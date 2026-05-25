@@ -3,31 +3,74 @@
   "nodes": [
     {
       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "name": "Chat – SEO Intelligence",
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.4,
-      "position": [240, 500],
+      "name": "GET – Serve HTML",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "seo-intelligence",
       "parameters": {
-        "public": true,
-        "mode": "hostedChat",
-        "initialMessages": "Olá! Sou o SEO Intelligence Orchestrator.\n\nEnvie uma URL e um tópico para análise completa.\nExemplo: Analise https://centauro.com.br sobre tênis de corrida\n\n⏱️ A análise completa leva entre 1 e 3 minutos.",
+        "httpMethod": "GET",
+        "path": "seo-intelligence",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567891",
+      "name": "Responder HTML",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\"/>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>\n  <title>SEO Intelligence Hub | Cadastra</title>\n  <link href=\"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap\" rel=\"stylesheet\">\n  <link rel=\"icon\" type=\"image/png\" href=\"https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png\">\n  <style>\n    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}\n    :root{--ox:#FF5C28;--ox-light:#fff3ee;--ox-border:#ffd0bc;--dark:#111827;--gray:#6b7280;--gray-light:#9ca3af;--bg:#f4f4f2;--white:#ffffff;--line:#e5e7eb;--line-soft:#f3f4f6;--green:#059669;--green-bg:#ecfdf5;--green-border:#a7f3d0;--blue:#2563eb;--blue-bg:#eff6ff;--blue-border:#bfdbfe;--yellow:#d97706;--yellow-bg:#fffbeb;--yellow-border:#fde68a;--red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;--sans:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace;--r:12px;--r-lg:16px;--shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);--shadow-lg:0 4px 24px rgba(0,0,0,.08),0 12px 48px rgba(0,0,0,.06)}\n    body{font-family:var(--sans);background:var(--bg);color:var(--dark);line-height:1.6;min-height:100vh}\n    .header{background:var(--white);padding:0 40px;height:56px;display:flex;align-items:center;box-shadow:0 1px 0 var(--line);position:sticky;top:0;z-index:200}\n    .header-inner{max-width:1100px;margin:0 auto;width:100%;display:flex;align-items:center;gap:12px}\n    .logo{height:26px}.product-name{font-size:16px;font-weight:800;letter-spacing:-.02em}\n    .product-name span{color:var(--ox)}.version-badge{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}\n    .hero{background:linear-gradient(140deg,#e84e1b 0%,#ff6b3d 100%);padding:40px 40px 88px;position:relative;overflow:hidden}\n    .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:72px;background:linear-gradient(to bottom,transparent,var(--bg))}\n    .hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1;color:#fff}\n    .hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.75;margin-bottom:10px}\n    .hero h1{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px}\n    .hero-desc{font-size:16px;max-width:580px;opacity:.9;line-height:1.6;margin-bottom:24px}\n    .hero-badges{display:flex;gap:8px;flex-wrap:wrap}\n    .hero-badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.92);padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600}\n    .wrap{max-width:1100px;margin:-48px auto 60px;padding:0 40px;position:relative;z-index:10}\n    .card{background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);padding:40px 44px;margin-bottom:24px}\n    .card-title{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}\n    .card-sub{color:var(--gray);margin-bottom:28px;font-size:14px;line-height:1.6}\n    .form-label{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--gray);margin-bottom:8px;display:block}\n    .form-group{margin-bottom:20px}\n    .q-input{width:100%;padding:14px 18px;border:2px solid var(--line);border-radius:var(--r);font-size:15px;font-family:var(--sans);color:var(--dark);outline:none;background:var(--white);transition:border-color .2s,box-shadow .2s}\n    .q-input::placeholder{color:var(--gray-light)}\n    .q-input:focus{border-color:var(--ox);box-shadow:0 0 0 4px rgba(255,92,40,.1)}\n    .run-btn{background:linear-gradient(145deg,#ff6535,var(--ox));color:#fff;border:none;padding:14px 32px;border-radius:var(--r);font-size:15px;font-weight:800;font-family:var(--sans);cursor:pointer;white-space:nowrap;box-shadow:0 4px 16px rgba(255,92,40,.4);transition:transform .15s,box-shadow .15s;letter-spacing:-.01em}\n    .run-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,92,40,.45)}\n    .run-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}\n    .features-box{background:var(--line-soft);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;margin-top:24px}\n    .features-box h3{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--gray-light);margin-bottom:16px}\n    .feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}\n    .feat-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--white);border:1px solid var(--line);border-radius:8px;font-size:13px;font-weight:500}\n    .feat-check{width:20px;height:20px;background:var(--ox);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}\n    .loading{display:none;background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:40px;margin-bottom:24px;text-align:center}\n    .loading.on{display:block}\n    .spinner{width:40px;height:40px;margin:0 auto 18px;border:3px solid rgba(255,92,40,.12);border-top-color:var(--ox);border-radius:50%;animation:spin .8s linear infinite}\n    @keyframes spin{to{transform:rotate(360deg)}}\n    .loading-title{font-weight:700;font-size:15px;margin-bottom:4px}\n    .loading-sub{font-size:13px;color:var(--gray);margin-bottom:20px}\n    .steps-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}\n    .step-pill{font-size:11px;font-weight:600;padding:5px 14px;border-radius:999px;background:var(--line-soft);border:1px solid var(--line);color:var(--gray);transition:all .3s}\n    .step-pill.active{background:var(--ox-light);border-color:var(--ox-border);color:var(--ox)}\n    .step-pill.done{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}\n    .timer-wrap{margin:0 auto 8px;max-width:340px}\n    .timer-bar-bg{height:6px;background:var(--line);border-radius:3px;overflow:hidden}\n    .timer-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--ox),#ff7a50);width:0%;transition:width .5s linear}\n    .timer-label{font-size:11px;color:var(--gray-light);margin-top:6px;font-family:var(--mono)}\n    .err-box{display:none;background:var(--red-bg);border:2px solid var(--red-border);border-radius:var(--r);padding:20px 24px;margin-bottom:16px}\n    .err-box.on{display:block}\n    .err-box h4{color:var(--red);font-weight:800;margin-bottom:6px}\n    .err-box p{color:#7f1d1d;font-size:14px}\n    .results{display:none}.results.on{display:block}\n    .section{background:var(--white);border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07)}\n    .section-head{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}\n    .section-head:hover{background:var(--line-soft)}\n    .section-title{font-size:14px;font-weight:800;letter-spacing:-.01em}\n    .section-body{padding:22px}\n    .section-body.hidden{display:none}\n    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}\n    .kpi{background:var(--line-soft);border:1px solid var(--line);border-radius:var(--r);padding:16px;text-align:center;border-top:3px solid var(--ox)}\n    .kpi-val{font-size:28px;font-weight:800;letter-spacing:-.04em;color:var(--dark);line-height:1;margin-bottom:4px}\n    .kpi-lbl{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.06em}\n    .item{border-left:4px solid var(--ox);padding:12px 16px;margin:10px 0;background:var(--line-soft);border-radius:0 var(--r) var(--r) 0}\n    .item.alta{border-left-color:var(--red)}.item.media{border-left-color:var(--yellow)}.item.baixa{border-left-color:var(--green)}\n    .item-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px}\n    .item-name{font-size:13px;font-weight:700;flex:1}\n    .item-text{font-size:13px;color:var(--gray);margin-bottom:6px;line-height:1.6}\n    .item-meta{font-size:12px;color:var(--dark);display:flex;gap:12px;flex-wrap:wrap;margin-top:4px}\n    .item-meta span{display:flex;align-items:center;gap:4px}\n    .sev-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;flex-shrink:0}\n    .sev-badge.alta{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}\n    .sev-badge.media{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border)}\n    .sev-badge.baixa{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}\n    .wf-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}\n    .wf-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}\n    .summary-box{background:var(--ox-light);border:1px solid var(--ox-border);border-radius:var(--r);padding:18px 20px;margin-bottom:16px}\n    .summary-box h4{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ox);margin-bottom:12px}\n    .insight-list{list-style:none;padding:0}\n    .insight-list li{font-size:14px;line-height:1.7;padding:7px 0;border-bottom:1px solid var(--ox-border);display:flex;gap:10px}\n    .insight-list li:last-child{border-bottom:none}\n    .insight-list li::before{content:\"→\";color:var(--ox);font-weight:700;flex-shrink:0;margin-top:2px}\n    .impact-badge{display:inline-block;padding:3px 12px;border-radius:999px;font-size:11px;font-weight:700;margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em}\n    .impact-badge.alto{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}\n    .impact-badge.medio{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border)}\n    .impact-badge.baixo{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}\n    .cwv-note{border-radius:var(--r);padding:14px 18px;margin-top:16px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px}\n    .cwv-note.ok{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)}\n    .cwv-note.pending{background:var(--yellow-bg);border:1px solid var(--yellow-border);color:var(--yellow)}\n    .meta-row{font-size:12px;color:var(--gray-light);font-family:var(--mono);margin-bottom:16px;padding:10px 14px;background:var(--line-soft);border-radius:8px;display:flex;gap:16px;flex-wrap:wrap}\n    @media(max-width:768px){.header{padding:0 20px}.hero{padding:32px 20px 80px}.wrap{padding:0 20px;margin-top:-40px}.card{padding:24px 20px}.run-btn{width:100%}.steps-row{gap:6px}}\n  </style>\n</head>\n<body>\n  <header class=\"header\">\n    <div class=\"header-inner\">\n      <img src=\"https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png\" class=\"logo\" alt=\"Cadastra\">\n      <div class=\"product-name\">SEO <span>Intelligence</span></div>\n      <span class=\"version-badge\">Hub</span>\n    </div>\n  </header>\n\n  <section class=\"hero\">\n    <div class=\"hero-inner\">\n      <div class=\"hero-eyebrow\">SEO &amp; GEO INTELLIGENCE ORCHESTRATOR</div>\n      <h1>SEO Intelligence Hub</h1>\n      <p class=\"hero-desc\">Orquestra 4 workflows especializados em paralelo — Query Fan-out com múltiplos LLMs, GEO Mapping, On-Page SEO Audit e Core Web Vitals — correlacionando todos os dados em insights acionáveis.</p>\n      <div class=\"hero-badges\">\n        <div class=\"hero-badge\">Query Fan-out (ChatGPT · Gemini · Perplexity)</div>\n        <div class=\"hero-badge\">GEO Mapping</div>\n        <div class=\"hero-badge\">On-Page SEO Audit</div>\n        <div class=\"hero-badge\">Core Web Vitals</div>\n        <div class=\"hero-badge\">Correlação IA</div>\n      </div>\n    </div>\n  </section>\n\n  <div class=\"wrap\">\n    <div class=\"card\">\n      <div class=\"card-title\">🔍 Análise SEO &amp; GEO Integrada</div>\n      <div class=\"card-sub\">Informe a URL e o tópico para iniciar a orquestração completa dos 4 workflows em paralelo.</div>\n      <form id=\"form\">\n        <div class=\"form-group\">\n          <label class=\"form-label\" for=\"url\">URL para Análise</label>\n          <input class=\"q-input\" type=\"url\" id=\"url\" placeholder=\"https://www.seusite.com.br/pagina-ou-dominio\" required autocomplete=\"off\">\n        </div>\n        <div class=\"form-group\">\n          <label class=\"form-label\" for=\"topic\">Tópico / Keyword</label>\n          <input class=\"q-input\" type=\"text\" id=\"topic\" placeholder=\"Ex: tênis de corrida, e-commerce de moda, seguro auto\" required autocomplete=\"off\">\n        </div>\n        <div class=\"form-group\">\n          <label class=\"form-label\" for=\"email\">E-mail para relatório CWV <span style=\"font-weight:400;color:var(--gray-light)\">(opcional)</span></label>\n          <input class=\"q-input\" type=\"email\" id=\"email\" placeholder=\"seu@email.com\" autocomplete=\"email\">\n        </div>\n        <button class=\"run-btn\" type=\"submit\" id=\"btn\">🚀 Iniciar Análise Completa</button>\n        <div class=\"features-box\">\n          <h3>O que será executado em paralelo</h3>\n          <div class=\"feat-grid\">\n            <div class=\"feat-item\"><div class=\"feat-check\">✓</div>Query Fan-out (3 LLMs)</div>\n            <div class=\"feat-item\"><div class=\"feat-check\">✓</div>GEO Mapping (visibilidade IA)</div>\n            <div class=\"feat-item\"><div class=\"feat-check\">✓</div>On-Page SEO Audit</div>\n            <div class=\"feat-item\"><div class=\"feat-check\">✓</div>Core Web Vitals (via e-mail)</div>\n            <div class=\"feat-item\"><div class=\"feat-check\">✓</div>Correlação multi-fonte por IA</div>\n            <div class=\"feat-item\"><div class=\"feat-check\">✓</div>Plano de ação priorizado</div>\n          </div>\n        </div>\n      </form>\n    </div>\n\n    <div class=\"loading\" id=\"loading\">\n      <div class=\"spinner\"></div>\n      <div class=\"loading-title\">Orquestrando análise completa...</div>\n      <div class=\"loading-sub\">4 workflows especializados em execução paralela</div>\n      <div class=\"steps-row\">\n        <span class=\"step-pill active\" id=\"sp-fanout\">⚡ Query Fan-out</span>\n        <span class=\"step-pill active\" id=\"sp-geo\">🤖 GEO Mapping</span>\n        <span class=\"step-pill active\" id=\"sp-onpage\">📄 On-Page SEO</span>\n        <span class=\"step-pill active\" id=\"sp-cwv\">📊 Core Web Vitals</span>\n        <span class=\"step-pill\" id=\"sp-ai\">🧠 Correlação IA</span>\n      </div>\n      <div class=\"timer-wrap\">\n        <div class=\"timer-bar-bg\"><div class=\"timer-bar-fill\" id=\"timerFill\"></div></div>\n        <div class=\"timer-label\" id=\"timerLabel\">0s / 180s</div>\n      </div>\n    </div>\n\n    <div class=\"err-box\" id=\"errBox\">\n      <h4>Erro na análise</h4>\n      <p id=\"errMsg\">Não foi possível completar a análise. Verifique a URL e tente novamente.</p>\n    </div>\n\n    <div class=\"results\" id=\"results\"></div>\n  </div>\n\n  <script>\n    const esc = s => String(s??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#039;'}[c]));\n    const TIMEOUT_MS = 180000;\n    let timerInterval = null;\n\n    function startTimer() {\n      const fill = document.getElementById('timerFill');\n      const lbl  = document.getElementById('timerLabel');\n      const total = TIMEOUT_MS / 1000;\n      const start = Date.now();\n      fill.style.width = '0%';\n      timerInterval = setInterval(() => {\n        const elapsed = Math.round((Date.now() - start) / 1000);\n        fill.style.width = Math.min((elapsed / total) * 100, 100) + '%';\n        lbl.textContent = elapsed + 's / ' + total + 's';\n        if (elapsed > 30) {\n          ['sp-fanout','sp-geo','sp-onpage','sp-cwv'].forEach(id => {\n            const el = document.getElementById(id);\n            if (el && !el.classList.contains('done')) {\n              el.classList.remove('active');\n              el.classList.add('done');\n            }\n          });\n          const ai = document.getElementById('sp-ai');\n          if (ai && !ai.classList.contains('active')) ai.classList.add('active');\n        }\n        if (elapsed >= total) clearInterval(timerInterval);\n      }, 500);\n    }\n\n    function stopTimer() {\n      clearInterval(timerInterval);\n      document.getElementById('timerFill').style.width = '100%';\n    }\n\n    function sevCls(p) {\n      const v = (p||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');\n      return v === 'alta' || v === 'alto' ? 'alta' : v === 'media' || v === 'medio' ? 'media' : 'baixa';\n    }\n\n    function renderItems(items) {\n      return (items||[]).map(it => {\n        const cls = sevCls(it.prioridade || it.impacto || '');\n        const tags = (it.workflows||[]).map(w => '<span class=\"wf-tag\">'+esc(w)+'</span>').join('');\n        const meta = [\n          it.prazo          && '<span>📅 '+esc(it.prazo)+'</span>',\n          it.horizonte      && '<span>🗓️ '+esc(it.horizonte)+'</span>',\n          it.impacto_estimado && '<span>📈 '+esc(it.impacto_estimado)+'</span>',\n          it.impacto_esperado && '<span>📈 '+esc(it.impacto_esperado)+'</span>'\n        ].filter(Boolean).join('');\n        return '<div class=\"item ' + cls + '\">' +\n          '<div class=\"item-head\"><span class=\"item-name\">'+esc(it.titulo||it.acao||it.passo||'')+'</span>' +\n          (cls ? '<span class=\"sev-badge '+cls+'\">'+(it.prioridade||'')+'</span>' : '') +\n          '</div>' +\n          (it.descricao ? '<div class=\"item-text\">'+esc(it.descricao)+'</div>' : '') +\n          (meta ? '<div class=\"item-meta\">'+meta+'</div>' : '') +\n          (tags ? '<div class=\"wf-tags\">'+tags+'</div>' : '') +\n          '</div>';\n      }).join('');\n    }\n\n    function renderResults(d) {\n      const res = document.getElementById('results');\n      const sum = d.sumario || {};\n      const impCls = sevCls(sum.nivel_impacto || 'medio');\n      const corr   = d.correlacoes || [];\n      const gaps   = d.gaps_oportunidades || [];\n      const plan   = d.plano_acao || [];\n      const prox   = d.proximos_passos || [];\n\n      const metaHtml = '<div class=\"meta-row\">' +\n        (d.url_analisada ? '<span>🔗 '+esc(d.url_analisada)+'</span>' : '') +\n        (d.topico        ? '<span>🔑 '+esc(d.topico)+'</span>' : '') +\n        (d.generated_at  ? '<span>🕐 '+new Date(d.generated_at).toLocaleString('pt-BR')+'</span>' : '') +\n        '</div>';\n\n      const kpiHtml = '<div class=\"kpi-grid\">' +\n        '<div class=\"kpi\"><div class=\"kpi-val\">'+corr.length+'</div><div class=\"kpi-lbl\">Correlações</div></div>' +\n        '<div class=\"kpi\"><div class=\"kpi-val\">'+gaps.filter(g=>sevCls(g.prioridade)==='alta').length+'</div><div class=\"kpi-lbl\">Gaps Críticos</div></div>' +\n        '<div class=\"kpi\"><div class=\"kpi-val\">'+plan.length+'</div><div class=\"kpi-lbl\">Ações Imediatas</div></div>' +\n        '<div class=\"kpi\"><div class=\"kpi-val\">'+prox.length+'</div><div class=\"kpi-lbl\">Próx. Passos</div></div>' +\n        '</div>';\n\n      const insightsHtml = (sum.insights||[]).length\n        ? '<ul class=\"insight-list\">'+( sum.insights.map(i=>'<li>'+esc(i)+'</li>').join(''))+'</ul>'\n        : '<p style=\"color:var(--gray);font-size:14px\">Sem insights disponíveis.</p>';\n\n      const cwvHtml = d.cwv_email_enviado\n        ? '<div class=\"cwv-note ok\">📬 Relatório Core Web Vitals processado e enviado por e-mail pelo CorePulse Analyzer.</div>'\n        : '<div class=\"cwv-note pending\">⏳ Relatório CWV em processamento — será enviado por e-mail em breve.</div>';\n\n      const empty = '<p style=\"color:var(--gray);font-size:14px\">Nenhum item disponível.</p>';\n\n      res.innerHTML =\n        '<div class=\"section\">' +\n          '<div class=\"section-head\" onclick=\"toggle(this)\"><span class=\"section-title\">📊 Sumário Executivo & KPIs</span><span>▾</span></div>' +\n          '<div class=\"section-body\">' + metaHtml + kpiHtml +\n            '<div class=\"summary-box\"><h4>Insights Críticos</h4>' +\n            '<span class=\"impact-badge '+impCls+'\">Impacto: '+esc(sum.nivel_impacto||'Médio')+'</span>' +\n            insightsHtml + '</div>' + cwvHtml +\n          '</div>' +\n        '</div>' +\n        '<div class=\"section\">' +\n          '<div class=\"section-head\" onclick=\"toggle(this)\"><span class=\"section-title\">🔗 Correlações Detectadas ('+corr.length+')</span><span>▾</span></div>' +\n          '<div class=\"section-body\">' + (corr.length ? renderItems(corr) : empty) + '</div>' +\n        '</div>' +\n        '<div class=\"section\">' +\n          '<div class=\"section-head\" onclick=\"toggle(this)\"><span class=\"section-title\">🎯 Gaps & Oportunidades ('+gaps.length+')</span><span>▾</span></div>' +\n          '<div class=\"section-body\">' + (gaps.length ? renderItems(gaps) : empty) + '</div>' +\n        '</div>' +\n        '<div class=\"section\">' +\n          '<div class=\"section-head\" onclick=\"toggle(this)\"><span class=\"section-title\">⚡ Plano de Ação Imediato ('+plan.length+')</span><span>▾</span></div>' +\n          '<div class=\"section-body\">' + (plan.length ? renderItems(plan) : empty) + '</div>' +\n        '</div>' +\n        '<div class=\"section\">' +\n          '<div class=\"section-head\" onclick=\"toggle(this)\"><span class=\"section-title\">🗺️ Próximos Passos ('+prox.length+')</span><span>▾</span></div>' +\n          '<div class=\"section-body\">' + (prox.length ? renderItems(prox) : empty) + '</div>' +\n        '</div>';\n\n      res.classList.add('on');\n      res.scrollIntoView({ behavior: 'smooth', block: 'start' });\n    }\n\n    function toggle(head) { head.nextElementSibling.classList.toggle('hidden'); }\n\n    document.getElementById('form').addEventListener('submit', async e => {\n      e.preventDefault();\n      const url   = document.getElementById('url').value.trim();\n      const topic = document.getElementById('topic').value.trim();\n      const email = document.getElementById('email').value.trim();\n      const btn     = document.getElementById('btn');\n      const loading = document.getElementById('loading');\n      const errBox  = document.getElementById('errBox');\n      const results = document.getElementById('results');\n\n      btn.disabled = true; btn.textContent = '⏳ Analisando...';\n      loading.classList.add('on');\n      errBox.classList.remove('on');\n      results.classList.remove('on'); results.innerHTML = '';\n      ['sp-fanout','sp-geo','sp-onpage','sp-cwv'].forEach(id => {\n        const el = document.getElementById(id);\n        if (el) { el.className = 'step-pill active'; }\n      });\n      document.getElementById('sp-ai').className = 'step-pill';\n      startTimer();\n\n      try {\n        const isTest = window.location.pathname.includes('webhook-test');\n        const postUrl = isTest\n          ? 'https://n8n-prod.cadastra.com/webhook-test/seo-intelligence'\n          : 'https://n8n-prod.cadastra.com/webhook/seo-intelligence';\n\n        const res = await fetch(postUrl, {\n          method: 'POST',\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify({ url, topic, email }),\n          signal: AbortSignal.timeout(TIMEOUT_MS + 5000)\n        });\n        stopTimer();\n        if (!res.ok) throw new Error('Erro HTTP ' + res.status);\n        const raw = await res.json();\n        const d = raw.data ?? raw.result ?? raw.json ?? raw;\n        renderResults(d);\n      } catch(err) {\n        stopTimer();\n        errBox.classList.add('on');\n        document.getElementById('errMsg').textContent = err.message || 'Erro inesperado. Tente novamente.';\n      } finally {\n        loading.classList.remove('on');\n        btn.disabled = false; btn.textContent = '🚀 Iniciar Análise Completa';\n      }\n    });\n  </script>\n</body>\n</html>\n",
         "options": {
-          "title": "SEO Intelligence Hub",
-          "subtitle": "Query Fan-out • GEO Mapping • On-Page SEO • Core Web Vitals",
-          "inputPlaceholder": "Ex: Analise https://centauro.com.br sobre tênis de corrida",
-          "responseMode": "streaming"
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
         }
       }
     },
     {
       "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "name": "POST – Receber Análise",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        600
+      ],
+      "webhookId": "seo-intelligence",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "seo-intelligence",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678902",
       "name": "Extrair URL e Tópico",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [500, 500],
+      "position": [
+        500,
+        600
+      ],
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const input = ($input.first()?.json?.chatInput ?? $input.first()?.json?.input ?? '').trim();\nconst urlMatch = input.match(/https?:\\/\\/[^\\s,;!?]+/);\nif (!urlMatch) throw new Error('Informe uma URL válida. Ex: Analise https://site.com.br sobre tênis de corrida');\nconst url = urlMatch[0].replace(/[.,;!?]+$/, '').trim();\nconst topic = input.replace(url, '').replace(/\\b(analise|sobre|o site|a url|verifique|quero analisar)\\b/gi, ' ').replace(/\\s+/g, ' ').trim();\nif (!topic) throw new Error('Informe o tópico ou keyword. Ex: sobre tênis de corrida');\nreturn [{ json: { url, topic } }];"
+        "jsCode": "const body = $input.first()?.json?.body ?? $input.first()?.json ?? {};\nconst url = (body.url ?? '').trim();\nconst topic = (body.topic ?? '').trim();\nconst email = (body.email ?? '').trim();\nif (!url) throw new Error('URL é obrigatória');\nif (!topic) throw new Error('Tópico é obrigatório');\nreturn [{ json: { url, topic, email: email || 'tiagodaso@gmail.com' } }];"
       }
     },
     {
@@ -35,7 +78,10 @@
       "name": "Query Fan-out v2",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
-      "position": [760, 100],
+      "position": [
+        760,
+        200
+      ],
       "parameters": {
         "method": "POST",
         "url": "https://n8n-prod.cadastra.com/webhook/query-fan-out-v2",
@@ -44,9 +90,18 @@
         "specifyBody": "keypair",
         "bodyParameters": {
           "parameters": [
-            { "name": "query", "value": "={{ $json.topic }}" },
-            { "name": "market", "value": "BR" },
-            { "name": "lang", "value": "pt-BR" }
+            {
+              "name": "query",
+              "value": "={{ $json.topic }}"
+            },
+            {
+              "name": "market",
+              "value": "BR"
+            },
+            {
+              "name": "lang",
+              "value": "pt-BR"
+            }
           ]
         },
         "options": {
@@ -64,7 +119,10 @@
       "name": "Prompt Mapper GEO",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
-      "position": [760, 340],
+      "position": [
+        760,
+        480
+      ],
       "parameters": {
         "method": "POST",
         "url": "https://n8n-prod.cadastra.com/webhook/prompt-mapper",
@@ -73,9 +131,18 @@
         "specifyBody": "keypair",
         "bodyParameters": {
           "parameters": [
-            { "name": "keyword", "value": "={{ $json.topic }}" },
-            { "name": "market", "value": "BR" },
-            { "name": "lang", "value": "pt-BR" }
+            {
+              "name": "keyword",
+              "value": "={{ $json.topic }}"
+            },
+            {
+              "name": "market",
+              "value": "BR"
+            },
+            {
+              "name": "lang",
+              "value": "pt-BR"
+            }
           ]
         },
         "options": {
@@ -93,7 +160,10 @@
       "name": "On-Page SEO Audit",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
-      "position": [760, 600],
+      "position": [
+        760,
+        760
+      ],
       "parameters": {
         "method": "POST",
         "url": "https://n8n-prod.cadastra.com/webhook/seo-onpage-audit",
@@ -102,7 +172,10 @@
         "specifyBody": "keypair",
         "bodyParameters": {
           "parameters": [
-            { "name": "url", "value": "={{ $json.url }}" }
+            {
+              "name": "url",
+              "value": "={{ $json.url }}"
+            }
           ]
         },
         "options": {
@@ -120,7 +193,10 @@
       "name": "CorePulse CWV",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
-      "position": [760, 880],
+      "position": [
+        760,
+        1040
+      ],
       "parameters": {
         "method": "POST",
         "url": "https://n8n-prod.cadastra.com/webhook/corepulse",
@@ -129,9 +205,18 @@
         "specifyBody": "keypair",
         "bodyParameters": {
           "parameters": [
-            { "name": "urls", "value": "={{ $json.url }}" },
-            { "name": "email", "value": "tiagodaso@gmail.com" },
-            { "name": "context", "value": "={{ $json.topic }}" }
+            {
+              "name": "urls",
+              "value": "={{ $json.url }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "name": "context",
+              "value": "={{ $json.topic }}"
+            }
           ]
         },
         "options": {
@@ -149,7 +234,10 @@
       "name": "Unir Todos os Resultados",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [1080, 490],
+      "position": [
+        1080,
+        620
+      ],
       "parameters": {
         "mode": "append",
         "numberInputs": 4
@@ -160,10 +248,13 @@
       "name": "Montar Contexto para Correlação",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1340, 490],
+      "position": [
+        1340,
+        620
+      ],
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const fanout  = $('Query Fan-out v2').first()?.json ?? {};\nconst geo     = $('Prompt Mapper GEO').first()?.json ?? {};\nconst onPage  = $('On-Page SEO Audit').first()?.json ?? {};\nconst cwv     = $('CorePulse CWV').first()?.json ?? {};\nconst params  = $('Extrair URL e Tópico').first()?.json ?? {};\n\nconst context = {\n  url_analisada: params.url,\n  topico: params.topic,\n\n  query_fanout: {\n    fanout_queries:   fanout.fanout_queries   ?? {},\n    cited_sources:    fanout.cited_sources    ?? {},\n    source_diversity: fanout.source_diversity ?? {},\n    seo_summary:      fanout.seo_summary      ?? {}\n  },\n\n  geo_mapping: {\n    summary:       geo.summary ?? '',\n    total_prompts: geo.total   ?? 0,\n    prompts:       (geo.prompts ?? []).slice(0, 10)\n  },\n\n  on_page_audit: onPage,\n\n  cwv_status: cwv.status ?? 'dispatched',\n  cwv_nota:   'Relatório CWV completo enviado por e-mail pelo CorePulse Analyzer (assíncrono).'\n};\n\nreturn [{ json: { correlationContext: JSON.stringify(context, null, 2) } }];"
+        "jsCode": "const fanout  = $('Query Fan-out v2').first()?.json ?? {};\nconst geo     = $('Prompt Mapper GEO').first()?.json ?? {};\nconst onPage  = $('On-Page SEO Audit').first()?.json ?? {};\nconst cwv     = $('CorePulse CWV').first()?.json ?? {};\nconst params  = $('Extrair URL e Tópico').first()?.json ?? {};\n\nconst context = {\n  url_analisada: params.url,\n  topico: params.topic,\n  query_fanout: {\n    fanout_queries:   fanout.fanout_queries   ?? {},\n    cited_sources:    fanout.cited_sources    ?? {},\n    source_diversity: fanout.source_diversity ?? {},\n    seo_summary:      fanout.seo_summary      ?? {}\n  },\n  geo_mapping: {\n    summary:       geo.summary ?? '',\n    total_prompts: geo.total   ?? 0,\n    prompts:       (geo.prompts ?? []).slice(0, 10)\n  },\n  on_page_audit: onPage,\n  cwv_status: cwv.status ?? 'dispatched',\n  cwv_nota: 'Relatório CWV completo enviado por e-mail pelo CorePulse Analyzer (assíncrono).'\n};\n\nreturn [{ json: { correlationContext: JSON.stringify(context, null, 2) } }];"
       }
     },
     {
@@ -171,7 +262,10 @@
       "name": "OpenRouter – Claude Sonnet",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
-      "position": [1600, 720],
+      "position": [
+        1600,
+        860
+      ],
       "parameters": {
         "model": "anthropic/claude-sonnet-4-6",
         "options": {
@@ -185,81 +279,207 @@
       "name": "Agente Correlacionador SEO",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [1600, 490],
+      "position": [
+        1600,
+        620
+      ],
       "parameters": {
         "promptType": "define",
-        "text": "=Analise e correlacione os dados coletados de 4 workflows especializados:\n\n{{ $json.correlationContext }}\n\nGere um relatório acionável em português com as seguintes seções:\n\n**1. Sumário Executivo**\nListe 3 a 5 insights críticos que emergem do cruzamento dos dados.\n\n**2. Correlações Detectadas**\nIdentifique padrões e relações entre os outputs dos 4 workflows:\n- Queries do Fan-out vs. visibilidade nos LLMs (GEO Mapping)\n- Issues on-page vs. performance CWV\n- Fontes citadas pelos LLMs vs. autoridade da página\n- Intent dos prompts GEO vs. otimização de conteúdo existente\n\n**3. Gaps e Oportunidades**\nListe as principais lacunas encontradas, priorizadas por impacto estimado (Alto / Médio / Baixo).\n\n**4. Plano de Ação Imediato**\nDe 3 a 5 ações concretas para executar nas próximas 2 semanas.\n\n**5. Próximos Passos**\nRecomendações de médio prazo (1 a 3 meses).\n\n---\n*Nota: O relatório detalhado de Core Web Vitals foi enviado por e-mail pelo CorePulse Analyzer. Os dados de CWV acima refletem apenas o status do disparo.*",
+        "text": "=Analise e correlacione os dados coletados de 4 workflows especializados:\n\n{{ $json.correlationContext }}\n\nRetorne APENAS um objeto JSON válido (sem markdown, sem texto adicional) com esta estrutura exata:\n\n{\n  \"sumario\": {\n    \"insights\": [\"insight 1\", \"insight 2\", \"insight 3\"],\n    \"nivel_impacto\": \"Alto\"\n  },\n  \"correlacoes\": [\n    {\n      \"titulo\": \"Título da correlação\",\n      \"descricao\": \"Descrição detalhada\",\n      \"workflows\": [\"Query Fan-out\", \"GEO Mapping\"],\n      \"prioridade\": \"Alta\"\n    }\n  ],\n  \"gaps_oportunidades\": [\n    {\n      \"titulo\": \"Título do gap\",\n      \"descricao\": \"Descrição do gap ou oportunidade\",\n      \"prioridade\": \"Alta\",\n      \"impacto_estimado\": \"Descrição do impacto\"\n    }\n  ],\n  \"plano_acao\": [\n    {\n      \"acao\": \"Descrição da ação concreta\",\n      \"prazo\": \"2 semanas\",\n      \"impacto_esperado\": \"Descrição do resultado esperado\"\n    }\n  ],\n  \"proximos_passos\": [\n    {\n      \"passo\": \"Descrição do próximo passo\",\n      \"horizonte\": \"1-3 meses\"\n    }\n  ]\n}\n\nGere entre 3-5 itens em cada seção. Prioridades: Alta, Média ou Baixa.",
         "options": {
-          "systemMessage": "Você é um especialista sênior em SEO técnico, GEO (Generative Engine Optimization) e CRO. Sua função é correlacionar dados de múltiplas fontes especializadas — pesquisa de queries com múltiplos LLMs, mapeamento de visibilidade em IA, auditoria on-page e Core Web Vitals — e transformar isso em insights acionáveis de negócio. Seja objetivo, técnico e focado em impacto real. Responda sempre em português.",
+          "systemMessage": "Você é um especialista sênior em SEO técnico, GEO (Generative Engine Optimization) e CRO. Analise os dados fornecidos de múltiplos workflows especializados e correlacione-os para gerar insights acionáveis. Retorne APENAS JSON válido, sem texto adicional, markdown ou comentários.",
           "maxIterations": 3
+        }
+      }
+    },
+    {
+      "id": "e1f2a3b4-c5d6-7890-efab-890000000010",
+      "name": "Formatar Resposta JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1880,
+        620
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const raw = ($input.first()?.json?.output ?? '').trim();\nconst cleaned = raw.replace(/^```(?:json)?\\s*/i, '').replace(/\\s*```$/i, '').trim();\nlet parsed;\ntry { parsed = JSON.parse(cleaned); }\ncatch(e) {\n  parsed = {\n    sumario: { insights: [raw.slice(0, 500) || 'Análise indisponível.'], nivel_impacto: 'Médio' },\n    correlacoes: [], gaps_oportunidades: [], plano_acao: [], proximos_passos: []\n  };\n}\nconst params = $('Extrair URL e Tópico').first()?.json ?? {};\nconst cwv = $('CorePulse CWV').first()?.json ?? {};\nreturn [{ json: {\n  ...parsed,\n  url_analisada: params.url,\n  topico: params.topic,\n  cwv_status: cwv.status ?? 'dispatched',\n  cwv_email_enviado: (cwv.status ?? '') === 'received',\n  generated_at: new Date().toISOString()\n}}];"
+      }
+    },
+    {
+      "id": "f2a3b4c5-d6e7-8901-fabc-900000000011",
+      "name": "Responder JSON",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2140,
+        620
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
         }
       }
     }
   ],
   "connections": {
-    "Chat – SEO Intelligence": {
+    "GET – Serve HTML": {
       "main": [
         [
-          { "node": "Extrair URL e Tópico", "type": "main", "index": 0 }
+          {
+            "node": "Responder HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST – Receber Análise": {
+      "main": [
+        [
+          {
+            "node": "Extrair URL e Tópico",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
     "Extrair URL e Tópico": {
       "main": [
         [
-          { "node": "Query Fan-out v2",   "type": "main", "index": 0 },
-          { "node": "Prompt Mapper GEO",  "type": "main", "index": 0 },
-          { "node": "On-Page SEO Audit",  "type": "main", "index": 0 },
-          { "node": "CorePulse CWV",      "type": "main", "index": 0 }
+          {
+            "node": "Query Fan-out v2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prompt Mapper GEO",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "On-Page SEO Audit",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CorePulse CWV",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
     "Query Fan-out v2": {
       "main": [
         [
-          { "node": "Unir Todos os Resultados", "type": "main", "index": 0 }
+          {
+            "node": "Unir Todos os Resultados",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
     "Prompt Mapper GEO": {
       "main": [
         [
-          { "node": "Unir Todos os Resultados", "type": "main", "index": 1 }
+          {
+            "node": "Unir Todos os Resultados",
+            "type": "main",
+            "index": 1
+          }
         ]
       ]
     },
     "On-Page SEO Audit": {
       "main": [
         [
-          { "node": "Unir Todos os Resultados", "type": "main", "index": 2 }
+          {
+            "node": "Unir Todos os Resultados",
+            "type": "main",
+            "index": 2
+          }
         ]
       ]
     },
     "CorePulse CWV": {
       "main": [
         [
-          { "node": "Unir Todos os Resultados", "type": "main", "index": 3 }
+          {
+            "node": "Unir Todos os Resultados",
+            "type": "main",
+            "index": 3
+          }
         ]
       ]
     },
     "Unir Todos os Resultados": {
       "main": [
         [
-          { "node": "Montar Contexto para Correlação", "type": "main", "index": 0 }
+          {
+            "node": "Montar Contexto para Correlação",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
     "Montar Contexto para Correlação": {
       "main": [
         [
-          { "node": "Agente Correlacionador SEO", "type": "main", "index": 0 }
+          {
+            "node": "Agente Correlacionador SEO",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
     "OpenRouter – Claude Sonnet": {
       "ai_languageModel": [
         [
-          { "node": "Agente Correlacionador SEO", "type": "ai_languageModel", "index": 0 }
+          {
+            "node": "Agente Correlacionador SEO",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Correlacionador SEO": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resposta JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Resposta JSON": {
+      "main": [
+        [
+          {
+            "node": "Responder JSON",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     }
