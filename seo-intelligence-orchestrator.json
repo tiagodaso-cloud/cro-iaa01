@@ -60,15 +60,46 @@
     {
       "id": "n04",
       "name": "Ler Resultado",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
       "position": [
         500,
         400
       ],
+      "alwaysOutputData": true,
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "seo_jobs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "jobId",
+              "condition": "eq",
+              "keyValue": "={{ $json.query.jobId }}"
+            }
+          ]
+        },
+        "returnAll": true
+      }
+    },
+    {
+      "id": "n04b",
+      "name": "Formatar Poll",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        400
+      ],
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const query  = $input.first()?.json?.query ?? {};\nconst jobId  = (query.jobId ?? '').trim();\nif (!jobId) return [{ json: { status:'error', message:'jobId obrigatório' } }];\nconst store  = $getWorkflowStaticData('global');\nconst result = store[jobId];\nif (!result) return [{ json: { status:'processing' } }];\ndelete store[jobId];\nconst r = typeof result === 'object' ? result : JSON.parse(result);\nreturn [{ json: { status:'done', result: r } }];"
+        "jsCode": "const query = $('GET – Poll Resultado').first()?.json?.query ?? {};\nconst jobId = (query.jobId ?? '').trim();\nif (!jobId) return [{ json: { status:'error', message:'jobId obrigatório' } }];\nconst row = $input.first()?.json ?? {};\nif (!row.result) return [{ json: { status:'processing' } }];\nconst r = row.result;\nconst parsed = typeof r === 'string' ? JSON.parse(r) : r;\nreturn [{ json: { status:'done', result: parsed } }];"
       }
     },
     {
@@ -466,15 +497,38 @@
     {
       "id": "n21",
       "name": "Salvar Análise",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
       "position": [
         2860,
         560
       ],
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const result = $input.first()?.json ?? {};\nconst jobId  = $('Parse Request').first()?.json?.jobId ?? '';\nif (jobId) { const s = $getWorkflowStaticData('global'); s[jobId] = result; }\nreturn [{ json: { saved: true } }];"
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "seo_jobs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "jobId",
+              "condition": "eq",
+              "keyValue": "={{ $('Parse Request').first().json.jobId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "jobId": "={{ $('Parse Request').first().json.jobId }}",
+            "result": "={{ JSON.stringify($input.first().json) }}"
+          },
+          "matchingColumns": ["jobId"]
+        }
       }
     },
     {
@@ -712,15 +766,38 @@
     {
       "id": "n26",
       "name": "Salvar Conversa",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
       "position": [
         2080,
         900
       ],
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const result = $input.first()?.json ?? {};\nconst jobId  = $('Parse Request').first()?.json?.jobId ?? '';\nif (jobId) { const s = $getWorkflowStaticData('global'); s[jobId] = result; }\nreturn [{ json: { saved: true } }];"
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "seo_jobs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "jobId",
+              "condition": "eq",
+              "keyValue": "={{ $('Parse Request').first().json.jobId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "jobId": "={{ $('Parse Request').first().json.jobId }}",
+            "result": "={{ JSON.stringify($input.first().json) }}"
+          },
+          "matchingColumns": ["jobId"]
+        }
       }
     }
   ],
@@ -748,6 +825,17 @@
       ]
     },
     "Ler Resultado": {
+      "main": [
+        [
+          {
+            "node": "Formatar Poll",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Poll": {
       "main": [
         [
           {
