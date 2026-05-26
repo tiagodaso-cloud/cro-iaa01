@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmark EdTech — Taxa de Geração de Leads</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: #fff;
+      color: #1a1a1a;
+      padding: 48px 40px 32px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 36px;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #6b7280;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      margin-bottom: 24px;
+    }
+
+    thead tr {
+      background: #111827;
+      color: #fff;
+    }
+
+    thead th {
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 11.5px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    thead th:not(:first-child):not(:last-child) {
+      text-align: center;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    tbody tr:hover {
+      background: #f0f4ff;
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: middle;
+      line-height: 1.45;
+    }
+
+    tbody td:not(:first-child):not(:last-child) {
+      text-align: center;
+    }
+
+    td.segment {
+      font-weight: 600;
+      color: #111;
+      min-width: 190px;
+    }
+
+    td.benchmark {
+      font-weight: 700;
+      color: #111;
+    }
+
+    td.channel {
+      color: #374151;
+    }
+
+    td.factors {
+      color: #4b5563;
+      font-size: 12px;
+      min-width: 280px;
+      max-width: 320px;
+    }
+
+    .highlight {
+      background: #fef9c3 !important;
+    }
+
+    .sources {
+      font-size: 11px;
+      color: #9ca3af;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+
+    .sources strong {
+      color: #6b7280;
+    }
+
+    footer {
+      margin-top: auto;
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .footer-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #9ca3af;
+    }
+
+    .page-title-bottom {
+      font-size: 11px;
+      font-weight: 700;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .cna-row td {
+      border-left: 3px solid #2563eb;
+    }
+
+    .cna-tag {
+      display: inline-block;
+      background: #2563eb;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-left: 6px;
+      vertical-align: middle;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <div class="badge">Cadastra Confidential and Proprietary</div>
+      <h1 style="margin-top:10px;">Benchmark EdTech — Taxa de Geração de Leads</h1>
+      <p class="subtitle">Lead CVR por segmento e canal de tráfego · Sessão → Form Submit</p>
+    </div>
+  </header>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Segmento</th>
+        <th>Benchmark Confiável<br>(Brasil %)</th>
+        <th>Paid Search<br>(%)</th>
+        <th>Paid Social<br>(%)</th>
+        <th>Organic Search<br>(%)</th>
+        <th>Direct / Email<br>(%)</th>
+        <th>Fatores-Chave de Influência</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="segment">EdTech Geral<br><span style="font-weight:400;color:#6b7280;font-size:11.5px;">Plataformas de ensino online</span></td>
+        <td class="benchmark channel">3,5% – 6,0%</td>
+        <td class="channel">7,0% – 12,0%</td>
+        <td class="channel">2,5% – 5,0%</td>
+        <td class="channel">4,0% – 7,5%</td>
+        <td class="channel">5,0% – 9,0%</td>
+        <td class="factors">Alta concorrência, jornada de decisão media, forte influência de avaliações e provas sociais.</td>
+      </tr>
+
+      <tr class="cna-row highlight">
+        <td class="segment">Cursos de Idiomas<br><span style="font-weight:400;color:#6b7280;font-size:11.5px;">Presencial + online</span><span class="cna-tag">CNA</span></td>
+        <td class="benchmark channel">4,0% – 7,5%</td>
+        <td class="channel">9,0% – 18,0%</td>
+        <td class="channel">3,0% – 6,0%</td>
+        <td class="channel">5,0% – 9,0%</td>
+        <td class="channel">6,0% – 11,0%</td>
+        <td class="factors">Decisão emocional + aspiracional. Forte sazonalidade (início de ano / mid-year). Alta sensibilidade a preço e modalidade (ao vivo vs. gravado).</td>
+      </tr>
+
+      <tr>
+        <td class="segment">Franquias de Idiomas<br><span style="font-weight:400;color:#6b7280;font-size:11.5px;">Redes físicas c/ presença digital</span></td>
+        <td class="benchmark channel">3,0% – 5,5%</td>
+        <td class="channel">8,0% – 15,0%</td>
+        <td class="channel">2,5% – 5,0%</td>
+        <td class="channel">4,5% – 8,0%</td>
+        <td class="channel">5,5% – 9,5%</td>
+        <td class="factors">Confiança na marca franqueadora, proximidade geográfica como fator decisivo, lead qualificado exige confirmação de unidade.</td>
+      </tr>
+
+      <tr>
+        <td class="segment">Cursos para Crianças<br><span style="font-weight:400;color:#6b7280;font-size:11.5px;">0 – 12 anos</span></td>
+        <td class="benchmark channel">4,5% – 8,0%</td>
+        <td class="channel">10,0% – 18,0%</td>
+        <td class="channel">4,0% – 7,5%</td>
+        <td class="channel">5,5% – 9,5%</td>
+        <td class="channel">7,0% – 12,0%</td>
+        <td class="factors">Decisão do responsável com alto apelo emocional. Mobile-first (pais acessam via smartphone). Forte influência de depoimentos de outros pais.</td>
+      </tr>
+
+      <tr>
+        <td class="segment">Cursos para Adolescentes<br><span style="font-weight:400;color:#6b7280;font-size:11.5px;">13 – 17 anos</span></td>
+        <td class="benchmark channel">4,0% – 7,0%</td>
+        <td class="channel">9,0% – 16,0%</td>
+        <td class="channel">3,5% – 6,5%</td>
+        <td class="channel">4,5% – 8,5%</td>
+        <td class="channel">6,0% – 10,0%</td>
+        <td class="factors">Co-decisão entre pais e adolescentes. Forte influência social (YouTube, TikTok, Instagram). CVR cai sem prova de aplicabilidade prática.</td>
+      </tr>
+
+      <tr>
+        <td class="segment">Educação para Adultos<br><span style="font-weight:400;color:#6b7280;font-size:11.5px;">Profissional e continuada</span></td>
+        <td class="benchmark channel">3,5% – 6,5%</td>
+        <td class="channel">8,0% – 14,0%</td>
+        <td class="channel">2,5% – 5,5%</td>
+        <td class="channel">4,5% – 8,0%</td>
+        <td class="channel">5,5% – 10,0%</td>
+        <td class="factors">Jornada mais longa e racional (ROI, carreira). Alta sensibilidade a horários, modalidade e carga horária. Abandono elevado sem urgência clara.</td>
+      </tr>
+
+      <tr>
+        <td class="segment">Ensino de Programação / STEM<br><span style="font-weight:400;color:#6b7280;font-size:11.5px;">Crianças e adolescentes</span></td>
+        <td class="benchmark channel">5,0% – 9,0%</td>
+        <td class="channel">11,0% – 19,0%</td>
+        <td class="channel">4,5% – 8,0%</td>
+        <td class="channel">6,0% – 10,0%</td>
+        <td class="channel">7,5% – 13,0%</td>
+        <td class="factors">Mercado em crescimento acelerado. Alta percepção de valor futuro pelos pais. Demanda por experimentação gratuita antes da conversão.</td>
+      </tr>
+
+      <tr>
+        <td class="segment">Pré-vestibular / Reforço<br><span style="font-weight:400;color:#6b7280;font-size:11.5px;">Ensino suplementar</span></td>
+        <td class="benchmark channel">5,5% – 10,0%</td>
+        <td class="channel">12,0% – 20,0%</td>
+        <td class="channel">4,0% – 7,0%</td>
+        <td class="channel">6,5% – 11,0%</td>
+        <td class="channel">8,0% – 14,0%</td>
+        <td class="factors">Altíssima urgência e sazonalidade (ENEM / vestibulares). Ciclo de decisão curto. CVR fortemente correlacionado com proximidade do exame.</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <p class="sources">
+    <strong>Fontes:</strong>
+    WordStream Industry Benchmarks (Education) &nbsp;|&nbsp;
+    Unbounce Conversion Benchmark Report &nbsp;|&nbsp;
+    HubSpot State of Marketing Report &nbsp;|&nbsp;
+    RD Station Benchmarks Brasil (Educação) &nbsp;|&nbsp;
+    Ruler Analytics B2C Lead Gen Report &nbsp;|&nbsp;
+    Semrush Education Sector Study &nbsp;|&nbsp;
+    ABComm / E-Learning Brasil
+  </p>
+
+  <footer>
+    <div class="footer-label">Cadastra Confidential and Proprietary</div>
+    <div class="page-title-bottom">Benchmark EdTech — Taxa de Geração de Leads</div>
+  </footer>
+
+</body>
+</html>
