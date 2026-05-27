@@ -1,0 +1,223 @@
+{
+  "name": "Pyramid - Workflow Architect",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-architect-001-aaaa-bbbb-ccccdddd0001",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        400,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first()?.json ?? {};\nconst description = input.description ?? input.query ?? JSON.stringify(input);\nreturn [{ json: { userRequest: String(description) } }];"
+      },
+      "id": "norm-input-002-aaaa-bbbb-ccccdddd0002",
+      "name": "Normalizar Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        620,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Demanda do usuário:\n\n{{ $json.userRequest }}\n\nProjete e publique o workflow n8n correspondente. Use a ferramenta \"Criar Workflow no n8n\" para publicar. Retorne ao usuário um resumo completo em Markdown.",
+        "options": {
+          "systemMessage": "Você é o **Pyramid Workflow Architect** — um agente especializado em projetar e publicar workflows n8n para SEO, GEO, conteúdo e CRO.\n\nSua missão: receber uma descrição em linguagem natural de um workflow desejado, projetar o JSON do workflow seguindo o schema do n8n, e publicá-lo via API.\n\n## Schema básico de workflow n8n\n\nTodo workflow tem esta estrutura:\n\n```json\n{\n  \"name\": \"Nome do Workflow\",\n  \"nodes\": [\n    {\n      \"parameters\": { ... },\n      \"id\": \"uuid-único\",\n      \"name\": \"Nome do Nó\",\n      \"type\": \"n8n-nodes-base.TIPO\",\n      \"typeVersion\": 1,\n      \"position\": [x, y]\n    }\n  ],\n  \"connections\": {\n    \"Nome do Nó Origem\": {\n      \"main\": [[{ \"node\": \"Nome do Nó Destino\", \"type\": \"main\", \"index\": 0 }]]\n    }\n  },\n  \"settings\": { \"executionOrder\": \"v1\" }\n}\n```\n\n## Padrões de design SEO/GEO comuns\n\n### Padrão 1 — Keyword Rank Tracker\n```\nSchedule Trigger (semanal) → HTTP Request (SERP API) → Code (parse posições) → Google Sheets (append)\n```\n\n### Padrão 2 — GEO Visibility Monitor\n```\nSchedule Trigger (diário) → HTTP Request (Prompt Mapper) → Code (extract mentions) → Database\n```\n\n### Padrão 3 — Content Brief Generator\n```\nWebhook → HTTP Request (Query Fan-out) → AI Agent (gera brief) → Respond to Webhook\n```\n\n### Padrão 4 — On-Page Audit em Lote\n```\nSchedule Trigger → Google Sheets (read URLs) → Loop → HTTP Request (audit) → Code (consolida) → Email\n```\n\n### Padrão 5 — Performance Monitor\n```\nSchedule Trigger → HTTP Request (PageSpeed API) → IF (threshold) → Slack notification\n```\n\n## Webhooks Cadastra disponíveis (use-os quando relevante)\n\n- `https://n8n-prod.cadastra.com/webhook/query-fan-out-v2` — Fan-out em 3 LLMs (body: query, market, lang)\n- `https://n8n-prod.cadastra.com/webhook/prompt-mapper` — GEO mapping (body: keyword, market, lang)\n- `https://n8n-prod.cadastra.com/webhook/seo-onpage-audit` — Auditoria on-page (body: url)\n- `https://n8n-prod.cadastra.com/webhook/corepulse` — CWV detalhado (body: urls, context, mode, email)\n\n## Tipos de nós mais usados\n\n- **Triggers**: `n8n-nodes-base.scheduleTrigger`, `n8n-nodes-base.webhook`, `n8n-nodes-base.manualTrigger`\n- **HTTP**: `n8n-nodes-base.httpRequest` (typeVersion 4.3)\n- **Code**: `n8n-nodes-base.code` (typeVersion 2)\n- **Lógica**: `n8n-nodes-base.if`, `n8n-nodes-base.switch`, `n8n-nodes-base.merge`, `n8n-nodes-base.splitInBatches`\n- **Saída**: `n8n-nodes-base.respondToWebhook`, `n8n-nodes-base.emailSend`, `n8n-nodes-base.googleSheets`\n- **IA**: `@n8n/n8n-nodes-langchain.agent`, `@n8n/n8n-nodes-langchain.lmChatOpenRouter`\n\n## Processo de criação\n\n1. Entenda a demanda — faça perguntas se ambígua, mas seja proativo se claro\n2. Escolha o padrão mais próximo ou combine padrões\n3. Construa o JSON completo, com:\n   - IDs únicos para cada nó (uuid-like)\n   - Posições espaçadas (x: +250 entre nós, y: 300)\n   - Connections explícitas no campo `connections`\n   - `settings.executionOrder: \"v1\"`\n4. Use a ferramenta **Criar Workflow no n8n** para publicar\n5. Retorne ao usuário: nome, ID, URL de acesso (`https://n8n-prod.cadastra.com/workflow/{ID}`) e resumo do que faz\n\n## Regras críticas\n\n- NUNCA ative workflow recém-criado automaticamente (`active: false`)\n- SEMPRE valide que IDs são únicos\n- SEMPRE conecte todos os nós (sem nós órfãos)\n- Para webhooks, gere `webhookId` (uuid) e defina `path` único\n- Para HTTP requests externos, sempre defina `timeout` razoável (30000-120000ms)\n- Use `neverError: true` em chamadas HTTP quando o erro deve ser tratado pelo workflow\n\n## Formato de resposta ao usuário\n\nResponda em Markdown:\n\n```\n✅ **Workflow criado: [nome]**\n\n**ID:** `abc123`\n**URL:** https://n8n-prod.cadastra.com/workflow/abc123\n\n**O que faz:**\n- [bullet 1]\n- [bullet 2]\n\n**Próximos passos:**\n- Revise os nós no n8n\n- Configure credenciais necessárias\n- Ative o workflow quando estiver pronto\n```\n\nSe a criação falhar, explique o erro e proponha correção.",
+          "maxIterations": 5
+        }
+      },
+      "id": "agent-architect-003-aaaa-bbbb-ccccdddd0003",
+      "name": "Agente Arquiteto",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        880,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "maxTokens": 8192,
+          "temperature": 0.2
+        }
+      },
+      "id": "lmodel-arch-004-aaaa-bbbb-ccccdddd0004",
+      "name": "OpenRouter – Arquiteto",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        880,
+        620
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "Criar Workflow no n8n",
+        "description": "Cria e publica um novo workflow no n8n via API. Recebe o JSON completo do workflow (campos: name, nodes, connections, settings). Retorna o workflow criado com seu ID. Use esta ferramenta após projetar o workflow.",
+        "method": "POST",
+        "url": "https://n8n-prod.cadastra.com/api/v1/workflows",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "n8nApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $fromAI('workflowJson', 'JSON completo do workflow contendo: name (string), nodes (array), connections (object), settings (object com executionOrder: v1). Não inclua active, id, versionId nem meta.', 'string') }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "tool-create-wf-005-aaa-bbbb-ccccdddd0005",
+      "name": "Criar Workflow no n8n",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        1100,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "name": "Listar Workflows Existentes",
+        "description": "Lista workflows existentes no n8n (com filtro opcional por nome). Use para verificar nomes duplicados ou explorar workflows já existentes antes de criar novos.",
+        "method": "GET",
+        "url": "https://n8n-prod.cadastra.com/api/v1/workflows",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "n8nApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "20"
+            },
+            {
+              "name": "name",
+              "value": "={{ $fromAI('nameFilter', 'Filtro opcional pelo nome do workflow', 'string') }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "tool-list-wf-006-aaaa-bbbb-ccccdddd0006",
+      "name": "Listar Workflows Existentes",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        1320,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = ($input.first()?.json?.output ?? '').toString().trim();\nreturn [{ json: { result: output, success: output.length > 0, generated_at: new Date().toISOString() } }];"
+      },
+      "id": "format-out-007-aaaa-bbbb-ccccdddd0007",
+      "name": "Formatar Saída",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Input": {
+      "main": [
+        [
+          {
+            "node": "Agente Arquiteto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter – Arquiteto": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Arquiteto",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Workflow no n8n": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Arquiteto",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Workflows Existentes": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Arquiteto",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Arquiteto": {
+      "main": [
+        [
+          {
+            "node": "Formatar Saída",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}
