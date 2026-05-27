@@ -667,35 +667,17 @@
     {
       "parameters": {
         "name": "Gerar Conteúdo via COPBot",
-        "description": "Gera conteúdo SEO otimizado usando o COPBot da Cadastra. Produz textos de apoio para categoria, blogposts, PDPs e meta tags respeitando o guia de linguagem e tom de voz da marca. Use quando o usuário solicitar criação ou sugestão de conteúdo otimizado para a URL ou keyword analisada.",
+        "description": "Gera conteúdo SEO otimizado usando o COPBot da Cadastra. Produz textos de apoio para categoria, blogposts, PDPs e meta tags respeitando o guia de linguagem e tom de voz da marca. Parâmetros necessários: url (URL de referência), keyword (keyword principal), contentType (texto_apoio | blogpost | pdp | meta_tags), briefing (instruções e contexto), brand (nome da marca).",
         "workflowId": {
           "__rl": true,
           "value": "gwrUKz2qeu6RhhbS",
           "mode": "id"
         },
-        "fields": {
-          "values": [
-            {
-              "name": "url",
-              "stringValue": "={{ $fromAI('url','URL de referência da página a ser otimizada','string') }}"
-            },
-            {
-              "name": "keyword",
-              "stringValue": "={{ $fromAI('keyword','Keyword principal para o conteúdo SEO','string') }}"
-            },
-            {
-              "name": "contentType",
-              "stringValue": "={{ $fromAI('contentType','Tipo de conteúdo: texto_apoio | blogpost | pdp | meta_tags','string') }}"
-            },
-            {
-              "name": "briefing",
-              "stringValue": "={{ $fromAI('briefing','Instruções específicas, contexto e requisitos adicionais para a geração','string') }}"
-            },
-            {
-              "name": "brand",
-              "stringValue": "={{ $fromAI('brand','Nome da marca para adequação de tom e linguagem','string') }}"
-            }
-          ]
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
         }
       },
       "id": "c0pb0t00-1234-5678-abcd-copbot00tool1",
