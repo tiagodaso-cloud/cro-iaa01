@@ -723,37 +723,32 @@
     {
       "parameters": {
         "name": "Criar Workflow Especializado",
-        "description": "Cocria um novo workflow especializado em SEO, GEO, conteúdo ou CRO no n8n. Recebe uma descrição em linguagem natural da automação desejada e o agente Arquiteto projeta + publica o workflow. Use quando o usuário pedir para criar uma nova automação, monitoramento recorrente, pipeline de dados ou integração entre serviços. Informe uma descrição detalhada: gatilho, fontes de dados, transformações, saída esperada e periodicidade.",
-        "workflowId": {
-          "__rl": true,
-          "value": "vS2BD0Ha4C5zuTpQ",
-          "mode": "id"
-        },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "description": "={{ $fromAI('description', 'Descrição detalhada em linguagem natural do workflow desejado: o que faz, qual o gatilho (schedule/webhook/manual), fontes de dados, transformações e onde entrega o resultado', 'string') }}"
-          },
-          "matchingColumns": [
-            "description"
-          ],
-          "schema": [
+        "description": "Aciona o Pyramid Workflow Architect para projetar e publicar automaticamente um novo workflow n8n especializado em SEO, GEO, conteúdo ou CRO. Use quando o usuário pedir para criar uma automação, monitoramento recorrente, pipeline de dados ou integração entre serviços. Exemplos: 'monitore meus rankings semanalmente', 'audite URLs em lote', 'crie um pipeline GEO diário', 'automatize geração de meta tags'. Passe uma descrição rica: gatilho desejado, fontes de dados, transformações necessárias, destino do resultado e periodicidade.",
+        "method": "POST",
+        "url": "https://n8n-prod.cadastra.com/webhook/pyramid-workflow-architect",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
             {
-              "id": "description",
-              "displayName": "description",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
+              "name": "description",
+              "value": "={{ $fromAI('description', 'Descrição detalhada em linguagem natural do workflow desejado: o que faz, qual o gatilho (schedule semanal/diário/webhook/manual), quais serviços e fontes de dados envolve (ex: Google Sheets, PSI, Fan-out, GEO Mapping), qual o processamento/transformação, onde entrega o resultado (Slack, e-mail, Google Sheets, webhook) e qual a periodicidade', 'string') }}"
             }
           ]
-        }
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        },
+        "optimizeResponse": true
       },
-      "id": "arch-tool-pyramid-search-assistant-2026",
+      "id": "http-tool-architect-psa-node-2026-abcdef123456",
       "name": "Criar Workflow Especializado",
-      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
       "position": [
         9632,
         9840

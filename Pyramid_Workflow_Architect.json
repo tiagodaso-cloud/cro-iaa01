@@ -3,28 +3,24 @@
   "nodes": [
     {
       "parameters": {
-        "inputSource": "define",
-        "workflowInputs": {
-          "values": [
-            {
-              "name": "description",
-              "type": "string"
-            }
-          ]
-        }
+        "httpMethod": "POST",
+        "path": "pyramid-workflow-architect",
+        "responseMode": "responseNode",
+        "options": {}
       },
       "id": "trigger-architect-001-aaaa-bbbb-ccccdddd0001",
-      "name": "Execute Workflow Trigger",
-      "type": "n8n-nodes-base.executeWorkflowTrigger",
-      "typeVersion": 1,
+      "name": "Webhook – Receber Demanda",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
       "position": [
         400,
         400
-      ]
+      ],
+      "webhookId": "pwa-webhook-uuid-1234-5678-abcd-ef0123456789"
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first()?.json ?? {};\nconst description = input.description ?? input.query ?? JSON.stringify(input);\nreturn [{ json: { userRequest: String(description) } }];"
+        "jsCode": "const body = $input.first()?.json?.body ?? $input.first()?.json ?? {};\nconst description = body.description ?? body.query ?? body.message ?? JSON.stringify(body);\nreturn [{ json: { userRequest: String(description) } }];"
       },
       "id": "norm-input-002-aaaa-bbbb-ccccdddd0002",
       "name": "Normalizar Input",
@@ -153,20 +149,37 @@
         1320,
         400
       ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-arch-node-id-7777-aaaa-bbbb-cccc88880001",
+      "name": "Responder Resultado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1540,
+        400
+      ]
     }
   ],
   "connections": {
-    "Execute Workflow Trigger": {
-      "main": [
-        [
-          {
-            "node": "Normalizar Input",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Normalizar Input": {
       "main": [
         [
@@ -216,6 +229,28 @@
         [
           {
             "node": "Formatar Saída",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook – Receber Demanda": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Saída": {
+      "main": [
+        [
+          {
+            "node": "Responder Resultado",
             "type": "main",
             "index": 0
           }
