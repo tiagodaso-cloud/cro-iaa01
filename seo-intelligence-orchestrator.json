@@ -188,7 +188,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3520,
+        4032,
         5888
       ]
     },
@@ -419,7 +419,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const fanout = $('Query Fan-out v2').first()?.json ?? {};\nconst geo    = $('Prompt Mapper GEO').first()?.json ?? {};\nconst onPage = $('On-Page SEO Audit').first()?.json ?? {};\nconst cwv    = $('CorePulse CWV').first()?.json ?? {};\nconst psi    = $('Parse PSI').first()?.json ?? {};\nconst params = $('Extrair URL e Tópico').first()?.json ?? {};\n\nconst context = {\n  url_analisada: params.url,\n  topico: params.topic,\n  query_fanout: {\n    fanout_queries:   fanout.fanout_queries   ?? {},\n    cited_sources:    fanout.cited_sources    ?? {},\n    source_diversity: fanout.source_diversity ?? {},\n    seo_summary:      fanout.seo_summary      ?? {}\n  },\n  geo_mapping: {\n    summary:       geo.summary ?? '',\n    total_prompts: geo.total   ?? 0,\n    prompts:       (geo.prompts ?? []).slice(0, 10)\n  },\n  on_page_audit: onPage,\n  cwv_data: {\n    fonte: 'PageSpeed Insights API (laboratório + campo CrUX)',\n    performance_score: psi.performance_score,\n    metricas_lab: { fcp: psi.fcp, lcp: psi.lcp, tbt: psi.tbt, cls: psi.cls, si: psi.si },\n    campo_crux:   { fcp: psi.fcp_field, lcp: psi.lcp_field, inp: psi.inp_field, cls: psi.cls_field, overall: psi.overall },\n    corepulse_status: cwv.status ?? 'dispatched',\n    corepulse_nota: 'Relatório CWV detalhado enviado por e-mail via CorePulse Analyzer.'\n  }\n};\n\n// Inject accumulated feedback evolution notes (safe – $getWorkflowStaticData may not be available)\nlet _evo = null;\ntry {\n  const _store = $getWorkflowStaticData('global');\n  _evo = _store?.seo_orch_evolution ?? null;\n} catch(_e) {}\nif (_evo && _evo.total_feedback > 0) {\n  const notes = [];\n  if (_evo.sugestoes_recentes?.length) notes.push('Sugestões: ' + _evo.sugestoes_recentes.join(' | '));\n  if (_evo.reclamacoes_recentes?.length) notes.push('Evitar: ' + _evo.reclamacoes_recentes.join(' | '));\n  if (notes.length) context.notas_evolucao_agente = notes.join(' // ');\n}\n// Include user-provided reference documents if any\nconst refsCtx = $('Buscar Referências').first()?.json?.referencesContext ?? '';\nif (refsCtx) context.referencias_usuario = refsCtx;\nreturn [{ json: { correlationContext: JSON.stringify(context, null, 2) } }];"
+        "jsCode": "const fanout = $('Query Fan-out v2').first()?.json ?? {};\nconst geo    = $('Prompt Mapper GEO').first()?.json ?? {};\nconst onPage = $('On-Page SEO Audit').first()?.json ?? {};\nconst cwv    = $('CorePulse CWV').first()?.json ?? {};\nconst psi    = $('Parse PSI').first()?.json ?? {};\nconst params = $('Extrair URL e Tópico').first()?.json ?? {};\n\nconst context = {\n  url_analisada: params.url,\n  topico: params.topic,\n  query_fanout: {\n    fanout_queries:   fanout.fanout_queries   ?? {},\n    cited_sources:    fanout.cited_sources    ?? {},\n    source_diversity: fanout.source_diversity ?? {},\n    seo_summary:      fanout.seo_summary      ?? {}\n  },\n  geo_mapping: {\n    summary:       geo.summary ?? '',\n    total_prompts: geo.total   ?? 0,\n    prompts:       (geo.prompts ?? []).slice(0, 10)\n  },\n  on_page_audit: onPage,\n  cwv_data: {\n    fonte: 'PageSpeed Insights API (laboratório + campo CrUX)',\n    performance_score: psi.performance_score,\n    metricas_lab: { fcp: psi.fcp, lcp: psi.lcp, tbt: psi.tbt, cls: psi.cls, si: psi.si },\n    campo_crux:   { fcp: psi.fcp_field, lcp: psi.lcp_field, inp: psi.inp_field, cls: psi.cls_field, overall: psi.overall },\n    corepulse_status: cwv.status ?? 'dispatched',\n    corepulse_nota: 'Relatório CWV detalhado enviado por e-mail via CorePulse Analyzer.'\n  }\n};\n\n// Inject synthesized feedback notes from DataTable-backed pipeline\nconst _feedbackNotes = $('Sintetizar Feedback').first()?.json?.feedbackNotes ?? null;\nif (_feedbackNotes) context.notas_evolucao_agente = _feedbackNotes;\n// Include user-provided reference documents if any\nconst refsCtx = $('Buscar Referências').first()?.json?.referencesContext ?? '';\nif (refsCtx) context.referencias_usuario = refsCtx;\nreturn [{ json: { correlationContext: JSON.stringify(context, null, 2) } }];"
       },
       "id": "0b78018b-ca95-4623-9187-86bfb701d4b3",
       "name": "Montar Contexto",
@@ -525,7 +525,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const data    = $('Parse Request').first()?.json ?? {};\nconst message = data.message ?? '';\nconst history = data.history ?? [];\nconst ctx     = data.analysisContext ?? null;\nconst histText= history.length ? history.map(m=>(m.role==='user'?'Usuário':'Assistente')+': '+m.content).join('\\n\\n') : '(início da conversa)';\nlet ctxJSON;\nif (!ctx || !ctx.url_analisada) {\n  ctxJSON = JSON.stringify({ status: 'aguardando_analise', instrucao: 'Nenhuma análise foi realizada ainda. Oriente o usuário a informar uma URL completa (ex: https://decathlon.com.br) seguida do tópico/keyword para iniciar.' });\n} else {\n  ctxJSON = JSON.stringify({\n    url_analisada: ctx.url_analisada,\n    topico: ctx.topico,\n    sumario: ctx.sumario,\n    correlacoes: ctx.correlacoes,\n    gaps_oportunidades: ctx.gaps_oportunidades,\n    plano_acao: ctx.plano_acao,\n    proximos_passos: ctx.proximos_passos,\n    cwv_dados: {\n      performance_score: ctx.psi_score,\n      lcp: ctx.psi_lcp, fcp: ctx.psi_fcp, cls: ctx.psi_cls, tbt: ctx.psi_tbt,\n      campo_geral: ctx.psi_overall,\n      corepulse_email_enviado: ctx.cwv_email_enviado\n    }\n  }, null, 2);\n}\n\n// Read accumulated feedback evolution notes (safe – $getWorkflowStaticData may not be available)\nlet feedbackContext = '';\ntry {\n  const _store = $getWorkflowStaticData('global');\n  const _evo = _store?.seo_orch_evolution ?? null;\n  if (_evo && _evo.total_feedback > 0) {\n    const parts = [];\n    if (_evo.sugestoes_recentes?.length) {\n      parts.push('Sugestões dos usuários (incorpore nas respostas):\\n' + _evo.sugestoes_recentes.map(s => '- ' + s).join('\\n'));\n    }\n    if (_evo.reclamacoes_recentes?.length) {\n      parts.push('Pontos a evitar (baseados em feedback negativo):\\n' + _evo.reclamacoes_recentes.map(s => '- ' + s).join('\\n'));\n    }\n    if (parts.length) {\n      feedbackContext = '\\n\\n---\\n🔄 Notas de evolução do agente (' + _evo.total_feedback + ' feedbacks acumulados):\\n' + parts.join('\\n\\n');\n    }\n  }\n} catch(_e) {}\nconst refsCtx = $('Buscar Referências').first()?.json?.referencesContext ?? '';\nreturn [{ json: { message, histText, ctxJSON, feedbackContext, referencesContext: refsCtx, url: ctx?.url_analisada??'', topico: ctx?.topico??'' } }];"
+        "jsCode": "const data    = $('Parse Request').first()?.json ?? {};\nconst message = data.message ?? '';\nconst history = data.history ?? [];\nconst ctx     = data.analysisContext ?? null;\nconst histText= history.length ? history.map(m=>(m.role==='user'?'Usuário':'Assistente')+': '+m.content).join('\\n\\n') : '(início da conversa)';\nlet ctxJSON;\nif (!ctx || !ctx.url_analisada) {\n  ctxJSON = JSON.stringify({ status: 'aguardando_analise', instrucao: 'Nenhuma análise foi realizada ainda. Oriente o usuário a informar uma URL completa (ex: https://decathlon.com.br) seguida do tópico/keyword para iniciar.' });\n} else {\n  ctxJSON = JSON.stringify({\n    url_analisada: ctx.url_analisada,\n    topico: ctx.topico,\n    sumario: ctx.sumario,\n    correlacoes: ctx.correlacoes,\n    gaps_oportunidades: ctx.gaps_oportunidades,\n    plano_acao: ctx.plano_acao,\n    proximos_passos: ctx.proximos_passos,\n    cwv_dados: {\n      performance_score: ctx.psi_score,\n      lcp: ctx.psi_lcp, fcp: ctx.psi_fcp, cls: ctx.psi_cls, tbt: ctx.psi_tbt,\n      campo_geral: ctx.psi_overall,\n      corepulse_email_enviado: ctx.cwv_email_enviado\n    }\n  }, null, 2);\n}\n\n// Read synthesized feedback notes from DataTable-backed pipeline\nconst feedbackContext = $('Sintetizar Feedback').first()?.json?.feedbackContext ?? '';\nconst refsCtx = $('Buscar Referências').first()?.json?.referencesContext ?? '';\nreturn [{ json: { message, histText, ctxJSON, feedbackContext, referencesContext: refsCtx, url: ctx?.url_analisada??'', topico: ctx?.topico??'' } }];"
       },
       "id": "bd2e1075-d15e-408f-b7ef-e216cf472ca4",
       "name": "Preparar Conversa",
@@ -840,7 +840,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const data = $('Parse Request').first()?.json ?? {};\nconst convResult = $input.first()?.json ?? {};\n\n// Normalize message for keyword-based signal detection\nconst raw = (data.message ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');\nconst ctx = data.analysisContext ?? {};\n\n// Feedback signal dictionaries\nconst signals = {\n  sugestao: ['poderia','deveria','sugiro','prefiro','seria melhor','quero que','foca mais','aprofunde','proxima vez','sempre que','melhorar','adicionar','incluir','gostaria que','considere','melhore'],\n  negativo: ['incorreto','errado','impreciso','ruim','fraco','nao gostei','inutil','irrelevante','superficial','generico','nao ajudou','confuso','faltou','faltando','incompleto','fraca'],\n  positivo: ['otimo','excelente','perfeito','muito bom','gostei','util','preciso','correto','incrivel','ajudou','funciona','boa analise','parabens','exato','acertou']\n};\n\nlet feedbackType = null, maxMatches = 0;\nfor (const [type, kws] of Object.entries(signals)) {\n  const count = kws.filter(k => raw.includes(k)).length;\n  if (count > maxMatches) { maxMatches = count; feedbackType = type; }\n}\n\n// Persist feedback and synthesize evolution notes (safe – $getWorkflowStaticData may not be available)\nif (maxMatches > 0) {\n  try {\n    const store = $getWorkflowStaticData('global');\n    if (!Array.isArray(store.seo_orch_feedback)) store.seo_orch_feedback = [];\n    store.seo_orch_feedback.push({\n      type: feedbackType,\n      message: data.message,\n      url: ctx.url_analisada ?? null,\n      topico: ctx.topico ?? null,\n      ts: new Date().toISOString()\n    });\n    if (store.seo_orch_feedback.length > 100) {\n      store.seo_orch_feedback = store.seo_orch_feedback.slice(-100);\n    }\n    const fb = store.seo_orch_feedback;\n    store.seo_orch_evolution = {\n      total_feedback: fb.length,\n      last_updated: new Date().toISOString(),\n      sugestoes_recentes: fb.filter(f => f.type === 'sugestao').slice(-8).map(f => f.message),\n      reclamacoes_recentes: fb.filter(f => f.type === 'negativo').slice(-8).map(f => f.message)\n    };\n  } catch(_e) { /* static data unavailable – feedback not persisted this run */ }\n}\n\n// Pass conversation result through unchanged\nreturn [{ json: convResult }];"
+        "jsCode": "const data = $('Parse Request').first()?.json ?? {};\nconst convResult = $input.first()?.json ?? {};\n\n// Normalize message for keyword-based signal detection\nconst raw = (data.message ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');\nconst ctx = data.analysisContext ?? {};\n\n// Feedback signal dictionaries\nconst signals = {\n  sugestao: ['poderia','deveria','sugiro','prefiro','seria melhor','quero que','foca mais','aprofunde','proxima vez','sempre que','melhorar','adicionar','incluir','gostaria que','considere','melhore'],\n  negativo: ['incorreto','errado','impreciso','ruim','fraco','nao gostei','inutil','irrelevante','superficial','generico','nao ajudou','confuso','faltou','faltando','incompleto','fraca'],\n  positivo: ['otimo','excelente','perfeito','muito bom','gostei','util','preciso','correto','incrivel','ajudou','funciona','boa analise','parabens','exato','acertou']\n};\n\nlet feedbackType = null, maxMatches = 0;\nfor (const [type, kws] of Object.entries(signals)) {\n  const count = kws.filter(k => raw.includes(k)).length;\n  if (count > maxMatches) { maxMatches = count; feedbackType = type; }\n}\n\n// Expose detection metadata – persistence handled downstream by Salvar Feedback (DataTable)\nreturn [{ json: {\n  ...convResult,\n  feedbackDetected: maxMatches > 0,\n  feedbackType,\n  feedbackMessage: maxMatches > 0 ? data.message : null,\n  feedbackUrl: ctx.url_analisada ?? null,\n  feedbackTopico: ctx.topico ?? null\n} }];"
       },
       "id": "capturar-feedback-seoo-001",
       "name": "Capturar Feedback",
@@ -862,6 +862,108 @@
       "position": [
         3264,
         5888
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "7qlCqsnonvxOwSMn"
+        },
+        "returnAll": false,
+        "limit": 100,
+        "orderBy": true,
+        "orderByColumn": "createdAt",
+        "orderByDirection": "DESC"
+      },
+      "id": "ler-feedback-dt-seoo-001",
+      "name": "Ler Feedback",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3520,
+        5888
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recover original request payload from the node that ran before the DataTable branch\nconst parseData = $('Buscar Referências').first()?.json ?? {};\n\n// Collect feedback rows returned by the DataTable (may be empty on first run)\nconst rows = $input.all()\n  .map(item => item.json)\n  .filter(r => r.feedback_type);\n\n// Build synthesis grouped by type (up to 8 most recent each)\nconst sugestoes = rows.filter(r => r.feedback_type === 'sugestao').slice(0, 8).map(r => r.message);\nconst negativos  = rows.filter(r => r.feedback_type === 'negativo').slice(0, 8).map(r => r.message);\n\n// feedbackContext – rich string injected into the orchestrator's conversation prompt\nlet feedbackContext = '';\nif (rows.length > 0) {\n  const parts = [];\n  if (sugestoes.length) parts.push('Sugestões dos usuários (incorpore nas respostas):\\n' + sugestoes.map(s => '- ' + s).join('\\n'));\n  if (negativos.length)  parts.push('Pontos a evitar (baseados em feedback negativo):\\n' + negativos.map(s => '- ' + s).join('\\n'));\n  if (parts.length) {\n    feedbackContext = '\\n\\n---\\n🔄 Notas de evolução do agente (' + rows.length + ' feedbacks acumulados):\\n' + parts.join('\\n\\n');\n  }\n}\n\n// feedbackNotes – compact string injected into the SEO analysis JSON context\nlet feedbackNotes = null;\nif (rows.length > 0) {\n  const notes = [];\n  if (sugestoes.length) notes.push('Sugestões: ' + sugestoes.join(' | '));\n  if (negativos.length)  notes.push('Evitar: ' + negativos.join(' | '));\n  if (notes.length) feedbackNotes = notes.join(' // ');\n}\n\n// Return original request payload enriched with feedback synthesis\nreturn [{ json: { ...parseData, feedbackContext, feedbackNotes, feedbackTotal: rows.length } }];"
+      },
+      "id": "sintetizar-feedback-seoo-001",
+      "name": "Sintetizar Feedback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3776,
+        5888
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cf1",
+              "leftValue": "={{ $json.feedbackDetected }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-tem-feedback-seoo-001",
+      "name": "IF: Tem Feedback?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4960,
+        5968
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "7qlCqsnonvxOwSMn"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "feedback_type": "={{ $json.feedbackType }}",
+            "message": "={{ $json.feedbackMessage }}",
+            "url": "={{ $json.feedbackUrl ?? '' }}",
+            "topico": "={{ $json.feedbackTopico ?? '' }}",
+            "ts": "={{ new Date().toISOString() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "salvar-feedback-dt-seoo-001",
+      "name": "Salvar Feedback",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        5216,
+        5968
       ]
     }
   ],
@@ -1208,6 +1310,11 @@
             "node": "Salvar Conversa",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "IF: Tem Feedback?",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -1216,7 +1323,40 @@
       "main": [
         [
           {
+            "node": "Ler Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Feedback": {
+      "main": [
+        [
+          {
+            "node": "Sintetizar Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sintetizar Feedback": {
+      "main": [
+        [
+          {
             "node": "IF: Nova Análise?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF: Tem Feedback?": {
+      "main": [
+        [
+          {
+            "node": "Salvar Feedback",
             "type": "main",
             "index": 0
           }
