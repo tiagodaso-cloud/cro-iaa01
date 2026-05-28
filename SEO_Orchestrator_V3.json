@@ -486,38 +486,12 @@
     },
     {
       "parameters": {
-        "resource": "row",
-        "operation": "upsert",
-        "dataTableId": {
-          "__rl": true,
-          "mode": "name",
-          "value": "seo_jobs"
-        },
-        "matchType": "allConditions",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "jobId",
-              "keyValue": "={{ $('Parse Request').first().json.jobId }}"
-            }
-          ]
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "jobId": "={{ $('Parse Request').first().json.jobId }}",
-            "result": "={{ JSON.stringify($input.first().json) }}"
-          },
-          "matchingColumns": [
-            "jobId"
-          ]
-        },
-        "options": {}
+        "jsCode": "const result = $input.first()?.json ?? {};\nconst jobId  = $('Parse Request').first()?.json?.jobId ?? '';\nif (jobId) { const s = $getWorkflowStaticData('global'); s[jobId] = result; }\n\n// Marca o domínio como já analisado (alimenta a melhoria contínua)\nconst ctx = result.analysisContext ?? {};\nconst url = ctx.url_analisada ?? '';\nlet domain = '';\ntry { domain = new URL(url).hostname.replace('www.', ''); } catch(_) {}\nif (domain) {\n  const s = $getWorkflowStaticData('global');\n  const key = `fb_${domain}`;\n  const fb = s[key] ?? { domain, topics: {}, global_patterns: [], updated_at: null };\n  fb.last_analysis_at = new Date().toISOString();\n  fb.analysis_count = (fb.analysis_count ?? 0) + 1;\n  s[key] = fb;\n}\nreturn [{ json: { saved: true } }];\n"
       },
       "id": "faaf2a82-6ed1-4b94-9a51-f11e36b035ac",
       "name": "Salvar Análise",
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1.1,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         6600,
         5776
