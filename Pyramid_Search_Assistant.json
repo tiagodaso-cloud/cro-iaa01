@@ -723,19 +723,31 @@
     {
       "parameters": {
         "name": "Criar Workflow Especializado",
-        "description": "Coccria um novo workflow especializado em SEO, GEO, conteúdo ou CRO no n8n. Recebe uma descrição em linguagem natural da automação desejada e o agente Arquiteto projeta + publica o workflow. Use quando o usuário pedir para criar uma nova automação, monitoramento contínuo, integração entre serviços ou pipeline recorrente. Informe uma descrição detalhada da intenção, fontes de dados envolvidas e saída esperada.",
+        "description": "Cocria um novo workflow especializado em SEO, GEO, conteúdo ou CRO no n8n. Recebe uma descrição em linguagem natural da automação desejada e o agente Arquiteto projeta + publica o workflow. Use quando o usuário pedir para criar uma nova automação, monitoramento recorrente, pipeline de dados ou integração entre serviços. Informe uma descrição detalhada: gatilho, fontes de dados, transformações, saída esperada e periodicidade.",
         "workflowId": {
           "__rl": true,
-          "value": "__ARCHITECT_WORKFLOW_ID__",
+          "value": "vS2BD0Ha4C5zuTpQ",
           "mode": "id"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
-            "description": "={{ $fromAI('description', 'Descrição detalhada em linguagem natural do workflow desejado: o que monitora/processa, qual o gatilho (schedule/webhook/manual), quais serviços e fontes de dados envolve, qual o output esperado e onde deve ser entregue', 'string') }}"
+            "description": "={{ $fromAI('description', 'Descrição detalhada em linguagem natural do workflow desejado: o que faz, qual o gatilho (schedule/webhook/manual), fontes de dados, transformações e onde entrega o resultado', 'string') }}"
           },
-          "matchingColumns": [],
-          "schema": []
+          "matchingColumns": [
+            "description"
+          ],
+          "schema": [
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
         }
       },
       "id": "arch-tool-pyramid-search-assistant-2026",

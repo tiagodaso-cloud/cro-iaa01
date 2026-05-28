@@ -2,7 +2,17 @@
   "name": "Pyramid - Workflow Architect",
   "nodes": [
     {
-      "parameters": {},
+      "parameters": {
+        "inputSource": "define",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "description",
+              "type": "string"
+            }
+          ]
+        }
+      },
       "id": "trigger-architect-001-aaaa-bbbb-ccccdddd0001",
       "name": "Execute Workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
