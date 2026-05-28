@@ -882,6 +882,19 @@
         48,
         5100
       ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $input.first()?.json ?? {};\n\n// Try to find CWV metrics anywhere in the response shape\nconst pickFirst = (obj, ...keys) => {\n  for (const k of keys) {\n    if (obj && obj[k] != null) return obj[k];\n  }\n  return null;\n};\n\n// Some workflows return data inside .data / .result / .metrics\nconst root = r.data ?? r.result ?? r.metrics ?? r;\nconst cwv  = root.cwv ?? root.coreWebVitals ?? root.web_vitals ?? root;\n\nreturn [{ json: {\n  corepulse_status:     r.status ?? 'sync',\n  corepulse_score:      pickFirst(cwv, 'score', 'performance_score', 'performanceScore'),\n  corepulse_lcp:        pickFirst(cwv, 'lcp', 'LCP', 'largest_contentful_paint'),\n  corepulse_fcp:        pickFirst(cwv, 'fcp', 'FCP', 'first_contentful_paint'),\n  corepulse_cls:        pickFirst(cwv, 'cls', 'CLS', 'cumulative_layout_shift'),\n  corepulse_inp:        pickFirst(cwv, 'inp', 'INP', 'interaction_to_next_paint'),\n  corepulse_tbt:        pickFirst(cwv, 'tbt', 'TBT', 'total_blocking_time'),\n  corepulse_grade:      pickFirst(cwv, 'grade', 'category', 'rating'),\n  corepulse_summary:    r.summary ?? r.message ?? root.summary ?? null,\n  corepulse_raw:        Object.keys(r).slice(0, 20)\n} }];\n"
+      },
+      "id": "ebdb1f9b-a7a1-4f86-8a0d-475dc8328a86",
+      "name": "Parse CorePulse",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4160,
+        5984
+      ]
     }
   ],
   "connections": {
@@ -1042,9 +1055,9 @@
       "main": [
         [
           {
-            "node": "Unir Resultados",
+            "node": "Parse CorePulse",
             "type": "main",
-            "index": 3
+            "index": 0
           }
         ]
       ]
@@ -1265,6 +1278,17 @@
             "node": "Responder Feedback",
             "type": "main",
             "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CorePulse": {
+      "main": [
+        [
+          {
+            "node": "Unir Resultados",
+            "type": "main",
+            "index": 3
           }
         ]
       ]
