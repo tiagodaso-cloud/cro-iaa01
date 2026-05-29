@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Processos de UX — Implantação & Evolução</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --ox:#FF5C28;--ox-light:#fff3ee;--ox-border:#ffd0bc;
+    --dark:#111827;--gray:#6b7280;--gray-light:#9ca3af;
+    --bg:#f4f4f2;--white:#ffffff;
+    --line:#e5e7eb;--line-soft:#f3f4f6;
+    --green:#059669;--green-bg:#ecfdf5;--green-border:#a7f3d0;
+    --blue:#2563eb;--blue-bg:#eff6ff;--blue-border:#bfdbfe;
+    --yellow:#d97706;--yellow-bg:#fffbeb;--yellow-border:#fde68a;
+    --red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;
+    --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-border:#ddd6fe;
+    --sans:'Plus Jakarta Sans',sans-serif;
+    --mono:'JetBrains Mono',monospace;
+    --r:12px;--r-lg:16px;
+    --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
+    --shadow-lg:0 4px 24px rgba(0,0,0,.08),0 12px 48px rgba(0,0,0,.06);
+  }
+
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bg);color:var(--dark);line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+  /* ---------- HEADER ---------- */
+  .header{
+    background:var(--white);padding:0 40px;height:56px;
+    display:flex;align-items:center;
+    box-shadow:0 1px 0 var(--line);
+    position:sticky;top:0;z-index:200;
+  }
+  .header-inner{
+    max-width:1140px;margin:0 auto;width:100%;
+    display:flex;align-items:center;gap:12px;
+  }
+  .logo{height:24px}
+  .product-name{font-size:15px;font-weight:800;letter-spacing:-.02em}
+  .product-name span{color:var(--ox)}
+  .version-badge{
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;
+    padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:linear-gradient(140deg,#e84e1b 0%,#ff6b3d 100%);
+    padding:48px 40px 96px;position:relative;overflow:hidden;
+  }
+  .hero::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse 60% 80% at 100% -20%,rgba(255,255,255,.08),transparent),
+               radial-gradient(ellipse 50% 60% at -10% 110%,rgba(0,0,0,.12),transparent);
+  }
+  .hero::after{
+    content:'';position:absolute;bottom:0;left:0;right:0;height:80px;
+    background:linear-gradient(to bottom,transparent,var(--bg));
+  }
+  .hero-inner{max-width:1140px;margin:0 auto;position:relative;z-index:1;color:#fff}
+  .hero-eyebrow{
+    font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    opacity:.75;margin-bottom:10px;font-family:var(--mono);
+  }
+  .hero h1{
+    font-size:clamp(30px,4.5vw,52px);font-weight:800;
+    letter-spacing:-.03em;line-height:1.08;margin-bottom:14px;
+  }
+  .hero h1 em{font-style:normal;opacity:.85}
+  .hero-desc{font-size:16px;max-width:620px;opacity:.9;line-height:1.65;margin-bottom:26px}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap}
+  .hero-badge{
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+    color:rgba(255,255,255,.92);padding:4px 12px;border-radius:999px;
+    font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:6px;
+  }
+  .hero-badge .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+  /* ---------- WRAP ---------- */
+  .wrap{max-width:1140px;margin:0 auto;padding:0 40px}
+
+  /* ---------- TABS ---------- */
+  .tabs-section{
+    margin:-52px auto 0;padding:0 40px;max-width:1140px;
+    position:relative;z-index:10;
+  }
+  .tabs-card{
+    background:var(--white);border-radius:var(--r-lg);
+    box-shadow:var(--shadow-lg);padding:6px;
+    display:flex;gap:4px;flex-wrap:wrap;
+  }
+  .tab{
+    appearance:none;border:none;cursor:pointer;
+    font-family:var(--sans);font-weight:700;font-size:13.5px;
+    padding:10px 20px;border-radius:10px;
+    background:transparent;color:var(--gray);
+    transition:all .18s ease;flex:1;min-width:160px;text-align:center;
+  }
+  .tab:hover{color:var(--dark);background:var(--line-soft)}
+  .tab.active{background:var(--ox);color:#fff;box-shadow:0 4px 14px rgba(255,92,40,.35)}
+  .tab .ph{
+    font-family:var(--mono);font-size:10px;
+    display:inline-block;
+    background:rgba(0,0,0,.06);color:currentColor;
+    padding:1px 6px;border-radius:4px;margin-right:6px;
+    font-weight:500;
+  }
+  .tab.active .ph{background:rgba(255,255,255,.2)}
+
+  /* ---------- MAIN CONTENT ---------- */
+  .content{padding:36px 0 60px}
+
+  /* ---------- PANEL ---------- */
+  .panel{display:none;animation:fade .35s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .panel-head{
+    background:var(--white);border:1px solid var(--line);
+    border-radius:var(--r-lg);padding:28px 32px;
+    margin-bottom:20px;box-shadow:var(--shadow);
+  }
+  .panel-eyebrow{
+    font-family:var(--mono);font-size:10px;font-weight:500;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--gray-light);
+    margin-bottom:8px;
+  }
+  .panel-head h2{
+    font-size:clamp(22px,3vw,34px);font-weight:800;
+    letter-spacing:-.025em;margin-bottom:6px;
+  }
+  .badge{
+    display:inline-block;font-family:var(--mono);font-size:10px;
+    font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:4px 12px;border-radius:999px;margin-bottom:12px;
+  }
+  .badge.atual{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+  .badge.ideal{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+  .panel-sub{color:var(--gray);font-size:14.5px;max-width:760px;line-height:1.65}
+
+  /* ---------- METRICS ---------- */
+  .metrics{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+  .metric{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--r);
+    padding:18px 22px;min-width:150px;flex:1;box-shadow:var(--shadow);
+    border-top:3px solid var(--line);
+  }
+  .metric.warn{border-top-color:var(--red)}
+  .metric.good{border-top-color:var(--green)}
+  .metric .n{
+    font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1;
+    margin-bottom:4px;
+  }
+  .metric.warn .n{color:var(--red)}
+  .metric.good .n{color:var(--green)}
+  .metric .l{font-size:11.5px;color:var(--gray);font-weight:500}
+
+  /* ---------- FLOW ---------- */
+  .flow{display:flex;flex-direction:column;gap:0}
+  .step{
+    display:grid;grid-template-columns:52px 1fr;gap:18px;
+    padding-bottom:4px;
+  }
+  .rail{display:flex;flex-direction:column;align-items:center;gap:0}
+  .num{
+    width:44px;height:44px;border-radius:12px;flex:none;
+    display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:13px;
+    color:#fff;box-shadow:var(--shadow);z-index:2;
+    background:var(--gray-light);
+  }
+  .connector{
+    width:2px;flex:1;min-height:20px;
+    background:linear-gradient(var(--line),var(--line));
+    margin:4px 0;border-radius:2px;
+  }
+  .step:last-child .connector{display:none}
+
+  /* num color variants */
+  .num.c-nodesign{background:#9ca3af}
+  .num.c-cliente{background:var(--purple)}
+  .num.c-design{background:var(--blue)}
+  .num.c-interno{background:var(--yellow)}
+  .num.c-ia{background:var(--green)}
+  .num.c-accent{background:var(--ox)}
+
+  /* ---------- CARD ---------- */
+  .card{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--r-lg);
+    padding:20px 24px;box-shadow:var(--shadow);
+    margin-bottom:4px;
+    transition:transform .18s,box-shadow .18s;
+  }
+  .card:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+  .card-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .card h3{font-size:16px;font-weight:800;letter-spacing:-.015em;line-height:1.3}
+  .tags{display:flex;gap:6px;flex-wrap:wrap}
+
+  .tag{
+    font-family:var(--mono);font-size:10px;font-weight:500;
+    letter-spacing:.06em;text-transform:uppercase;
+    padding:3px 9px;border-radius:6px;white-space:nowrap;
+  }
+  .tag.design{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+  .tag.nodesign{background:var(--line-soft);color:#6b7280;border:1px solid var(--line)}
+  .tag.cliente{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)}
+  .tag.interno{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border)}
+  .tag.ia{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+  .tag.hours{background:var(--dark);color:#f9fafb}
+
+  .card p.desc{font-size:13.5px;color:var(--gray);line-height:1.6;margin-bottom:0}
+  .card ul{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+  .card li{
+    position:relative;padding-left:16px;font-size:13.5px;color:var(--dark);line-height:1.5;
+  }
+  .card li::before{
+    content:'';position:absolute;left:0;top:7px;
+    width:5px;height:5px;border-radius:50%;background:var(--ox);
+  }
+
+  /* notes */
+  .note{
+    margin-top:12px;border-radius:var(--r);padding:10px 14px;
+    font-size:13px;display:flex;gap:8px;align-items:flex-start;
+    line-height:1.55;
+  }
+  .note .ic{font-weight:800;flex:none;font-size:14px}
+  .note.gap{background:var(--red-bg);border:1px solid var(--red-border);color:#7f1d1d}
+  .note.gain{background:var(--green-bg);border:1px solid var(--green-border);color:#064e3b}
+  .note.gap .ic{color:var(--red)}
+  .note.gain .ic{color:var(--green)}
+
+  /* split layout */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .mini{
+    background:var(--line-soft);border:1px solid var(--line);
+    border-radius:var(--r);padding:12px 14px;
+  }
+  .mini h4{
+    margin:0 0 8px;font-size:10px;font-family:var(--mono);
+    letter-spacing:.08em;text-transform:uppercase;color:var(--gray-light);
+    font-weight:700;
+  }
+  .mini ol{
+    margin:0;padding-left:16px;font-size:13px;color:var(--dark);
+    display:flex;flex-direction:column;gap:4px;
+  }
+
+  /* ---------- CLOSING ---------- */
+  .closing{
+    background:var(--dark);color:#f9fafb;border-radius:var(--r-lg);
+    padding:36px 40px;box-shadow:var(--shadow-lg);margin-top:8px;
+  }
+  .closing h3{font-size:22px;font-weight:800;margin:0 0 12px;letter-spacing:-.02em}
+  .closing p{color:#9ca3af;font-size:14.5px;margin:0 0 20px;max-width:820px;line-height:1.65}
+  .closing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .closing-box{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+    border-radius:var(--r);padding:16px 18px;
+    border-top:3px solid var(--ox);
+  }
+  .closing-box strong{color:#fff;display:block;margin-bottom:6px;font-size:13.5px;font-weight:700}
+  .closing-box span{font-size:13px;color:#9ca3af;line-height:1.55}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media(max-width:768px){
+    .header{padding:0 20px}
+    .hero{padding:36px 20px 88px}
+    .tabs-section,.wrap{padding:0 20px}
+    .tabs-card{flex-direction:column}
+    .tab{min-width:unset;text-align:left}
+    .step{grid-template-columns:44px 1fr;gap:12px}
+    .num{width:38px;height:38px}
+    .split{grid-template-columns:1fr}
+    .panel-head{padding:20px}
+    .closing{padding:24px 20px}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <img src="https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png" class="logo" alt="Cadastra">
+    <div class="product-name">Processos <span>UX</span></div>
+    <span class="version-badge">Mapeamento</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Mapeamento de Processos · UX/UI</div>
+    <h1>O processo de UX em<br><em>Implantação</em> e <em>Evolução</em></h1>
+    <p class="hero-desc">Quatro fluxos lado a lado: como o trabalho acontece <strong>hoje</strong> e como ele deveria acontecer no <strong>cenário ideal</strong> — desenhado a partir do mapeamento de processos e da jornada do projeto.</p>
+    <div class="hero-badges">
+      <div class="hero-badge"><span class="dot" style="background:var(--purple)"></span>Contato com cliente</div>
+      <div class="hero-badge"><span class="dot" style="background:var(--blue)"></span>Design participa</div>
+      <div class="hero-badge"><span class="dot" style="background:#9ca3af"></span>Sem atuação do design</div>
+      <div class="hero-badge"><span class="dot" style="background:var(--yellow)"></span>Etapa interna</div>
+      <div class="hero-badge"><span class="dot" style="background:var(--green)"></span>Apoio de IA</div>
+      <div class="hero-badge"><span class="dot" style="background:var(--red)"></span>Gargalo / risco</div>
+    </div>
+  </div>
+</section>
+
+<!-- TABS -->
+<div class="tabs-section">
+  <div class="tabs-card">
+    <button class="tab active" data-panel="imp-atual"><span class="ph">A</span>Implantação · Atual</button>
+    <button class="tab" data-panel="imp-ideal"><span class="ph">B</span>Implantação · Ideal</button>
+    <button class="tab" data-panel="evo-atual"><span class="ph">C</span>Evolução · Atual</button>
+    <button class="tab" data-panel="evo-ideal"><span class="ph">D</span>Evolução · Ideal</button>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="content">
+
+    <!-- ============ IMPLANTAÇÃO ATUAL ============ -->
+    <section class="panel active" id="imp-atual">
+      <div class="panel-head">
+        <div class="panel-eyebrow">Fluxo A</div>
+        <span class="badge atual">Como funciona hoje</span>
+        <h2>Implantação — processo atual</h2>
+        <p class="panel-sub">Projeto novo de e-commerce/institucional, do fechamento comercial ao go-live. O design entra tarde e herda lacunas das etapas iniciais, o que empurra retrabalho para o fim do fluxo.</p>
+      </div>
+
+      <div class="metrics">
+        <div class="metric warn"><div class="n">Etapa 4</div><div class="l">Design só entra de fato no estudo/criação</div></div>
+        <div class="metric warn"><div class="n">4h</div><div class="l">Alocadas para estudo de briefing (insuficiente)</div></div>
+        <div class="metric warn"><div class="n">0</div><div class="l">Participação no kickoff</div></div>
+        <div class="metric"><div class="n">~55h</div><div class="l">Média de layout por projeto</div></div>
+      </div>
+
+      <div class="flow">
+        <div class="step">
+          <div class="rail"><div class="num c-nodesign">01</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Fechamento do projeto (Comercial)</h3><div class="tags"><span class="tag nodesign">Sem design · sem cliente</span></div></div>
+            <p class="desc">Etapa comercial: contrato assinado, escopo macro definido pelo comercial e handover para a gestão.</p>
+            <div class="note gap"><span class="ic">!</span><span>O design não recebe nem visibilidade do que foi vendido — origem de surpresas sobre funcionalidades contratadas/esquecidas mais à frente.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-cliente">02</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Reunião de Kick-off</h3><div class="tags"><span class="tag cliente">Contato com cliente</span></div></div>
+            <p class="desc">Apresentação das equipes, metodologia, cronograma e expectativas — com o cliente presente.</p>
+            <div class="note gap"><span class="ic">!</span><span>UX/UI <strong>não participa</strong>. Perde contexto e visão direto da fonte; o cliente depois precisa repetir informações, passando sensação de falta de comunicação interna.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-cliente">03</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Envio do Formulário de Briefing</h3><div class="tags"><span class="tag cliente">Cliente preenche</span></div></div>
+            <p class="desc">Cliente recebe o formulário digital, preenche informações de negócio e envia brandbook e materiais.</p>
+            <div class="note gap"><span class="ic">!</span><span>Briefings longos e densos (25–30 min) geram resistência e abandono. Preenchimento após o kickoff causa duplicidade e dados conflitantes; nem sempre é o cliente que responde.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">04</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Estudo e entendimento do projeto</h3><div class="tags"><span class="tag interno">Etapa interna · análise</span></div></div>
+            <p class="desc">Leitura do briefing respondido, análise do contexto de negócio e mapeamento de dúvidas críticas.</p>
+            <div class="note gap"><span class="ic">!</span><span>Apenas <strong>4h</strong> alocadas, independente da complexidade. Sem tempo para benchmark, identidade visual e sitemap — telas não planejadas aparecem tarde (caso Mitsubishi).</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-cliente">05</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Call de Briefing (tira-dúvidas)</h3><div class="tags"><span class="tag cliente">Contato com cliente</span></div></div>
+            <p class="desc">Revisão guiada do briefing, esclarecimento de dúvidas técnicas e alinhamento final de expectativas.</p>
+            <div class="note gap"><span class="ic">!</span><span>Cliente espera postura consultiva e entregáveis de discovery; frustra-se quando o design não traz estudo aprofundado depois desta reunião.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">06</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Estudo de Briefing (estratégia)</h3><div class="tags"><span class="tag interno">Etapa interna · estratégia</span></div></div>
+            <p class="desc">Benchmark e referências visuais, definição de diretrizes de UX/UI e construção da defesa criativa.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-design">07</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Criação de Layout</h3><div class="tags"><span class="tag design">Design · criação &amp; execução</span></div></div>
+            <p class="desc">Dois modelos de execução, definidos pelo prazo e pela orientação do PO:</p>
+            <div class="split">
+              <div class="mini"><h4>Modelo 1 — Completo</h4><ol><li>Todas as telas de uma vez</li><li>Entrega em pacote</li><li>Pronto para apresentação</li></ol></div>
+              <div class="mini"><h4>Modelo 2 — Faseado</h4><ol><li>Home</li><li>Produto, categoria e busca</li><li>Demais páginas</li></ol></div>
+            </div>
+            <div class="note gap"><span class="ic">!</span><span>Sem sitemap fechado e com escopo vago do PO, descobre-se volume real de telas só durante a execução. ~98% do esforço fica em UI, quase nada em UX.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-design">08</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Apresentação &amp; Ajustes</h3><div class="tags"><span class="tag design">Design participa</span></div></div>
+            <p class="desc">Apresentação dos fluxos, defesa das decisões de design, validação com stakeholders e aplicação de feedbacks.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">09</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Entrega Final / Handoff</h3><div class="tags"><span class="tag interno">Entrega técnica</span></div></div>
+            <p class="desc">Organização de arquivos e assets, documentação para desenvolvimento e reunião de handoff.</p>
+            <div class="note gap"><span class="ic">!</span><span>Validação técnica com o Tech Lead acontece desorganizada e em cima da hora, causando cancelamento de reuniões com cliente e incerteza sobre ajustes.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-nodesign">10</div></div>
+          <div class="card">
+            <div class="card-top"><h3>Suporte Pós-entrega</h3><div class="tags"><span class="tag nodesign">Opcional · sob demanda</span></div></div>
+            <p class="desc">Ajustes menores de layout e melhorias pontuais — dependente do contrato.</p>
+            <div class="note gap"><span class="ic">!</span><span>Não há QA de design estruturado: o foco em funcionalidade técnica deixa erros visuais e divergências do Figma passarem despercebidos.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ IMPLANTAÇÃO IDEAL ============ -->
+    <section class="panel" id="imp-ideal">
+      <div class="panel-head">
+        <div class="panel-eyebrow">Fluxo B</div>
+        <span class="badge ideal">Cenário proposto</span>
+        <h2>Implantação — processo ideal</h2>
+        <p class="panel-sub">Mesmo teto de horas, mas com design presente desde o início, briefing antecipado, discovery estratégico, SLAs por marco e IA encurtando o operacional. Resultado: menos retrabalho e mais tempo de UX dentro do prazo.</p>
+      </div>
+
+      <div class="metrics">
+        <div class="metric good"><div class="n">Etapa 1</div><div class="l">Design já entra no kickoff</div></div>
+        <div class="metric good"><div class="n">6–8h</div><div class="l">Para imersão / estudo de briefing</div></div>
+        <div class="metric good"><div class="n">5 dias</div><div class="l">SLAs e marcos de tempo por etapa</div></div>
+        <div class="metric good"><div class="n">~30h</div><div class="l">Teto da fase inicial estruturada</div></div>
+      </div>
+
+      <div class="flow">
+        <div class="step">
+          <div class="rail"><div class="num c-cliente">01</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Kick-off unificado com UX</h3><div class="tags"><span class="tag cliente">Contato com cliente</span></div></div>
+            <p class="desc">A pauta de UX/UI entra na própria reunião de início — no formato de mini-workshop com design thinking — eliminando a reunião separada.</p>
+            <ul>
+              <li>Design ouve visão, direcionadores, tom e restrições direto da fonte</li>
+              <li>Solicitação imediata de acessos: GA4, brandbook, design system</li>
+              <li>Notas e insights de design já capturados</li>
+            </ul>
+            <div class="note gain"><span class="ic">✓</span><span>Ganha 3–4 dias de cronograma e elimina o "cliente repetindo contexto". Corrige a ponta mais frágil do processo: o início.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-cliente">02</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Briefing enxuto &amp; antecipado</h3><div class="tags"><span class="tag cliente">Cliente preenche</span></div></div>
+            <p class="desc">Briefing curto e objetivo, por tipo de projeto (implantação ≠ evolução ≠ migração), enviado antes e revisado no kickoff.</p>
+            <ul>
+              <li>Poucas perguntas, foco no que realmente direciona o design</li>
+              <li>Checklist de onboarding cumprido desde o dia zero</li>
+            </ul>
+            <div class="note gain"><span class="ic">✓</span><span>Acaba a duplicidade de dados e a resistência do cliente a formulários longos.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">03</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Discovery estratégico</h3><div class="tags"><span class="tag interno">Etapa interna · estratégia</span><span class="tag hours">6–8h+</span></div></div>
+            <p class="desc">Imersão de verdade antes do primeiro pixel: <em>o que resolvemos, para quem, por que importa.</em></p>
+            <ul>
+              <li>Benchmark, análise heurística e levantamento de dores/oportunidades</li>
+              <li>Auditoria de arquitetura da informação e de navegabilidade (~15h cada quando aplicável)</li>
+              <li>Análise de identidade visual com tempo dedicado às restrições de marca</li>
+              <li>Parceria com CRO como curadoria de dados (institucional → jornada e taxa de sucesso de formulários)</li>
+            </ul>
+            <div class="note gain"><span class="ic">✓</span><span>O cliente recebe entregáveis consultivos — atende a expectativa de discovery. Sem prometer protótipo nesta fase.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">04</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Sitemap, escopo &amp; negociação de prazo</h3><div class="tags"><span class="tag interno">Etapa interna</span></div></div>
+            <p class="desc">Sitemap e arquitetura fechados como entrega prévia, mapeando a volumetria real de telas e restrições técnicas (VTEX).</p>
+            <ul>
+              <li>Escopo aprovado por PO + cliente antes do layout</li>
+              <li>Limites por faixa (ex.: 20–30 páginas por estimativa) para evitar sobrecarga</li>
+              <li>Prazo negociado com UI, não estimado arbitrariamente</li>
+            </ul>
+            <div class="note gain"><span class="ic">✓</span><span>O momento mais crítico (sitemap) deixa de ser descoberta tardia e vira marco prévio.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-ia">05</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Setup de Design System / Guia de Estilo</h3><div class="tags"><span class="tag ia">Apoio de IA</span></div></div>
+            <p class="desc">No início do projeto, monta-se um mini design system: cores, tipografia, variáveis e componentes padrão no Figma.</p>
+            <ul>
+              <li>IA (Claude + MCP do Figma) audita, padroniza e documenta — variáveis com code syntax e nomes semânticos</li>
+              <li>Primeiro designer estrutura a base; demais reaproveitam</li>
+              <li>Reduz retrabalho com dev e divergência entre designers</li>
+            </ul>
+            <div class="note gain"><span class="ic">✓</span><span>Tarefa de ~16h (ex.: home) pode cair para ~2–3h, contando o tempo de alimentar a IA com referências.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-design">06</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Criação de Layout — preferência faseada</h3><div class="tags"><span class="tag design">Design · criação</span></div></div>
+            <p class="desc">Modelo faseado como padrão (Home → Produto/Categoria/Busca → Demais), validando a home antes de propagar.</p>
+            <ul>
+              <li>Briefing 100% preenchido no checklist do PO antes de iniciar</li>
+              <li>Feedback colhido cedo evita retrabalho que impactaria todas as páginas</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-design">07</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Apresentação &amp; defesa de design</h3><div class="tags"><span class="tag design">Design participa</span></div></div>
+            <p class="desc">Apresentação com defesa das decisões baseada em princípios de usabilidade — não "troca de cor".</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">08</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Self-QA, validação técnica &amp; Handoff</h3><div class="tags"><span class="tag interno">Entrega técnica</span></div></div>
+            <p class="desc">Handoff completo com checklist fechado e validação técnica com Tech Lead agendada como marco — não em cima da hora.</p>
+            <ul>
+              <li>Layout desktop/tablet/mobile, estados, tokens, changelog, Dev Mode</li>
+              <li>Self-QA de UI antes da validação oficial</li>
+            </ul>
+            <div class="note gain"><span class="ic">✓</span><span>Dev recebe handoff sem ambiguidades; menos idas e vindas e cronograma blindado.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-cliente">09</div></div>
+          <div class="card">
+            <div class="card-top"><h3>QA de design, Go-live &amp; suporte</h3><div class="tags"><span class="tag cliente">Contato com cliente</span></div></div>
+            <p class="desc">QA com olhar de UX/UI (não só funcional), conferindo fidelidade ao Figma, antes do go-live e do UAT.</p>
+            <ul>
+              <li>Tipografia, cores, espaçamentos, responsividade e estados verificados</li>
+              <li>Tickets no Jira quando necessário</li>
+            </ul>
+            <div class="note gain"><span class="ic">✓</span><span>Fecha a outra ponta frágil: o pós-handoff deixa de deixar erros visuais passarem.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EVOLUÇÃO ATUAL ============ -->
+    <section class="panel" id="evo-atual">
+      <div class="panel-head">
+        <div class="panel-eyebrow">Fluxo C</div>
+        <span class="badge atual">Como funciona hoje</span>
+        <h2>Evolução — processo atual</h2>
+        <p class="panel-sub">Demandas pontuais e recorrentes sobre clientes já existentes. O fluxo é ágil, mas mecânico: pouco contexto, pouco contato com cliente e tarefas que extrapolam o escopo de UX.</p>
+      </div>
+
+      <div class="metrics">
+        <div class="metric"><div class="n">~5 dias</div><div class="l">Prazo médio por demanda</div></div>
+        <div class="metric warn"><div class="n">98%</div><div class="l">Do esforço em UI, quase nada em UX</div></div>
+        <div class="metric warn"><div class="n">0</div><div class="l">Contato com cliente na maioria dos casos</div></div>
+        <div class="metric warn"><div class="n">Genéricas</div><div class="l">Descrições de tarefas variam por PO</div></div>
+      </div>
+
+      <div class="flow">
+        <div class="step">
+          <div class="rail"><div class="num c-interno">01</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Recebimento da demanda</h3><div class="tags"><span class="tag interno">Etapa interna</span></div></div>
+            <p class="desc">A demanda chega pelo Jira/Astra, criada pelo PO — de LPs e componentes a páginas e ajustes pontuais.</p>
+            <div class="note gap"><span class="ic">!</span><span>Descrições genéricas e incompletas, com padrão variando muito entre POs. Muitas vezes vem só "faça igual a esta referência", sem o porquê da mudança.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">02</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Estimativa</h3><div class="tags"><span class="tag interno">Etapa interna</span></div></div>
+            <p class="desc">A demanda é estimada em horas e a estimativa é aprovada antes da execução.</p>
+            <div class="note gap"><span class="ic">!</span><span>Sem base de estimativas padronizada, gera incerteza. Tarefas de front-end (ex.: "ajustar altura da barra de compra na PDP") chegam ao design sem precisar.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-design">03</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Execução do layout</h3><div class="tags"><span class="tag design">Design · execução</span></div></div>
+            <p class="desc">Após aprovação da estimativa, o designer executa e entrega.</p>
+            <div class="note gap"><span class="ic">!</span><span>Sem contexto prévio do cliente nem guia de marca centralizado, a execução vira mecânica — copiar a referência sem entender intenção, gerando retrabalho quando o cliente diz "não era isso".</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">04</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Validação técnica (se complexa)</h3><div class="tags"><span class="tag interno">Etapa interna</span></div></div>
+            <p class="desc">Em casos de maior complexidade, os desenvolvedores são acionados via comentários na tarefa para validar viabilidade.</p>
+            <ul>
+              <li>Se precisa de ajuste → volta para revisão</li>
+              <li>Se ok → segue para dev</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">05</div></div>
+          <div class="card">
+            <div class="card-top"><h3>Entrega ao PO / Dev</h3><div class="tags"><span class="tag interno">Etapa interna</span></div></div>
+            <p class="desc">O PO entrega ao cliente com os ajustes necessários e a tarefa segue para desenvolvimento.</p>
+            <div class="note gap"><span class="ic">!</span><span>Informações dispersas entre planilhas, docs, transcrições, Jira e formulários — nenhuma fonte única e confiável. Sem repositório por cliente, cada projeto recomeça do zero.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EVOLUÇÃO IDEAL ============ -->
+    <section class="panel" id="evo-ideal">
+      <div class="panel-head">
+        <div class="panel-eyebrow">Fluxo D</div>
+        <span class="badge ideal">Cenário proposto</span>
+        <h2>Evolução — processo ideal</h2>
+        <p class="panel-sub">Squads por cliente com memória viva, setup inicial de contexto, triagem do que é UX vs. front-end e IA nas tarefas repetitivas — liberando horas para pesquisa e atuação estratégica.</p>
+      </div>
+
+      <div class="metrics">
+        <div class="metric good"><div class="n">Squad</div><div class="l">Dedicado por cliente, com histórico</div></div>
+        <div class="metric good"><div class="n">Setup</div><div class="l">+ refresh semestral do repertório</div></div>
+        <div class="metric good"><div class="n">Triagem</div><div class="l">Front-end barrado antes do design</div></div>
+        <div class="metric good"><div class="n">+UX</div><div class="l">Horas livres viram pesquisa estratégica</div></div>
+      </div>
+
+      <div class="flow">
+        <div class="step">
+          <div class="rail"><div class="num c-ia">01</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Setup do cliente &amp; squad dedicado</h3><div class="tags"><span class="tag ia">Apoio de IA</span></div></div>
+            <p class="desc">Marco metodológico inicial que compila o repertório do cliente: guia de estilo, design system, histórico e skills — com refresh semestral.</p>
+            <ul>
+              <li>Squads dedicados mantêm contexto histórico e continuidade (férias/substituição)</li>
+              <li>Licenças de IA armazenam histórico, projetos e skills por cliente</li>
+              <li>Se o cliente não tem style guide, cria-se um no setup</li>
+            </ul>
+            <div class="note gain"><span class="ic">✓</span><span>O designer focal tem contexto desde o início — acaba a execução "às cegas".</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">02</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Triagem da demanda (UX vs. Front-end)</h3><div class="tags"><span class="tag interno">Etapa interna</span></div></div>
+            <p class="desc">Toda demanda passa por uma triagem que separa o que é UX/UI do que é desenvolvimento front-end puro.</p>
+            <ul>
+              <li>Lista clara do que vai direto para o dev, sem passar pelo design</li>
+              <li>Descrição padronizada na tarefa: objetivo, escopo, componentes, regras de negócio e referências</li>
+            </ul>
+            <div class="note gain"><span class="ic">✓</span><span>Para de drenar horas de UX em ajustes de front-end e diminui a dependência técnica dos devs.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-cliente">03</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Qualificação &amp; intenção</h3><div class="tags"><span class="tag cliente">Contato (quando cabe)</span></div></div>
+            <p class="desc">Antes de replicar uma referência, entende-se o porquê. Se não há reunião com o cliente, há perguntas-chave formais.</p>
+            <ul>
+              <li>Referência deixa de ser "fazer igual" e vira ponto de partida</li>
+              <li>Designer pode sugerir alternativa que faça mais sentido</li>
+            </ul>
+            <div class="note gain"><span class="ic">✓</span><span>Elimina o ruído "não era isso que eu queria" que hoje gera retrabalho em evolução.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">04</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Estimativa com base padronizada</h3><div class="tags"><span class="tag interno">Etapa interna</span></div></div>
+            <p class="desc">Estimativa apoiada em catálogo de entregas com horas históricas, aprovada antes da execução.</p>
+            <div class="note gain"><span class="ic">✓</span><span>Horas que sobram não somem: viram benchmark, pesquisa e pensamento estratégico.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-ia">05</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Execução com IA + design system</h3><div class="tags"><span class="tag ia">Apoio de IA</span></div></div>
+            <p class="desc">Layout executado sobre o design system do cliente, com agentes especializados nas tarefas repetitivas.</p>
+            <ul>
+              <li>Geração de variações operacionais (ex.: destaque de Pix/desconto) acelerada</li>
+              <li>Componentes nomeados com semântica e code syntax corretos</li>
+              <li>Governança: contexto por cliente permite usar modelos menores e mais baratos</li>
+            </ul>
+            <div class="note gain"><span class="ic">✓</span><span>O esforço sai do operacional de UI e migra para UX estratégico, no mesmo prazo.</span></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-interno">06</div><div class="connector"></div></div>
+          <div class="card">
+            <div class="card-top"><h3>Validação técnica como marco</h3><div class="tags"><span class="tag interno">Etapa interna</span></div></div>
+            <p class="desc">Quando há complexidade, validação com dev/Tech Lead organizada — não em cima da hora — antes de entregar ao PO.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="rail"><div class="num c-cliente">07</div></div>
+          <div class="card">
+            <div class="card-top"><h3>Entrega, QA de design &amp; registro</h3><div class="tags"><span class="tag cliente">Contato com cliente</span></div></div>
+            <p class="desc">Entrega ao PO/cliente com QA de UX/UI e tudo registrado na fonte única de verdade do cliente.</p>
+            <div class="note gain"><span class="ic">✓</span><span>O histórico fica no repositório do squad, alimentando o próximo ciclo de evolução.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CLOSING ============ -->
+    <div class="closing">
+      <h3>O que muda do atual para o ideal</h3>
+      <p>Os dois fluxos partilham a mesma raiz dos problemas: o design entra tarde, sem contexto e sem fonte única de informação — e gasta o tempo em UI operacional, não em UX estratégico. O cenário ideal ataca isso em três frentes, dentro do mesmo teto de horas.</p>
+      <div class="closing-grid">
+        <div class="closing-box"><strong>Entrar cedo &amp; com contexto</strong><span>Design no kickoff, briefing enxuto e antecipado, discovery com tempo real (6–8h+) e acessos pedidos no dia zero.</span></div>
+        <div class="closing-box"><strong>Estruturar antes da IA</strong><span>Sitemap, design system por cliente e descrições padronizadas de tarefa. Dados organizados são pré-requisito para a IA gerar ganho real.</span></div>
+        <div class="closing-box"><strong>Proteger o escopo de UX</strong><span>Triagem que barra front-end, SLAs e marcos por etapa, QA de design no fim e horas livres redirecionadas para pesquisa.</span></div>
+        <div class="closing-box"><strong>IA como alavanca</strong><span>Claude + MCP do Figma e agentes por squad encurtam o repetitivo (16h → ~2–3h) e abrem espaço para a virada de chave de UI para UX.</span></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+  tabs.forEach(t => {
+    t.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById(t.dataset.panel).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
