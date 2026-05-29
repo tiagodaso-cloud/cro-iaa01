@@ -222,6 +222,13 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
       const res = document.getElementById('results');
       const m = d.automated_metrics || {};
       const img = m.images || {}; const aria = m.aria || {}; const lm = m.landmarks || {};
+      const ct = m.contrast || {};
+      const ctSamples = (ct.samples || []).map(s=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--white);border:1px solid var(--line);border-radius:8px;margin-bottom:6px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:30px;border-radius:6px;border:1px solid var(--line);background:${esc(s.bg)};color:${esc(s.fg)};font-size:12px;font-weight:700" aria-hidden="true">Aa</span>
+          <span class="item-text" style="margin:0;flex:1"><code style="font-family:var(--mono);font-size:11px">${esc(s.fg)}</code> sobre <code style="font-family:var(--mono);font-size:11px">${esc(s.bg)}</code></span>
+          <span class="sev-badge ${s.passes_aa?'baixa':'alta'}">${esc(s.ratio)}:1 ${s.passes_aa?'AA OK':'< AA'}</span>
+        </div>`).join('');
       const totalFindings = (d.wcag_findings||[]).length;
       const critical = (d.wcag_findings||[]).filter(f=>String(f.severity).toLowerCase()==='alta').length;
 
@@ -312,6 +319,15 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
               <div class="kpi"><div class="kpi-val">${esc((m.wcag_elements||{}).lang_attribute? 'Sim':'Nao')}</div><div class="kpi-lbl">Atributo lang</div></div>
               <div class="kpi"><div class="kpi-val">${esc((m.links||{}).total??'-')}</div><div class="kpi-lbl">Links</div></div>
             </div>
+            <h4 style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--gray);margin:18px 0 12px">&#127912; Contraste de Cores (WCAG 1.4.3 / 1.4.11)</h4>
+            <div class="kpi-grid">
+              <div class="kpi"><div class="kpi-val">${esc(ct.pairs_checked??'-')}</div><div class="kpi-lbl">Pares verificados</div></div>
+              <div class="kpi"><div class="kpi-val ${(ct.low_contrast_aa>0)?'score-big lo':''}" style="font-size:26px">${esc(ct.low_contrast_aa??'-')}</div><div class="kpi-lbl">Abaixo de AA</div></div>
+              <div class="kpi"><div class="kpi-val">${esc(ct.low_contrast_aaa??'-')}</div><div class="kpi-lbl">Abaixo de AAA</div></div>
+              <div class="kpi"><div class="kpi-val">${esc(ct.elements_with_inline_style??'-')}</div><div class="kpi-lbl">Estilos inline</div></div>
+            </div>
+            ${ctSamples ? `<div style="margin-top:12px">${ctSamples}</div>` : ''}
+            ${ct.note ? `<p style="font-size:12px;color:var(--gray-light);margin-top:10px;font-style:italic">&#8505; ${esc(ct.note)}</p>` : ''}
           </div>
         </div>
 
@@ -400,6 +416,56 @@ function extractElements(html, tag) {
   return matches;
 }
 
+// --- Verificacao de contraste de cores (WCAG 1.4.3 / 1.4.11) ---
+// Heuristica best-effort: analisa pares cor/fundo declarados em estilos inline.
+function parseColor(str) {
+  if (!str) return null;
+  str = str.trim().toLowerCase();
+  const named = { black:[0,0,0], white:[255,255,255], red:[255,0,0], green:[0,128,0],
+    blue:[0,0,255], gray:[128,128,128], grey:[128,128,128], silver:[192,192,192],
+    yellow:[255,255,0], orange:[255,165,0], purple:[128,0,128], navy:[0,0,128] };
+  if (named[str]) return named[str];
+  let m = str.match(/#([0-9a-f]{6})\b/);
+  if (m) { const h = m[1]; return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
+  m = str.match(/#([0-9a-f]{3})\b/);
+  if (m) { const h = m[1]; return [parseInt(h[0]+h[0],16), parseInt(h[1]+h[1],16), parseInt(h[2]+h[2],16)]; }
+  m = str.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (m) return [parseInt(m[1]), parseInt(m[2]), parseInt(m[3])];
+  return null;
+}
+function relLum(c) {
+  const a = c.map(v => { v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); });
+  return 0.2126*a[0] + 0.7152*a[1] + 0.0722*a[2];
+}
+function contrastRatio(c1, c2) {
+  const l1 = relLum(c1), l2 = relLum(c2);
+  const hi = Math.max(l1, l2), lo = Math.min(l1, l2);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+const styleAttrs = html.match(/style=["'][^"']*["']/gi) || [];
+let pairsChecked = 0, lowAA = 0, lowAAA = 0;
+const contrastSamples = [];
+for (const s of styleAttrs) {
+  const colorM = s.match(/(?:^|;|\s)color\s*:\s*([^;"']+)/i);
+  const bgM = s.match(/background(?:-color)?\s*:\s*([^;"']+)/i);
+  if (colorM && bgM) {
+    const fg = parseColor(colorM[1]);
+    const bg = parseColor(bgM[1]);
+    if (fg && bg) {
+      pairsChecked++;
+      const ratio = Math.round(contrastRatio(fg, bg) * 100) / 100;
+      const passesAA = ratio >= 4.5;
+      const passesAAA = ratio >= 7;
+      if (!passesAA) lowAA++;
+      if (!passesAAA) lowAAA++;
+      if (contrastSamples.length < 8) {
+        contrastSamples.push({ fg: colorM[1].trim(), bg: bgM[1].trim(), ratio, passes_aa: passesAA, passes_aaa: passesAAA });
+      }
+    }
+  }
+}
+
 const accessibility_analysis = {
   landmarks: {
     main: countElements(html, 'main') + (html.match(/role=["']main["']/gi) || []).length,
@@ -457,6 +523,16 @@ const accessibility_analysis = {
     title_tag: countElements(html, 'title'),
     buttons_without_text: (html.match(/<button[^>]*>\s*<\/button>/gi) || []).length,
     viewport_meta: /<meta[^>]*name=["']viewport["']/i.test(html) ? 1 : 0
+  },
+  contrast: {
+    elements_with_inline_style: styleAttrs.length,
+    pairs_checked: pairsChecked,
+    low_contrast_aa: lowAA,
+    low_contrast_aaa: lowAAA,
+    samples: contrastSamples,
+    note: pairsChecked === 0
+      ? 'Nenhum par cor/fundo inline encontrado; o contraste real depende do CSS externo e deve ser validado visualmente.'
+      : 'Analise heuristica baseada em estilos inline; verifique tambem o CSS externo.'
   }
 };
 
@@ -502,6 +578,8 @@ SYSTEM_MESSAGE = (
     "\"summary\":\"string\"}. "
     "Inclua os 4 principios POUR. Forneca de 5 a 10 wcag_findings priorizando os de maior impacto, "
     "sempre com um code_example HTML corretivo curto e valido. "
+    "Use os dados de 'contrast' das metricas (razao de contraste calculada de pares cor/fundo inline) para avaliar os criterios 1.4.3 (Contraste Minimo, AA >= 4.5:1) e 1.4.11 (Contraste de Elementos Nao Textuais). "
+    "Se houver pares com low_contrast_aa, gere um wcag_finding de severidade Alta citando a razao real; se pairs_checked for 0, registre que o contraste nao pode ser medido automaticamente (CSS externo) e recomende validacao manual. "
     "Forneca de 3 a 6 ux_accessibility_findings (foco em legibilidade, contraste, navegacao por teclado, foco visivel, area de toque, feedback, linguagem clara). "
     "Forneca exatamente 3 top_quick_wins. Seja tecnico, objetivo e conciso (1 a 2 frases por campo)."
 )
