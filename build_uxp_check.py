@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gera o workflow n8n 'A11y PathWise' (auditoria aprofundada de Acessibilidade + UX)."""
+"""Gera o workflow n8n 'UXP-Check' (checagem de paginas com a estrutura POUR em UX)."""
 import json
 
 # ---------------------------------------------------------------------------
@@ -10,7 +10,7 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>A11y PathWise | Cadastra & Adtail</title>
+  <title>UXP-Check | Cadastra & Adtail</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png">
   <style>
@@ -116,16 +116,16 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
   <header class="header">
     <div class="header-inner">
       <img src="https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png" class="logo" alt="Cadastra">
-      <div class="product-name">A11y <span>Path</span>Wise</div>
+      <div class="product-name">UXP<span>-</span>Check</div>
       <span class="version-badge">v1</span>
     </div>
   </header>
 
   <section class="hero">
     <div class="hero-inner">
-      <div class="hero-eyebrow">ACCESSIBILITY &amp; UX DEEP AUDIT</div>
-      <h1>A11y PathWise</h1>
-      <p class="hero-desc">Auditoria aprofundada de acessibilidade digital que combina validacao tecnica WCAG 2.2 com analise de UX inclusiva &mdash; mapeando criterios violados, principios POUR e quick wins para tornar a interface acessivel a todas as pessoas.</p>
+      <div class="hero-eyebrow">CHECAGEM POUR &middot; UX &amp; ACESSIBILIDADE</div>
+      <h1>UXP-Check</h1>
+      <p class="hero-desc">Checagem de paginas estruturada nos 4 principios POUR &mdash; Perceptivel, Operavel, Compreensivel e Robusto &mdash; que servem de base para as WCAG. Combina validacao tecnica WCAG 2.2 com analise de UX inclusiva, mapeando criterios violados e quick wins para tornar a interface acessivel a todas as pessoas.</p>
       <div class="hero-badges">
         <div class="hero-badge">WCAG 2.2 (A / AA / AAA)</div>
         <div class="hero-badge">Render real (Lighthouse / axe)</div>
@@ -307,7 +307,7 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
           </button>
           <div class="section-body">
             <div class="kpi-grid">
-              <div class="kpi"><div class="kpi-val score-big ${scoreClass(d.overall_score)}">${esc(d.overall_score)}</div><div class="kpi-lbl">Score A11y /10</div></div>
+              <div class="kpi"><div class="kpi-val score-big ${scoreClass(d.overall_score)}">${esc(d.overall_score)}</div><div class="kpi-lbl">Score POUR /10</div></div>
               <div class="kpi"><div class="kpi-val"><span class="level-pill ${levelClass(d.wcag_compliance_level)}">${esc(d.wcag_compliance_level)}</span></div><div class="kpi-lbl">Nivel WCAG 2.2</div></div>
               <div class="kpi"><div class="kpi-val">${esc(critical)}</div><div class="kpi-lbl">Criterios Criticos</div></div>
               <div class="kpi"><div class="kpi-val">${esc(totalFindings)}</div><div class="kpi-lbl">Total de Achados</div></div>
@@ -682,11 +682,11 @@ AGENT_TEXT = (
 # Montagem do workflow
 # ---------------------------------------------------------------------------
 workflow = {
-    "name": "A11y PathWise V1 - Auditoria de Acessibilidade & UX",
+    "name": "UXP-Check V1 - Checagem POUR (UX & Acessibilidade)",
     "nodes": [
         {
             "parameters": {
-                "path": "a11y-pathwise",
+                "path": "uxp-check",
                 "responseMode": "responseNode",
                 "options": {"allowedOrigins": "*"}
             },
@@ -695,7 +695,7 @@ workflow = {
             "type": "n8n-nodes-base.webhook",
             "typeVersion": 2.1,
             "position": [0, 0],
-            "webhookId": "a11y-get-001"
+            "webhookId": "uxp-check-get-001"
         },
         {
             "parameters": {
@@ -719,7 +719,7 @@ workflow = {
         {
             "parameters": {
                 "httpMethod": "POST",
-                "path": "a11y-pathwise",
+                "path": "uxp-check",
                 "responseMode": "responseNode",
                 "options": {"allowedOrigins": "*"}
             },
@@ -728,7 +728,7 @@ workflow = {
             "type": "n8n-nodes-base.webhook",
             "typeVersion": 2.1,
             "position": [0, 240],
-            "webhookId": "a11y-post-001"
+            "webhookId": "uxp-check-post-001"
         },
         {
             "parameters": {
@@ -762,7 +762,7 @@ workflow = {
                 }
             },
             "id": "a1b2c3d4-0011-4000-8000-000000000011",
-            "name": "Lighthouse A11y (PageSpeed)",
+            "name": "Lighthouse (PageSpeed)",
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 4.4,
             "position": [304, 384]
@@ -813,7 +813,7 @@ workflow = {
                 }
             },
             "id": "a1b2c3d4-0007-4000-8000-000000000007",
-            "name": "A11y & UX Diagnostic Agent",
+            "name": "UXP Diagnostic Agent",
             "type": "@n8n/n8n-nodes-langchain.agent",
             "typeVersion": 3.1,
             "position": [1392, 240]
@@ -858,16 +858,16 @@ workflow = {
         "GET - Interface Web": {"main": [[{"node": "Renderizar Interface", "type": "main", "index": 0}]]},
         "POST - Receber Auditoria": {"main": [[
             {"node": "Fetch Page HTML", "type": "main", "index": 0},
-            {"node": "Lighthouse A11y (PageSpeed)", "type": "main", "index": 0}
+            {"node": "Lighthouse (PageSpeed)", "type": "main", "index": 0}
         ]]},
         "Fetch Page HTML": {"main": [[{"node": "Analise WCAG 2.2", "type": "main", "index": 0}]]},
         "Analise WCAG 2.2": {"main": [[{"node": "Merge Dados", "type": "main", "index": 0}]]},
-        "Lighthouse A11y (PageSpeed)": {"main": [[{"node": "Processar Lighthouse", "type": "main", "index": 0}]]},
+        "Lighthouse (PageSpeed)": {"main": [[{"node": "Processar Lighthouse", "type": "main", "index": 0}]]},
         "Processar Lighthouse": {"main": [[{"node": "Merge Dados", "type": "main", "index": 1}]]},
         "Merge Dados": {"main": [[{"node": "Prepare Context", "type": "main", "index": 0}]]},
-        "Prepare Context": {"main": [[{"node": "A11y & UX Diagnostic Agent", "type": "main", "index": 0}]]},
-        "A11y & UX Diagnostic Agent": {"main": [[{"node": "Parse JSON Result", "type": "main", "index": 0}]]},
-        "OpenRouter Model": {"ai_languageModel": [[{"node": "A11y & UX Diagnostic Agent", "type": "ai_languageModel", "index": 0}]]},
+        "Prepare Context": {"main": [[{"node": "UXP Diagnostic Agent", "type": "main", "index": 0}]]},
+        "UXP Diagnostic Agent": {"main": [[{"node": "Parse JSON Result", "type": "main", "index": 0}]]},
+        "OpenRouter Model": {"ai_languageModel": [[{"node": "UXP Diagnostic Agent", "type": "ai_languageModel", "index": 0}]]},
         "Parse JSON Result": {"main": [[{"node": "Retornar Resultados", "type": "main", "index": 0}]]}
     },
     "active": False,
@@ -879,8 +879,8 @@ workflow = {
     ]
 }
 
-with open("a11y-pathwise.json", "w", encoding="utf-8") as f:
+with open("uxp-check.json", "w", encoding="utf-8") as f:
     json.dump(workflow, f, ensure_ascii=False, indent=2)
 
-print("OK - a11y-pathwise.json gerado")
+print("OK - uxp-check.json gerado")
 print("nodes:", len(workflow["nodes"]))
