@@ -193,7 +193,7 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
 
   <script>
     const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-    const TIMEOUT_MS = 90000;
+    const TIMEOUT_MS = 150000;
     let timerInterval = null;
 
     function startTimer() {
@@ -413,8 +413,12 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
           signal: AbortSignal.timeout(TIMEOUT_MS + 5000)
         });
         stopTimer();
-        if (!res.ok) throw new Error(`Erro HTTP ${res.status}`);
-        const raw = await res.json();
+        const text = await res.text();
+        if (!res.ok) throw new Error(`O servidor retornou erro HTTP ${res.status}. ${text ? text.substring(0,200) : ''}`.trim());
+        if (!text || !text.trim()) throw new Error('Resposta vazia do servidor. O workflow provavelmente falhou ou expirou (ex.: timeout do Lighthouse/PageSpeed ou do modelo). Verifique a execucao no n8n.');
+        let raw;
+        try { raw = JSON.parse(text); }
+        catch (_) { throw new Error('Resposta nao e JSON valido: ' + text.substring(0,200)); }
         const d = raw.data ?? raw.result ?? raw.json ?? raw;
         if (d.error) throw new Error(d.message || 'Falha no processamento.');
         renderResults(d);
@@ -623,23 +627,31 @@ return { json: { lighthouse: {
 # ---------------------------------------------------------------------------
 # Parse node
 # ---------------------------------------------------------------------------
-PARSE_CODE = r"""const raw = $input.item.json.output ?? '';
+PARSE_CODE = r"""const raw = $input.first().json.output ?? '';
+
+// Referencias resilientes: usam .first() (fluxo de item unico) e nunca lancam,
+// para garantir que o no Respond sempre receba um JSON valido.
+function safe(fn, fallback) { try { return fn(); } catch (e) { return fallback; } }
+const url = safe(() => $("Prepare Context").first().json.url, "");
+const metrics = safe(() => $("Analise WCAG 2.2").first().json.wcag_metrics, {});
+const lighthouse = safe(() => $("Processar Lighthouse").first().json.lighthouse, { available: false });
+
 try {
   const match = raw.match(/{[\s\S]*}/);
   if (!match) throw new Error("JSON nao encontrado na resposta do modelo.");
   const d = JSON.parse(match[0]);
   return { json: {
     ...d,
-    url: $("Prepare Context").item.json.url,
-    automated_metrics: $("Analise WCAG 2.2").item.json.wcag_metrics,
-    lighthouse_audit: $("Processar Lighthouse").item.json.lighthouse
+    url,
+    automated_metrics: metrics,
+    lighthouse_audit: lighthouse
   }};
 } catch(e) {
   return { json: {
     error: true,
-    message: "Falha ao processar resposta: " + e.message,
-    raw_preview: raw.substring(0, 300),
-    url: $("Prepare Context").item.json.url
+    message: "Falha ao processar resposta do modelo: " + e.message,
+    raw_preview: String(raw).substring(0, 300),
+    url
   }};
 }"""
 
@@ -758,14 +770,15 @@ workflow = {
                 "url": "=https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url={{ encodeURIComponent($json.body.url) }}&category=accessibility&strategy=mobile{{ $env.PAGESPEED_API_KEY ? '&key=' + $env.PAGESPEED_API_KEY : '' }}",
                 "options": {
                     "response": {"response": {"neverError": True, "responseFormat": "json"}},
-                    "timeout": 60000
+                    "timeout": 45000
                 }
             },
             "id": "a1b2c3d4-0011-4000-8000-000000000011",
             "name": "Lighthouse (PageSpeed)",
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 4.4,
-            "position": [304, 384]
+            "position": [304, 384],
+            "onError": "continueRegularOutput"
         },
         {
             "parameters": {"mode": "runOnceForEachItem", "jsCode": LIGHTHOUSE_CODE},
@@ -787,11 +800,11 @@ workflow = {
             "parameters": {
                 "assignments": {
                     "assignments": [
-                        {"id": "1", "name": "url", "value": "={{ $(\"POST - Receber Auditoria\").item.json.body.url }}", "type": "string"},
-                        {"id": "2", "name": "context", "value": "={{ $(\"POST - Receber Auditoria\").item.json.body.context ?? \"Nao informado\" }}", "type": "string"},
-                        {"id": "3", "name": "wcag_metrics", "value": "={{ JSON.stringify($(\"Analise WCAG 2.2\").item.json.wcag_metrics) }}", "type": "string"},
-                        {"id": "4", "name": "page_content", "value": "={{ ($(\"Fetch Page HTML\").item.json.data ?? \"\").substring(0, 8000) }}", "type": "string"},
-                        {"id": "5", "name": "lighthouse", "value": "={{ JSON.stringify($(\"Processar Lighthouse\").item.json.lighthouse) }}", "type": "string"}
+                        {"id": "1", "name": "url", "value": "={{ $(\"POST - Receber Auditoria\").first().json.body.url }}", "type": "string"},
+                        {"id": "2", "name": "context", "value": "={{ $(\"POST - Receber Auditoria\").first().json.body.context ?? \"Nao informado\" }}", "type": "string"},
+                        {"id": "3", "name": "wcag_metrics", "value": "={{ JSON.stringify($(\"Analise WCAG 2.2\").first().json.wcag_metrics) }}", "type": "string"},
+                        {"id": "4", "name": "page_content", "value": "={{ ($(\"Fetch Page HTML\").first().json.data ?? \"\").substring(0, 8000) }}", "type": "string"},
+                        {"id": "5", "name": "lighthouse", "value": "={{ JSON.stringify($(\"Processar Lighthouse\").first().json.lighthouse) }}", "type": "string"}
                     ]
                 },
                 "options": {}
@@ -816,7 +829,8 @@ workflow = {
             "name": "UXP Diagnostic Agent",
             "type": "@n8n/n8n-nodes-langchain.agent",
             "typeVersion": 3.1,
-            "position": [1392, 240]
+            "position": [1392, 240],
+            "onError": "continueRegularOutput"
         },
         {
             "parameters": {
