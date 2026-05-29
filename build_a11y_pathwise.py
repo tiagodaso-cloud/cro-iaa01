@@ -124,6 +124,7 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
       <p class="hero-desc">Auditoria aprofundada de acessibilidade digital que combina validacao tecnica WCAG 2.2 com analise de UX inclusiva &mdash; mapeando criterios violados, principios POUR e quick wins para tornar a interface acessivel a todas as pessoas.</p>
       <div class="hero-badges">
         <div class="hero-badge">WCAG 2.2 (A / AA / AAA)</div>
+        <div class="hero-badge">Render real (Lighthouse / axe)</div>
         <div class="hero-badge">Principios POUR</div>
         <div class="hero-badge">UX Inclusiva</div>
         <div class="hero-badge">Metricas Automatizadas</div>
@@ -156,6 +157,7 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
           <div class="feat-grid">
             <div class="feat-item"><div class="feat-check">&#10003;</div>Score geral de acessibilidade (0-10)</div>
             <div class="feat-item"><div class="feat-check">&#10003;</div>Nivel de conformidade WCAG (A/AA/AAA)</div>
+            <div class="feat-item"><div class="feat-check">&#10003;</div>Auditoria axe-core com render real (Lighthouse)</div>
             <div class="feat-item"><div class="feat-check">&#10003;</div>Principios POUR avaliados</div>
             <div class="feat-item"><div class="feat-check">&#10003;</div>Criterios WCAG 2.2 violados</div>
             <div class="feat-item"><div class="feat-check">&#10003;</div>Achados de UX inclusiva</div>
@@ -223,6 +225,31 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
       const m = d.automated_metrics || {};
       const img = m.images || {}; const aria = m.aria || {}; const lm = m.landmarks || {};
       const ct = m.contrast || {};
+      const lh = d.lighthouse_audit || {};
+      const lhAvail = lh.available === true;
+      const lhAudits = (lh.failed_audits || []).map(a=>`
+        <div class="item ${a.id==='color-contrast'?'alta':'media'}">
+          <div class="item-head"><span class="item-name">${esc(a.title)}</span><span class="sev-badge ${a.id==='color-contrast'?'alta':'media'}">${esc(a.count)} elemento(s)</span></div>
+          <div><span class="tag">${esc(a.id)}</span></div>
+          ${(a.sample||[]).map(s=>`<pre class="code-ex">${esc(s.selector)}${s.snippet?'\\n'+esc(s.snippet):''}${s.explanation?'\\n// '+esc(s.explanation):''}</pre>`).join('')}
+        </div>`).join('');
+      const lhBlock = `
+        <div class="section">
+          <button class="section-head" type="button" aria-expanded="true" onclick="toggle(this)">
+            <span class="section-title">&#128300; Auditoria Lighthouse / axe-core (render real)</span><span aria-hidden="true">&#9662;</span>
+          </button>
+          <div class="section-body">
+            ${lhAvail ? `
+              <div class="kpi-grid">
+                <div class="kpi"><div class="kpi-val score-big ${scoreClass((lh.accessibility_score||0)/10)}" style="font-size:26px">${esc(lh.accessibility_score)}</div><div class="kpi-lbl">Score axe /100</div></div>
+                <div class="kpi"><div class="kpi-val">${esc(lh.total_failed??'-')}</div><div class="kpi-lbl">Auditorias reprovadas</div></div>
+                <div class="kpi"><div class="kpi-val">${esc(lh.contrast? lh.contrast.count : 0)}</div><div class="kpi-lbl">Falhas de contraste</div></div>
+                <div class="kpi"><div class="kpi-val">${esc(lh.strategy||'mobile')}</div><div class="kpi-lbl">Estrategia</div></div>
+              </div>
+              ${lhAudits || '<p style="color:var(--gray);font-size:14px">Nenhuma auditoria axe reprovada.</p>'}
+            ` : `<p style="font-size:13px;color:var(--gray)">&#8505; ${esc(lh.note || 'Render real indisponivel; resultados baseados na heuristica inline.')}</p>`}
+          </div>
+        </div>`;
       const ctSamples = (ct.samples || []).map(s=>`
         <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--white);border:1px solid var(--line);border-radius:8px;margin-bottom:6px">
           <span style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:30px;border-radius:6px;border:1px solid var(--line);background:${esc(s.bg)};color:${esc(s.fg)};font-size:12px;font-weight:700" aria-hidden="true">Aa</span>
@@ -282,6 +309,8 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
             <p style="font-size:14px;line-height:1.7;color:var(--gray)">${esc(d.conformance_summary)}</p>
           </div>
         </div>
+
+        ${lhBlock}
 
         <div class="section">
           <button class="section-head" type="button" aria-expanded="true" onclick="toggle(this)">
@@ -540,6 +569,52 @@ return [{ json: { wcag_metrics: accessibility_analysis } }];
 """
 
 # ---------------------------------------------------------------------------
+# Code node: processa a resposta do Google PageSpeed Insights (Lighthouse/axe)
+# ---------------------------------------------------------------------------
+LIGHTHOUSE_CODE = r"""const r = $input.item.json ?? {};
+const lr = r.lighthouseResult;
+
+if (!lr || !lr.categories || !lr.categories.accessibility) {
+  return { json: { lighthouse: {
+    available: false,
+    note: "Render real indisponivel (API key ausente, URL nao publica, timeout ou erro). A analise prossegue com a heuristica inline."
+  }}};
+}
+
+const score = Math.round((lr.categories.accessibility.score ?? 0) * 100);
+const audits = lr.audits || {};
+const refs = (lr.categories.accessibility.auditRefs || []);
+
+const failed = [];
+let contrast = null;
+
+for (const ref of refs) {
+  const a = audits[ref.id];
+  if (!a) continue;
+  if (a.scoreDisplayMode === 'binary' && a.score === 0) {
+    const allItems = ((a.details || {}).items || []);
+    const sample = allItems.slice(0, 3).map(it => ({
+      selector: (it.node && it.node.selector) || '',
+      snippet: ((it.node && it.node.snippet) || '').substring(0, 200),
+      explanation: (it.node && it.node.explanation) || ''
+    }));
+    const entry = { id: a.id, title: a.title, count: allItems.length, sample };
+    failed.push(entry);
+    if (a.id === 'color-contrast') contrast = entry;
+  }
+}
+
+return { json: { lighthouse: {
+  available: true,
+  accessibility_score: score,
+  total_failed: failed.length,
+  contrast,
+  failed_audits: failed.slice(0, 15),
+  strategy: 'mobile'
+}}};
+"""
+
+# ---------------------------------------------------------------------------
 # Parse node
 # ---------------------------------------------------------------------------
 PARSE_CODE = r"""const raw = $input.item.json.output ?? '';
@@ -550,7 +625,8 @@ try {
   return { json: {
     ...d,
     url: $("Prepare Context").item.json.url,
-    automated_metrics: $("Analise WCAG 2.2").item.json.wcag_metrics
+    automated_metrics: $("Analise WCAG 2.2").item.json.wcag_metrics,
+    lighthouse_audit: $("Processar Lighthouse").item.json.lighthouse
   }};
 } catch(e) {
   return { json: {
@@ -578,8 +654,9 @@ SYSTEM_MESSAGE = (
     "\"summary\":\"string\"}. "
     "Inclua os 4 principios POUR. Forneca de 5 a 10 wcag_findings priorizando os de maior impacto, "
     "sempre com um code_example HTML corretivo curto e valido. "
-    "Use os dados de 'contrast' das metricas (razao de contraste calculada de pares cor/fundo inline) para avaliar os criterios 1.4.3 (Contraste Minimo, AA >= 4.5:1) e 1.4.11 (Contraste de Elementos Nao Textuais). "
-    "Se houver pares com low_contrast_aa, gere um wcag_finding de severidade Alta citando a razao real; se pairs_checked for 0, registre que o contraste nao pode ser medido automaticamente (CSS externo) e recomende validacao manual. "
+    "PRIORIZE a auditoria Lighthouse/axe-core (render real) quando lighthouse.available=true: use lighthouse.accessibility_score como ancora do overall_score e converta cada item de lighthouse.failed_audits em um wcag_finding citando o seletor/snippet real; trate lighthouse.contrast (auditoria color-contrast do axe) como a fonte primaria de contraste. "
+    "Quando lighthouse.available=false, use a heuristica inline como fallback. "
+    "Para contraste de cores avalie os criterios 1.4.3 (Contraste Minimo, AA >= 4.5:1) e 1.4.11 (Contraste de Elementos Nao Textuais): se o axe ou os dados inline 'contrast' apontarem reprovacao, gere um wcag_finding de severidade Alta citando a razao/elemento real; se nada puder ser medido, recomende validacao manual. "
     "Forneca de 3 a 6 ux_accessibility_findings (foco em legibilidade, contraste, navegacao por teclado, foco visivel, area de toque, feedback, linguagem clara). "
     "Forneca exatamente 3 top_quick_wins. Seja tecnico, objetivo e conciso (1 a 2 frases por campo)."
 )
@@ -587,7 +664,9 @@ SYSTEM_MESSAGE = (
 AGENT_TEXT = (
     "=URL analisada: {{ $json.url }}\n"
     "Contexto: {{ $json.context }}\n\n"
-    "METRICAS TECNICAS AUTOMATIZADAS (dados reais extraidos do HTML):\n"
+    "AUDITORIA LIGHTHOUSE / AXE-CORE (render real em Chrome headless - fonte mais confiavel quando available=true):\n"
+    "{{ $json.lighthouse }}\n\n"
+    "METRICAS TECNICAS AUTOMATIZADAS (heuristica regex sobre o HTML cru):\n"
     "{{ $json.wcag_metrics }}\n\n"
     "HTML DA PAGINA (trecho):\n{{ $json.page_content }}"
 )
@@ -657,7 +736,7 @@ workflow = {
             "name": "Fetch Page HTML",
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 4.4,
-            "position": [304, 240]
+            "position": [304, 96]
         },
         {
             "parameters": {"jsCode": WCAG_CODE},
@@ -665,7 +744,37 @@ workflow = {
             "name": "Analise WCAG 2.2",
             "type": "n8n-nodes-base.code",
             "typeVersion": 2,
-            "position": [608, 240]
+            "position": [608, 96]
+        },
+        {
+            "parameters": {
+                "url": "=https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url={{ encodeURIComponent($json.body.url) }}&category=accessibility&strategy=mobile{{ $env.PAGESPEED_API_KEY ? '&key=' + $env.PAGESPEED_API_KEY : '' }}",
+                "options": {
+                    "response": {"response": {"neverError": True, "responseFormat": "json"}},
+                    "timeout": 60000
+                }
+            },
+            "id": "a1b2c3d4-0011-4000-8000-000000000011",
+            "name": "Lighthouse A11y (PageSpeed)",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.4,
+            "position": [304, 384]
+        },
+        {
+            "parameters": {"mode": "runOnceForEachItem", "jsCode": LIGHTHOUSE_CODE},
+            "id": "a1b2c3d4-0012-4000-8000-000000000012",
+            "name": "Processar Lighthouse",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [608, 384]
+        },
+        {
+            "parameters": {"mode": "combine", "combineBy": "combineAll", "options": {}},
+            "id": "a1b2c3d4-0013-4000-8000-000000000013",
+            "name": "Merge Dados",
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 3.2,
+            "position": [880, 240]
         },
         {
             "parameters": {
@@ -673,8 +782,9 @@ workflow = {
                     "assignments": [
                         {"id": "1", "name": "url", "value": "={{ $(\"POST - Receber Auditoria\").item.json.body.url }}", "type": "string"},
                         {"id": "2", "name": "context", "value": "={{ $(\"POST - Receber Auditoria\").item.json.body.context ?? \"Nao informado\" }}", "type": "string"},
-                        {"id": "3", "name": "wcag_metrics", "value": "={{ JSON.stringify($json.wcag_metrics) }}", "type": "string"},
-                        {"id": "4", "name": "page_content", "value": "={{ ($(\"Fetch Page HTML\").item.json.data ?? \"\").substring(0, 8000) }}", "type": "string"}
+                        {"id": "3", "name": "wcag_metrics", "value": "={{ JSON.stringify($(\"Analise WCAG 2.2\").item.json.wcag_metrics) }}", "type": "string"},
+                        {"id": "4", "name": "page_content", "value": "={{ ($(\"Fetch Page HTML\").item.json.data ?? \"\").substring(0, 8000) }}", "type": "string"},
+                        {"id": "5", "name": "lighthouse", "value": "={{ JSON.stringify($(\"Processar Lighthouse\").item.json.lighthouse) }}", "type": "string"}
                     ]
                 },
                 "options": {}
@@ -683,7 +793,7 @@ workflow = {
             "name": "Prepare Context",
             "type": "n8n-nodes-base.set",
             "typeVersion": 3.4,
-            "position": [912, 240]
+            "position": [1120, 240]
         },
         {
             "parameters": {
@@ -699,7 +809,7 @@ workflow = {
             "name": "A11y & UX Diagnostic Agent",
             "type": "@n8n/n8n-nodes-langchain.agent",
             "typeVersion": 3.1,
-            "position": [1216, 240]
+            "position": [1392, 240]
         },
         {
             "parameters": {
@@ -710,7 +820,7 @@ workflow = {
             "name": "OpenRouter Model",
             "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
             "typeVersion": 1,
-            "position": [1216, 432],
+            "position": [1392, 432],
             "credentials": {
                 "openRouterApi": {"id": "4MTPOCzYj4oYOSjA", "name": "OpenRouter account 51"}
             }
@@ -721,7 +831,7 @@ workflow = {
             "name": "Parse JSON Result",
             "type": "n8n-nodes-base.code",
             "typeVersion": 2,
-            "position": [1568, 240]
+            "position": [1744, 240]
         },
         {
             "parameters": {
@@ -733,15 +843,21 @@ workflow = {
             "name": "Retornar Resultados",
             "type": "n8n-nodes-base.respondToWebhook",
             "typeVersion": 1.5,
-            "position": [1872, 240]
+            "position": [1968, 240]
         }
     ],
     "pinData": {},
     "connections": {
         "GET - Interface Web": {"main": [[{"node": "Renderizar Interface", "type": "main", "index": 0}]]},
-        "POST - Receber Auditoria": {"main": [[{"node": "Fetch Page HTML", "type": "main", "index": 0}]]},
+        "POST - Receber Auditoria": {"main": [[
+            {"node": "Fetch Page HTML", "type": "main", "index": 0},
+            {"node": "Lighthouse A11y (PageSpeed)", "type": "main", "index": 0}
+        ]]},
         "Fetch Page HTML": {"main": [[{"node": "Analise WCAG 2.2", "type": "main", "index": 0}]]},
-        "Analise WCAG 2.2": {"main": [[{"node": "Prepare Context", "type": "main", "index": 0}]]},
+        "Analise WCAG 2.2": {"main": [[{"node": "Merge Dados", "type": "main", "index": 0}]]},
+        "Lighthouse A11y (PageSpeed)": {"main": [[{"node": "Processar Lighthouse", "type": "main", "index": 0}]]},
+        "Processar Lighthouse": {"main": [[{"node": "Merge Dados", "type": "main", "index": 1}]]},
+        "Merge Dados": {"main": [[{"node": "Prepare Context", "type": "main", "index": 0}]]},
         "Prepare Context": {"main": [[{"node": "A11y & UX Diagnostic Agent", "type": "main", "index": 0}]]},
         "A11y & UX Diagnostic Agent": {"main": [[{"node": "Parse JSON Result", "type": "main", "index": 0}]]},
         "OpenRouter Model": {"ai_languageModel": [[{"node": "A11y & UX Diagnostic Agent", "type": "ai_languageModel", "index": 0}]]},
