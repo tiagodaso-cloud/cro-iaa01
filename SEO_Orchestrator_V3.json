@@ -433,10 +433,10 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Você é o AGENTE DE SÍNTESE de um sistema multiagente. Recebeu correlações cruzadas (geradas por um agente de correlação a partir de 3 especialistas) e o blackboard completo. Produza o relatório executivo final.\n\nTESE E CORRELAÇÕES CRUZADAS:\n{{ $('Agente Correlação').first().json.output }}\n\nBLACKBOARD (hipóteses dos especialistas + dados brutos):\n{{ $('Montar Blackboard').first().json.blackboard }}\n\nRetorne APENAS o seguinte objeto JSON — sem markdown, sem backticks. Comece com { e termine com }.\nCada string com no máximo 200 caracteres.\n\n{\n  \"sumario\": { \"insights\": [\"insight 1\",\"insight 2\",\"insight 3\"], \"nivel_impacto\": \"Alto\" },\n  \"correlacoes\": [{ \"titulo\":\"\",\"descricao\":\"\",\"workflows\":[],\"prioridade\":\"Alta\" }],\n  \"gaps_oportunidades\": [{ \"titulo\":\"\",\"descricao\":\"\",\"prioridade\":\"Alta\",\"impacto_estimado\":\"\" }],\n  \"plano_acao\": [{ \"acao\":\"\",\"prazo\":\"2 semanas\",\"impacto_esperado\":\"\" }],\n  \"proximos_passos\": [{ \"passo\":\"\",\"horizonte\":\"1-3 meses\" }]\n}\n\nGere 3-5 itens por seção. As 'correlacoes' do JSON devem refletir as correlações cruzadas do agente de correlação. Pelo menos UMA correlação deve abordar Core Web Vitals. Se houver APRENDIZADOS ANTERIORES no blackboard, corrija análises previamente incorretas.",
+        "text": "=Você é o NÚCLEO de um sistema multiagente de SEO. Receberá hipóteses de 3 agentes especialistas (GEO/Search, SEO Técnico, Performance/CWV) e dados brutos consolidados. Execute DUAS tarefas em sequência:\n\nTAREFA 1 — CORRELAÇÃO CRUZADA: identifique relações causais entre os domínios que NENHUM especialista isolado enxergaria (ex: LCP alto + alta intenção transacional = perda de receita). Pondere por confiança das hipóteses.\n\nTAREFA 2 — SÍNTESE EXECUTIVA: com base nas correlações, gere o relatório final.\n\nBLACKBOARD (hipóteses dos 3 especialistas + dados brutos):\n{{ $json.blackboard }}\n\nRetorne APENAS o seguinte JSON puro — sem markdown, sem backticks. Comece com { termine com }.\nCada string com no máximo 200 caracteres.\n\n{\n  \"sumario\": { \"insights\": [\"insight 1\",\"insight 2\",\"insight 3\"], \"nivel_impacto\": \"Alto\", \"tese_central\": \"\" },\n  \"correlacoes\": [{ \"titulo\":\"\",\"descricao\":\"\",\"dominios_envolvidos\":[\"GEO\",\"Técnico\",\"Performance\"],\"workflows\":[],\"prioridade\":\"Alta\" }],\n  \"gaps_oportunidades\": [{ \"titulo\":\"\",\"descricao\":\"\",\"prioridade\":\"Alta\",\"impacto_estimado\":\"\" }],\n  \"plano_acao\": [{ \"acao\":\"\",\"prazo\":\"2 semanas\",\"impacto_esperado\":\"\" }],\n  \"proximos_passos\": [{ \"passo\":\"\",\"horizonte\":\"1-3 meses\" }]\n}\n\nGere 3-5 itens por seção. Prioridades: Alta, Média ou Baixa. Pelo menos UMA correlação deve cruzar Core Web Vitals com outro domínio. Se houver APRENDIZADOS ANTERIORES no blackboard, corrija análises previamente incorretas.",
         "options": {
-          "systemMessage": "Você é o Agente de Síntese sênior de um sistema multiagente de SEO/GEO/CRO. Consolida correlações cruzadas e hipóteses de especialistas em um relatório executivo acionável. Retorne APENAS JSON válido, sem markdown ou comentários.",
-          "maxIterations": 3
+          "systemMessage": "Você é o Agente Central de um sistema multiagente de SEO/GEO/CRO. Sua função é correlacionar hipóteses de especialistas distintos, identificar relações causais cross-domínio e sintetizar um relatório executivo acionável. Retorne APENAS JSON válido, sem markdown.",
+          "maxIterations": 1
         }
       },
       "id": "8ebdb381-d136-448c-a8d7-7f9406c063bc",
@@ -876,7 +876,7 @@
         "text": "=Você recebeu dados consolidados de uma análise SEO. FOQUE EXCLUSIVAMENTE em GEO (Generative Engine Optimization), Query Fan-out e visibilidade em buscadores/IAs.\n\nDADOS:\n{{ $json.correlationContext }}\n\nRetorne APENAS um objeto JSON puro (comece com { termine com }), sem markdown:\n{ \"dominio\":\"\", \"hipoteses\":[{\"observacao\":\"\",\"evidencia\":\"\",\"confianca\":\"alta|media|baixa\",\"impacto_potencial\":\"\"}], \"metricas_chave\":{}, \"sinais_para_outros_dominios\":[\"pontos que outros especialistas devem considerar\"] }\nGere 3 a 6 hipóteses. Seja específico e baseado em evidências dos dados.",
         "options": {
           "systemMessage": "Você é um especialista sênior em GEO e Search Intelligence. Analisa intenção de busca, fan-out de queries em múltiplos LLMs, fontes citadas, diversidade de fontes e visibilidade de marca em engines generativas. Gera hipóteses acionáveis. Retorne APENAS JSON válido.",
-          "maxIterations": 2
+          "maxIterations": 1
         }
       },
       "id": "0e679422-7990-4ac1-bef8-b668c66375a3",
@@ -892,7 +892,7 @@
       "parameters": {
         "model": "anthropic/claude-haiku-4.5",
         "options": {
-          "maxTokens": 3000,
+          "maxTokens": 1500,
           "temperature": 0.2
         }
       },
@@ -917,7 +917,7 @@
         "text": "=Você recebeu dados consolidados de uma análise SEO. FOQUE EXCLUSIVAMENTE em SEO técnico On-Page: estrutura HTML, headings, meta tags, Schema markup, conteúdo, indexabilidade, links internos.\n\nDADOS:\n{{ $json.correlationContext }}\n\nRetorne APENAS um objeto JSON puro (comece com { termine com }), sem markdown:\n{ \"dominio\":\"\", \"hipoteses\":[{\"observacao\":\"\",\"evidencia\":\"\",\"confianca\":\"alta|media|baixa\",\"impacto_potencial\":\"\"}], \"metricas_chave\":{}, \"sinais_para_outros_dominios\":[\"pontos que outros especialistas devem considerar\"] }\nGere 3 a 6 hipóteses. Seja específico e baseado em evidências dos dados.",
         "options": {
           "systemMessage": "Você é um especialista sênior em SEO Técnico On-Page. Analisa estrutura de páginas, semântica, dados estruturados, arquitetura de conteúdo e fatores técnicos de indexação. Gera hipóteses acionáveis. Retorne APENAS JSON válido.",
-          "maxIterations": 2
+          "maxIterations": 1
         }
       },
       "id": "67c36d95-ece4-42b6-b109-ab9c6475e399",
@@ -933,7 +933,7 @@
       "parameters": {
         "model": "anthropic/claude-haiku-4.5",
         "options": {
-          "maxTokens": 3000,
+          "maxTokens": 1500,
           "temperature": 0.2
         }
       },
@@ -958,7 +958,7 @@
         "text": "=Você recebeu dados consolidados de uma análise SEO. FOQUE EXCLUSIVAMENTE em Performance e Core Web Vitals: LCP, FCP, CLS, TBT, INP, score de performance (PSI lab + campo CrUX + CorePulse).\n\nDADOS:\n{{ $json.correlationContext }}\n\nRetorne APENAS um objeto JSON puro (comece com { termine com }), sem markdown:\n{ \"dominio\":\"\", \"hipoteses\":[{\"observacao\":\"\",\"evidencia\":\"\",\"confianca\":\"alta|media|baixa\",\"impacto_potencial\":\"\"}], \"metricas_chave\":{}, \"sinais_para_outros_dominios\":[\"pontos que outros especialistas devem considerar\"] }\nGere 3 a 6 hipóteses. Seja específico e baseado em evidências dos dados.",
         "options": {
           "systemMessage": "Você é um especialista sênior em Web Performance e Core Web Vitals. Analisa métricas de carregamento, interatividade e estabilidade visual, correlacionando-as com experiência do usuário e ranking. Gera hipóteses acionáveis. Retorne APENAS JSON válido.",
-          "maxIterations": 2
+          "maxIterations": 1
         }
       },
       "id": "a792d740-d86c-4eda-96d2-0d718db64a74",
@@ -974,7 +974,7 @@
       "parameters": {
         "model": "anthropic/claude-haiku-4.5",
         "options": {
-          "maxTokens": 3000,
+          "maxTokens": 1500,
           "temperature": 0.2
         }
       },
@@ -1041,7 +1041,7 @@
       "parameters": {
         "model": "anthropic/claude-sonnet-4.6",
         "options": {
-          "maxTokens": 4096,
+          "maxTokens": 2048,
           "temperature": 0.3
         }
       },
@@ -1548,7 +1548,7 @@
       "main": [
         [
           {
-            "node": "Agente Correlação",
+            "node": "Agente Análise SEO",
             "type": "main",
             "index": 0
           }
