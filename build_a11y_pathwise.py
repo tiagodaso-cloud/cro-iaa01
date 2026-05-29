@@ -93,6 +93,10 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
     .sev-badge.alta{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
     .sev-badge.media{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border)}
     .sev-badge.baixa{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+    .src-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.3px;margin-left:6px}
+    .src-badge.axe{background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe}
+    .src-badge.heuristica{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd}
+    .src-badge.ia{background:#f3f4f6;color:#4b5563;border:1px solid #e5e7eb}
     .tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--ax-light);color:var(--ax);border:1px solid var(--ax-border);margin-right:6px;text-transform:uppercase;letter-spacing:.04em}
     .tag.level{background:#f0f9ff;color:#0369a1;border-color:#bae6fd}
     .code-ex{font-family:var(--mono);font-size:11px;background:#0f172a;color:#e2e8f0;padding:10px 12px;border-radius:8px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;margin-top:4px}
@@ -266,10 +270,12 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
           <p style="margin-top:6px">&#128161; ${esc(p.recommendations)}</p>
         </div>`).join('');
 
+      const srcMap = {axe:{l:'axe-core (render real)',c:'axe'}, heuristica:{l:'Heuristica HTML',c:'heuristica'}, ia:{l:'Analise IA',c:'ia'}};
+      const srcBadge = (s)=>{ const k=String(s||'ia').toLowerCase(); const m=srcMap[k]||srcMap.ia; return `<span class="src-badge ${m.c}" title="Fonte que embasou este achado">${m.l}</span>`; };
       const wcagItems = (d.wcag_findings||[]).map(f=>`
         <div class="item ${esc(String(f.severity).toLowerCase())}">
           <div class="item-head">
-            <span class="item-name">${esc(f.criterion)}</span>
+            <span class="item-name">${esc(f.criterion)}${srcBadge(f.source)}</span>
             <span class="sev-badge ${esc(String(f.severity).toLowerCase())}">${esc(f.severity)}</span>
           </div>
           <div>
@@ -648,7 +654,7 @@ SYSTEM_MESSAGE = (
     "\"wcag_compliance_level\":\"Nao conforme|Parcial A|A|AA|AAA\","
     "\"conformance_summary\":\"string\","
     "\"pour_principles\":[{\"principle\":\"Perceptivel|Operavel|Compreensivel|Robusto\",\"score\":0-10,\"findings\":\"string\",\"recommendations\":\"string\"}],"
-    "\"wcag_findings\":[{\"criterion\":\"string\",\"level\":\"A|AA|AAA\",\"principle\":\"Perceptivel|Operavel|Compreensivel|Robusto\",\"severity\":\"Alta|Media|Baixa\",\"finding\":\"string\",\"recommendation\":\"string\",\"code_example\":\"string\"}],"
+    "\"wcag_findings\":[{\"criterion\":\"string\",\"level\":\"A|AA|AAA\",\"principle\":\"Perceptivel|Operavel|Compreensivel|Robusto\",\"severity\":\"Alta|Media|Baixa\",\"source\":\"axe|heuristica|ia\",\"finding\":\"string\",\"recommendation\":\"string\",\"code_example\":\"string\"}],"
     "\"ux_accessibility_findings\":[{\"area\":\"string\",\"severity\":\"Alta|Media|Baixa\",\"finding\":\"string\",\"recommendation\":\"string\"}],"
     "\"top_quick_wins\":[{\"priority\":1,\"action\":\"string\",\"expected_impact\":\"string\"}],"
     "\"summary\":\"string\"}. "
@@ -657,6 +663,7 @@ SYSTEM_MESSAGE = (
     "PRIORIZE a auditoria Lighthouse/axe-core (render real) quando lighthouse.available=true: use lighthouse.accessibility_score como ancora do overall_score e converta cada item de lighthouse.failed_audits em um wcag_finding citando o seletor/snippet real; trate lighthouse.contrast (auditoria color-contrast do axe) como a fonte primaria de contraste. "
     "Quando lighthouse.available=false, use a heuristica inline como fallback. "
     "Para contraste de cores avalie os criterios 1.4.3 (Contraste Minimo, AA >= 4.5:1) e 1.4.11 (Contraste de Elementos Nao Textuais): se o axe ou os dados inline 'contrast' apontarem reprovacao, gere um wcag_finding de severidade Alta citando a razao/elemento real; se nada puder ser medido, recomende validacao manual. "
+    "Em CADA wcag_finding preencha o campo 'source' indicando o que embasou o achado: 'axe' quando derivar da auditoria Lighthouse/axe-core (render real), 'heuristica' quando derivar das metricas inline extraidas do HTML cru, ou 'ia' quando for inferencia sua a partir do HTML sem evidencia automatizada direta. "
     "Forneca de 3 a 6 ux_accessibility_findings (foco em legibilidade, contraste, navegacao por teclado, foco visivel, area de toque, feedback, linguagem clara). "
     "Forneca exatamente 3 top_quick_wins. Seja tecnico, objetivo e conciso (1 a 2 frases por campo)."
 )
