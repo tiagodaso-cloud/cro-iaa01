@@ -250,7 +250,7 @@
     },
     {
       "parameters": {
-        "mode": "runOnceForEachItem",
+        "mode": "runOnceForAllItems",
         "jsCode": "const raw = $input.first().json.output ?? '';\n\n// Referencias resilientes: usam .first() (fluxo de item unico) e nunca lancam,\n// para garantir que o no Respond sempre receba um JSON valido.\nfunction safe(fn, fallback) { try { return fn(); } catch (e) { return fallback; } }\nconst url = safe(() => $(\"Prepare Context\").first().json.url, \"\");\nconst metrics = safe(() => $(\"Analise WCAG 2.2\").first().json.wcag_metrics, {});\nconst lighthouse = safe(() => $(\"Processar Lighthouse\").first().json.lighthouse, { available: false });\n\ntry {\n  const match = raw.match(/{[\\s\\S]*}/);\n  if (!match) throw new Error(\"JSON nao encontrado na resposta do modelo.\");\n  const d = JSON.parse(match[0]);\n  return { json: {\n    ...d,\n    url,\n    automated_metrics: metrics,\n    lighthouse_audit: lighthouse\n  }};\n} catch(e) {\n  return { json: {\n    error: true,\n    message: \"Falha ao processar resposta do modelo: \" + e.message,\n    raw_preview: String(raw).substring(0, 300),\n    url\n  }};\n}"
       },
       "id": "a1b2c3d4-0009-4000-8000-000000000009",

@@ -851,7 +851,7 @@ workflow = {
             }
         },
         {
-            "parameters": {"mode": "runOnceForEachItem", "jsCode": PARSE_CODE},
+            "parameters": {"mode": "runOnceForAllItems", "jsCode": PARSE_CODE},
             "id": "a1b2c3d4-0009-4000-8000-000000000009",
             "name": "Parse JSON Result",
             "type": "n8n-nodes-base.code",
