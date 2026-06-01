@@ -756,7 +756,8 @@ workflow = {
             "name": "Fetch Page HTML",
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 4.4,
-            "position": [304, 96]
+            "position": [304, 96],
+            "onError": "continueRegularOutput"
         },
         {
             "parameters": {"jsCode": WCAG_CODE},
@@ -764,7 +765,8 @@ workflow = {
             "name": "Analise WCAG 2.2",
             "type": "n8n-nodes-base.code",
             "typeVersion": 2,
-            "position": [608, 96]
+            "position": [608, 96],
+            "onError": "continueRegularOutput"
         },
         {
             "parameters": {
@@ -787,7 +789,8 @@ workflow = {
             "name": "Processar Lighthouse",
             "type": "n8n-nodes-base.code",
             "typeVersion": 2,
-            "position": [608, 384]
+            "position": [608, 384],
+            "onError": "continueRegularOutput"
         },
         {
             "parameters": {"mode": "combine", "combineBy": "combineAll", "options": {}},
