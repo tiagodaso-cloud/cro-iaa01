@@ -30,6 +30,10 @@
               {
                 "name": "Content-Type",
                 "value": "text/html; charset=utf-8"
+              },
+              {
+                "name": "Cache-Control",
+                "value": "no-store, no-cache, must-revalidate"
               }
             ]
           }
@@ -183,7 +187,7 @@
             {
               "id": "4",
               "name": "page_content",
-              "value": "={{ ($(\"Fetch Page HTML\").first().json.data ?? \"\").substring(0, 8000) }}",
+              "value": "={{ ($(\"Fetch Page HTML\").first().json.data ?? \"\").substring(0, 5000) }}",
               "type": "string"
             },
             {
@@ -210,7 +214,7 @@
         "promptType": "define",
         "text": "=URL analisada: {{ $json.url }}\nContexto: {{ $json.context }}\n\nAUDITORIA LIGHTHOUSE / AXE-CORE (render real em Chrome headless - fonte mais confiavel quando available=true):\n{{ $json.lighthouse }}\n\nMETRICAS TECNICAS AUTOMATIZADAS (heuristica regex sobre o HTML cru):\n{{ $json.wcag_metrics }}\n\nHTML DA PAGINA (trecho):\n{{ $json.page_content }}",
         "options": {
-          "systemMessage": "Voce e um(a) especialista senior em Acessibilidade Digital (WCAG 2.2) e UX inclusiva, com dominio das diretrizes do W3C/WAI, dos principios POUR e da legislacao brasileira (LBI / eMAG). Analise SOMENTE os dados reais fornecidos (HTML e metricas tecnicas automatizadas). NAO invente dados. Responda APENAS com JSON puro, sem markdown e sem texto fora do JSON. Use criterios WCAG 2.2 reais no formato 'numero Nome' (ex.: '1.1.1 Conteudo Nao Textual', '2.4.7 Foco Visivel', '4.1.2 Nome, Funcao, Valor'). Estrutura obrigatoria: {\"overall_score\":0-10,\"wcag_compliance_level\":\"Nao conforme|Parcial A|A|AA|AAA\",\"conformance_summary\":\"string\",\"pour_principles\":[{\"principle\":\"Perceptivel|Operavel|Compreensivel|Robusto\",\"score\":0-10,\"findings\":\"string\",\"recommendations\":\"string\"}],\"wcag_findings\":[{\"criterion\":\"string\",\"level\":\"A|AA|AAA\",\"principle\":\"Perceptivel|Operavel|Compreensivel|Robusto\",\"severity\":\"Alta|Media|Baixa\",\"source\":\"axe|heuristica|ia\",\"finding\":\"string\",\"recommendation\":\"string\",\"code_example\":\"string\"}],\"ux_accessibility_findings\":[{\"area\":\"string\",\"severity\":\"Alta|Media|Baixa\",\"finding\":\"string\",\"recommendation\":\"string\"}],\"top_quick_wins\":[{\"priority\":1,\"action\":\"string\",\"expected_impact\":\"string\"}],\"summary\":\"string\"}. Inclua os 4 principios POUR. Forneca de 5 a 10 wcag_findings priorizando os de maior impacto, sempre com um code_example HTML corretivo curto e valido. PRIORIZE a auditoria Lighthouse/axe-core (render real) quando lighthouse.available=true: use lighthouse.accessibility_score como ancora do overall_score e converta cada item de lighthouse.failed_audits em um wcag_finding citando o seletor/snippet real; trate lighthouse.contrast (auditoria color-contrast do axe) como a fonte primaria de contraste. Quando lighthouse.available=false, use a heuristica inline como fallback. Para contraste de cores avalie os criterios 1.4.3 (Contraste Minimo, AA >= 4.5:1) e 1.4.11 (Contraste de Elementos Nao Textuais): se o axe ou os dados inline 'contrast' apontarem reprovacao, gere um wcag_finding de severidade Alta citando a razao/elemento real; se nada puder ser medido, recomende validacao manual. Em CADA wcag_finding preencha o campo 'source' indicando o que embasou o achado: 'axe' quando derivar da auditoria Lighthouse/axe-core (render real), 'heuristica' quando derivar das metricas inline extraidas do HTML cru, ou 'ia' quando for inferencia sua a partir do HTML sem evidencia automatizada direta. Forneca de 3 a 6 ux_accessibility_findings (foco em legibilidade, contraste, navegacao por teclado, foco visivel, area de toque, feedback, linguagem clara). Forneca exatamente 3 top_quick_wins. Seja tecnico, objetivo e conciso (1 a 2 frases por campo).",
+          "systemMessage": "Voce e um(a) especialista senior em Acessibilidade Digital (WCAG 2.2) e UX inclusiva, com dominio das diretrizes do W3C/WAI, dos principios POUR e da legislacao brasileira (LBI / eMAG). Analise SOMENTE os dados reais fornecidos (HTML e metricas tecnicas automatizadas). NAO invente dados. Responda APENAS com JSON puro, sem markdown e sem texto fora do JSON. Use criterios WCAG 2.2 reais no formato 'numero Nome' (ex.: '1.1.1 Conteudo Nao Textual', '2.4.7 Foco Visivel', '4.1.2 Nome, Funcao, Valor'). Estrutura obrigatoria: {\"overall_score\":0-10,\"wcag_compliance_level\":\"Nao conforme|Parcial A|A|AA|AAA\",\"conformance_summary\":\"string\",\"pour_principles\":[{\"principle\":\"Perceptivel|Operavel|Compreensivel|Robusto\",\"score\":0-10,\"findings\":\"string\",\"recommendations\":\"string\"}],\"wcag_findings\":[{\"criterion\":\"string\",\"level\":\"A|AA|AAA\",\"principle\":\"Perceptivel|Operavel|Compreensivel|Robusto\",\"severity\":\"Alta|Media|Baixa\",\"source\":\"axe|heuristica|ia\",\"finding\":\"string\",\"recommendation\":\"string\",\"code_example\":\"string\"}],\"ux_accessibility_findings\":[{\"area\":\"string\",\"severity\":\"Alta|Media|Baixa\",\"finding\":\"string\",\"recommendation\":\"string\"}],\"top_quick_wins\":[{\"priority\":1,\"action\":\"string\",\"expected_impact\":\"string\"}],\"summary\":\"string\"}. Inclua os 4 principios POUR. Forneca de 4 a 6 wcag_findings priorizando os de maior impacto, sempre com um code_example HTML corretivo curto e valido. PRIORIZE a auditoria Lighthouse/axe-core (render real) quando lighthouse.available=true: use lighthouse.accessibility_score como ancora do overall_score e converta cada item de lighthouse.failed_audits em um wcag_finding citando o seletor/snippet real; trate lighthouse.contrast (auditoria color-contrast do axe) como a fonte primaria de contraste. Quando lighthouse.available=false, use a heuristica inline como fallback. Para contraste de cores avalie os criterios 1.4.3 (Contraste Minimo, AA >= 4.5:1) e 1.4.11 (Contraste de Elementos Nao Textuais): se o axe ou os dados inline 'contrast' apontarem reprovacao, gere um wcag_finding de severidade Alta citando a razao/elemento real; se nada puder ser medido, recomende validacao manual. Em CADA wcag_finding preencha o campo 'source' indicando o que embasou o achado: 'axe' quando derivar da auditoria Lighthouse/axe-core (render real), 'heuristica' quando derivar das metricas inline extraidas do HTML cru, ou 'ia' quando for inferencia sua a partir do HTML sem evidencia automatizada direta. Forneca de 3 a 4 ux_accessibility_findings (foco em legibilidade, contraste, navegacao por teclado, foco visivel, area de toque, feedback, linguagem clara). Forneca exatamente 3 top_quick_wins. Seja tecnico, objetivo e MUITO conciso: no maximo 1 frase curta por campo de texto (finding, recommendation, findings, recommendations, conformance_summary, summary, expected_impact, action), e code_example com no maximo 3 linhas. Priorize velocidade de resposta sem perder a precisao tecnica.",
           "maxIterations": 1,
           "enableStreaming": false
         }
@@ -229,7 +233,7 @@
       "parameters": {
         "model": "anthropic/claude-sonnet-4.6",
         "options": {
-          "maxTokens": 12000,
+          "maxTokens": 5000,
           "temperature": 0.2
         }
       },

@@ -671,14 +671,14 @@ SYSTEM_MESSAGE = (
     "\"ux_accessibility_findings\":[{\"area\":\"string\",\"severity\":\"Alta|Media|Baixa\",\"finding\":\"string\",\"recommendation\":\"string\"}],"
     "\"top_quick_wins\":[{\"priority\":1,\"action\":\"string\",\"expected_impact\":\"string\"}],"
     "\"summary\":\"string\"}. "
-    "Inclua os 4 principios POUR. Forneca de 5 a 10 wcag_findings priorizando os de maior impacto, "
+    "Inclua os 4 principios POUR. Forneca de 4 a 6 wcag_findings priorizando os de maior impacto, "
     "sempre com um code_example HTML corretivo curto e valido. "
     "PRIORIZE a auditoria Lighthouse/axe-core (render real) quando lighthouse.available=true: use lighthouse.accessibility_score como ancora do overall_score e converta cada item de lighthouse.failed_audits em um wcag_finding citando o seletor/snippet real; trate lighthouse.contrast (auditoria color-contrast do axe) como a fonte primaria de contraste. "
     "Quando lighthouse.available=false, use a heuristica inline como fallback. "
     "Para contraste de cores avalie os criterios 1.4.3 (Contraste Minimo, AA >= 4.5:1) e 1.4.11 (Contraste de Elementos Nao Textuais): se o axe ou os dados inline 'contrast' apontarem reprovacao, gere um wcag_finding de severidade Alta citando a razao/elemento real; se nada puder ser medido, recomende validacao manual. "
     "Em CADA wcag_finding preencha o campo 'source' indicando o que embasou o achado: 'axe' quando derivar da auditoria Lighthouse/axe-core (render real), 'heuristica' quando derivar das metricas inline extraidas do HTML cru, ou 'ia' quando for inferencia sua a partir do HTML sem evidencia automatizada direta. "
-    "Forneca de 3 a 6 ux_accessibility_findings (foco em legibilidade, contraste, navegacao por teclado, foco visivel, area de toque, feedback, linguagem clara). "
-    "Forneca exatamente 3 top_quick_wins. Seja tecnico, objetivo e conciso (1 a 2 frases por campo)."
+    "Forneca de 3 a 4 ux_accessibility_findings (foco em legibilidade, contraste, navegacao por teclado, foco visivel, area de toque, feedback, linguagem clara). "
+    "Forneca exatamente 3 top_quick_wins. Seja tecnico, objetivo e MUITO conciso: no maximo 1 frase curta por campo de texto (finding, recommendation, findings, recommendations, conformance_summary, summary, expected_impact, action), e code_example com no maximo 3 linhas. Priorize velocidade de resposta sem perder a precisao tecnica."
 )
 
 AGENT_TEXT = (
@@ -718,7 +718,8 @@ workflow = {
                     "responseCode": 200,
                     "responseHeaders": {
                         "entries": [
-                            {"name": "Content-Type", "value": "text/html; charset=utf-8"}
+                            {"name": "Content-Type", "value": "text/html; charset=utf-8"},
+                            {"name": "Cache-Control", "value": "no-store, no-cache, must-revalidate"}
                         ]
                     }
                 }
@@ -807,7 +808,7 @@ workflow = {
                         {"id": "1", "name": "url", "value": "={{ $(\"POST - Receber Auditoria\").first().json.body.url }}", "type": "string"},
                         {"id": "2", "name": "context", "value": "={{ $(\"POST - Receber Auditoria\").first().json.body.context ?? \"Nao informado\" }}", "type": "string"},
                         {"id": "3", "name": "wcag_metrics", "value": "={{ JSON.stringify($(\"Analise WCAG 2.2\").first().json.wcag_metrics) }}", "type": "string"},
-                        {"id": "4", "name": "page_content", "value": "={{ ($(\"Fetch Page HTML\").first().json.data ?? \"\").substring(0, 8000) }}", "type": "string"},
+                        {"id": "4", "name": "page_content", "value": "={{ ($(\"Fetch Page HTML\").first().json.data ?? \"\").substring(0, 5000) }}", "type": "string"},
                         {"id": "5", "name": "lighthouse", "value": "={{ JSON.stringify($(\"Processar Lighthouse\").first().json.lighthouse) }}", "type": "string"}
                     ]
                 },
@@ -839,7 +840,7 @@ workflow = {
         {
             "parameters": {
                 "model": "anthropic/claude-sonnet-4.6",
-                "options": {"maxTokens": 12000, "temperature": 0.2}
+                "options": {"maxTokens": 5000, "temperature": 0.2}
             },
             "id": "a1b2c3d4-0008-4000-8000-000000000008",
             "name": "OpenRouter Model",
