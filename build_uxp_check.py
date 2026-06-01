@@ -113,7 +113,7 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
   </style>
 </head>
 <body>
-  <a href="#main" class="skip-link">Pular para o conteudo</a>
+  <a href="#main" class="skip-link">Pular para o conteúdo</a>
   <header class="header">
     <div class="header-inner">
       <img src="https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png" class="logo" alt="Cadastra">
@@ -126,14 +126,14 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
     <div class="hero-inner">
       <div class="hero-eyebrow">CHECAGEM POUR &middot; UX &amp; ACESSIBILIDADE</div>
       <h1>UXP-Check</h1>
-      <p class="hero-desc">Checagem de paginas estruturada nos 4 principios POUR &mdash; Perceptivel, Operavel, Compreensivel e Robusto &mdash; que servem de base para as WCAG. Combina validacao tecnica WCAG 2.2 com analise de UX inclusiva, mapeando criterios violados e quick wins para tornar a interface acessivel a todas as pessoas.</p>
+      <p class="hero-desc">Checagem de páginas estruturada nos 4 princípios POUR &mdash; Perceptível, Operável, Compreensível e Robusto &mdash; que servem de base para as WCAG. Combina validação técnica WCAG 2.2 com análise de UX inclusiva, mapeando critérios de sucesso violados e quick wins para tornar a interface acessível a todas as pessoas.</p>
       <div class="hero-badges">
         <div class="hero-badge">WCAG 2.2 (A / AA / AAA)</div>
         <div class="hero-badge">Render real (Lighthouse / axe)</div>
-        <div class="hero-badge">Principios POUR</div>
+        <div class="hero-badge">Princípios POUR</div>
         <div class="hero-badge">UX Inclusiva</div>
-        <div class="hero-badge">Metricas Automatizadas</div>
-        <div class="hero-badge">Exemplos de Codigo</div>
+        <div class="hero-badge">Métricas Automatizadas</div>
+        <div class="hero-badge">Exemplos de Código</div>
         <div class="hero-badge">Top Quick Wins</div>
       </div>
     </div>
@@ -141,33 +141,33 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
 
   <main id="main" class="wrap">
     <div class="card">
-      <div class="card-title">&#9855; Auditoria de Acessibilidade &amp; UX</div>
-      <div class="card-sub">Insira a URL da pagina que deseja auditar e receba um diagnostico aprofundado de conformidade WCAG 2.2 e usabilidade inclusiva.</div>
+      <div class="card-title">Auditoria de Acessibilidade &amp; UX</div>
+      <div class="card-sub">Insira a URL da página que deseja auditar e receba um diagnóstico aprofundado de conformidade WCAG 2.2 e usabilidade inclusiva.</div>
 
       <form id="form">
         <div class="form-group">
-          <label class="form-label" for="url">URL da Pagina</label>
+          <label class="form-label" for="url">URL da Página</label>
           <input class="q-input" type="url" id="url" placeholder="https://www.seusite.com.br/pagina" required autocomplete="off">
         </div>
         <div class="form-group">
           <label class="form-label" for="context">Contexto (opcional)</label>
-          <textarea class="q-input" id="context" placeholder="Ex: Pagina de checkout de e-commerce, publico amplo incluindo pessoas idosas e usuarios de leitor de tela"></textarea>
+          <textarea class="q-input" id="context" placeholder="Ex.: página de checkout de e-commerce, público amplo incluindo pessoas idosas e usuários de leitor de tela"></textarea>
         </div>
         <div class="input-row">
-          <button class="run-btn" type="submit" id="btn">&#9855; Auditar Acessibilidade</button>
+          <button class="run-btn" type="submit" id="btn">Auditar Página</button>
         </div>
 
         <div class="features-box">
-          <h3>O que voce vai receber</h3>
+          <h3>O que você vai receber</h3>
           <div class="feat-grid">
-            <div class="feat-item"><div class="feat-check">&#10003;</div>Score geral de acessibilidade (0-10)</div>
-            <div class="feat-item"><div class="feat-check">&#10003;</div>Nivel de conformidade WCAG (A/AA/AAA)</div>
+            <div class="feat-item"><div class="feat-check">&#10003;</div>Pontuação geral de acessibilidade (0&ndash;10)</div>
+            <div class="feat-item"><div class="feat-check">&#10003;</div>Nível de conformidade WCAG (A / AA / AAA)</div>
             <div class="feat-item"><div class="feat-check">&#10003;</div>Auditoria axe-core com render real (Lighthouse)</div>
-            <div class="feat-item"><div class="feat-check">&#10003;</div>Principios POUR avaliados</div>
-            <div class="feat-item"><div class="feat-check">&#10003;</div>Criterios WCAG 2.2 violados</div>
+            <div class="feat-item"><div class="feat-check">&#10003;</div>Princípios POUR avaliados</div>
+            <div class="feat-item"><div class="feat-check">&#10003;</div>Critérios de sucesso WCAG 2.2 violados</div>
             <div class="feat-item"><div class="feat-check">&#10003;</div>Achados de UX inclusiva</div>
-            <div class="feat-item"><div class="feat-check">&#10003;</div>Metricas tecnicas automatizadas</div>
-            <div class="feat-item"><div class="feat-check">&#10003;</div>Exemplos de codigo corretivo</div>
+            <div class="feat-item"><div class="feat-check">&#10003;</div>Métricas técnicas automatizadas</div>
+            <div class="feat-item"><div class="feat-check">&#10003;</div>Exemplos de código corretivo</div>
             <div class="feat-item"><div class="feat-check">&#10003;</div>Top 3 Quick Wins priorizados</div>
           </div>
         </div>
@@ -176,17 +176,17 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
 
     <div class="loading" id="loading">
       <div class="spinner"></div>
-      <div class="loading-title">Auditando a pagina...</div>
-      <div class="loading-sub">Validando WCAG 2.2, principios POUR e UX inclusiva</div>
+      <div class="loading-title">Auditando a página...</div>
+      <div class="loading-sub">Validando WCAG 2.2, princípios POUR e UX inclusiva</div>
       <div class="timer-wrap">
         <div class="timer-bar-bg"><div class="timer-bar-fill" id="timerFill"></div></div>
-        <div class="timer-label" id="timerLabel">0s / 90s</div>
+        <div class="timer-label" id="timerLabel">0s / 150s</div>
       </div>
     </div>
 
     <div class="err-box" id="errBox" role="alert">
       <h4>Erro na auditoria</h4>
-      <p id="errMsg">Nao foi possivel completar o diagnostico. Verifique a URL e tente novamente.</p>
+      <p id="errMsg">Não foi possível completar o diagnóstico. Verifique a URL e tente novamente.</p>
     </div>
 
     <div class="results" id="results"></div>
@@ -249,10 +249,10 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
                 <div class="kpi"><div class="kpi-val score-big ${scoreClass((lh.accessibility_score||0)/10)}" style="font-size:26px">${esc(lh.accessibility_score)}</div><div class="kpi-lbl">Score axe /100</div></div>
                 <div class="kpi"><div class="kpi-val">${esc(lh.total_failed??'-')}</div><div class="kpi-lbl">Auditorias reprovadas</div></div>
                 <div class="kpi"><div class="kpi-val">${esc(lh.contrast? lh.contrast.count : 0)}</div><div class="kpi-lbl">Falhas de contraste</div></div>
-                <div class="kpi"><div class="kpi-val">${esc(lh.strategy||'mobile')}</div><div class="kpi-lbl">Estrategia</div></div>
+                <div class="kpi"><div class="kpi-val">${esc(lh.strategy||'mobile')}</div><div class="kpi-lbl">Estratégia</div></div>
               </div>
               ${lhAudits || '<p style="color:var(--gray);font-size:14px">Nenhuma auditoria axe reprovada.</p>'}
-            ` : `<p style="font-size:13px;color:var(--gray)">&#8505; ${esc(lh.note || 'Render real indisponivel; resultados baseados na heuristica inline.')}</p>`}
+            ` : `<p style="font-size:13px;color:var(--gray)">&#8505; ${esc(lh.note || 'Render real indisponível; resultados baseados na heurística inline.')}</p>`}
           </div>
         </div>`;
       const ctSamples = (ct.samples || []).map(s=>`
@@ -271,7 +271,7 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
           <p style="margin-top:6px">&#128161; ${esc(p.recommendations)}</p>
         </div>`).join('');
 
-      const srcMap = {axe:{l:'axe-core (render real)',c:'axe'}, heuristica:{l:'Heuristica HTML',c:'heuristica'}, ia:{l:'Analise IA',c:'ia'}};
+      const srcMap = {axe:{l:'axe-core (render real)',c:'axe'}, heuristica:{l:'Heurística HTML',c:'heuristica'}, ia:{l:'Análise IA',c:'ia'}};
       const srcBadge = (s)=>{ const k=String(s||'ia').toLowerCase(); const m=srcMap[k]||srcMap.ia; return `<span class="src-badge ${m.c}" title="Fonte que embasou este achado">${m.l}</span>`; };
       const wcagItems = (d.wcag_findings||[]).map(f=>`
         <div class="item ${esc(String(f.severity).toLowerCase())}">
@@ -280,7 +280,7 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
             <span class="sev-badge ${esc(String(f.severity).toLowerCase())}">${esc(f.severity)}</span>
           </div>
           <div>
-            ${f.level?`<span class="tag level">Nivel ${esc(f.level)}</span>`:''}
+            ${f.level?`<span class="tag level">Nível ${esc(f.level)}</span>`:''}
             ${f.principle?`<span class="tag">${esc(f.principle)}</span>`:''}
           </div>
           <div class="item-text" style="margin-top:6px">${esc(f.finding)}</div>
@@ -308,9 +308,9 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
           </button>
           <div class="section-body">
             <div class="kpi-grid">
-              <div class="kpi"><div class="kpi-val score-big ${scoreClass(d.overall_score)}">${esc(d.overall_score)}</div><div class="kpi-lbl">Score POUR /10</div></div>
-              <div class="kpi"><div class="kpi-val"><span class="level-pill ${levelClass(d.wcag_compliance_level)}">${esc(d.wcag_compliance_level)}</span></div><div class="kpi-lbl">Nivel WCAG 2.2</div></div>
-              <div class="kpi"><div class="kpi-val">${esc(critical)}</div><div class="kpi-lbl">Criterios Criticos</div></div>
+              <div class="kpi"><div class="kpi-val score-big ${scoreClass(d.overall_score)}">${esc(d.overall_score)}</div><div class="kpi-lbl">Pontuação POUR /10</div></div>
+              <div class="kpi"><div class="kpi-val"><span class="level-pill ${levelClass(d.wcag_compliance_level)}">${esc(d.wcag_compliance_level)}</span></div><div class="kpi-lbl">Nível WCAG 2.2</div></div>
+              <div class="kpi"><div class="kpi-val">${esc(critical)}</div><div class="kpi-lbl">Critérios Críticos</div></div>
               <div class="kpi"><div class="kpi-val">${esc(totalFindings)}</div><div class="kpi-lbl">Total de Achados</div></div>
             </div>
             <p style="font-size:14px;line-height:1.7;color:var(--gray)">${esc(d.conformance_summary)}</p>
@@ -321,28 +321,28 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
 
         <div class="section">
           <button class="section-head" type="button" aria-expanded="true" onclick="toggle(this)">
-            <span class="section-title">&#127760; Principios POUR (Perceptivel, Operavel, Compreensivel, Robusto)</span><span aria-hidden="true">&#9662;</span>
+            <span class="section-title">&#127760; Princípios POUR (Perceptível, Operável, Compreensível, Robusto)</span><span aria-hidden="true">&#9662;</span>
           </button>
           <div class="section-body"><div class="pour-grid">${pourCards}</div></div>
         </div>
 
         <div class="section">
           <button class="section-head" type="button" aria-expanded="true" onclick="toggle(this)">
-            <span class="section-title">&#9888; Criterios WCAG 2.2 Violados</span><span aria-hidden="true">&#9662;</span>
+            <span class="section-title">&#9888; Critérios de Sucesso WCAG 2.2 Violados</span><span aria-hidden="true">&#9662;</span>
           </button>
-          <div class="section-body">${wcagItems || '<p style="color:var(--gray);font-size:14px">Nenhum criterio critico identificado nos dados analisados.</p>'}</div>
+          <div class="section-body">${wcagItems || '<p style="color:var(--gray);font-size:14px">Nenhum critério crítico identificado nos dados analisados.</p>'}</div>
         </div>
 
         <div class="section">
           <button class="section-head" type="button" aria-expanded="true" onclick="toggle(this)">
-            <span class="section-title">&#9855; UX Inclusiva &amp; Usabilidade</span><span aria-hidden="true">&#9662;</span>
+            <span class="section-title">&#128101; UX Inclusiva &amp; Usabilidade</span><span aria-hidden="true">&#9662;</span>
           </button>
           <div class="section-body">${uxItems}</div>
         </div>
 
         <div class="section">
           <button class="section-head" type="button" aria-expanded="true" onclick="toggle(this)">
-            <span class="section-title">&#128202; Metricas Tecnicas Automatizadas</span><span aria-hidden="true">&#9662;</span>
+            <span class="section-title">&#128202; Métricas Técnicas Automatizadas</span><span aria-hidden="true">&#9662;</span>
           </button>
           <div class="section-body">
             <div class="kpi-grid">
@@ -352,7 +352,7 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
               <div class="kpi"><div class="kpi-val">${esc((m.forms||{}).labels??'-')}</div><div class="kpi-lbl">Labels</div></div>
               <div class="kpi"><div class="kpi-val">${esc(aria.labels??'-')}</div><div class="kpi-lbl">aria-label</div></div>
               <div class="kpi"><div class="kpi-val">${esc(lm.main??'-')}</div><div class="kpi-lbl">Landmark main</div></div>
-              <div class="kpi"><div class="kpi-val">${esc((m.wcag_elements||{}).lang_attribute? 'Sim':'Nao')}</div><div class="kpi-lbl">Atributo lang</div></div>
+              <div class="kpi"><div class="kpi-val">${esc((m.wcag_elements||{}).lang_attribute? 'Sim':'Não')}</div><div class="kpi-lbl">Atributo lang</div></div>
               <div class="kpi"><div class="kpi-val">${esc((m.links||{}).total??'-')}</div><div class="kpi-lbl">Links</div></div>
             </div>
             <h4 style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--gray);margin:18px 0 12px">&#127912; Contraste de Cores (WCAG 1.4.3 / 1.4.11)</h4>
@@ -416,10 +416,10 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
         stopTimer();
         const text = await res.text();
         if (!res.ok) throw new Error(`O servidor retornou erro HTTP ${res.status}. ${text ? text.substring(0,200) : ''}`.trim());
-        if (!text || !text.trim()) throw new Error('Resposta vazia do servidor. O workflow provavelmente falhou ou expirou (ex.: timeout do Lighthouse/PageSpeed ou do modelo). Verifique a execucao no n8n.');
+        if (!text || !text.trim()) throw new Error('Resposta vazia do servidor. O workflow provavelmente falhou ou expirou (ex.: timeout do Lighthouse/PageSpeed ou do modelo). Verifique a execução no n8n.');
         let raw;
         try { raw = JSON.parse(text); }
-        catch (_) { throw new Error('Resposta nao e JSON valido: ' + text.substring(0,200)); }
+        catch (_) { throw new Error('Resposta não é JSON válido: ' + text.substring(0,200)); }
         const d = raw.data ?? raw.result ?? raw.json ?? raw;
         if (d.error) throw new Error(d.message || 'Falha no processamento.');
         renderResults(d);
@@ -430,7 +430,7 @@ INTERFACE_HTML = r"""<!DOCTYPE html>
       } finally {
         loading.classList.remove('on');
         btn.disabled = false;
-        btn.textContent = '♿ Auditar Acessibilidade';
+        btn.textContent = 'Auditar Página';
       }
     });
   </script>
@@ -588,7 +588,7 @@ const lr = r.lighthouseResult;
 if (!lr || !lr.categories || !lr.categories.accessibility) {
   return { json: { lighthouse: {
     available: false,
-    note: "Render real indisponivel (API key ausente, URL nao publica, timeout ou erro). A analise prossegue com a heuristica inline."
+    note: "Render real indisponível (API key ausente, URL não pública, timeout ou erro). A análise prossegue com a heurística inline."
   }}};
 }
 
@@ -664,10 +664,10 @@ SYSTEM_MESSAGE = (
     "Use criterios WCAG 2.2 reais no formato 'numero Nome' (ex.: '1.1.1 Conteudo Nao Textual', '2.4.7 Foco Visivel', '4.1.2 Nome, Funcao, Valor'). "
     "Estrutura obrigatoria: {"
     "\"overall_score\":0-10,"
-    "\"wcag_compliance_level\":\"Nao conforme|Parcial A|A|AA|AAA\","
+    "\"wcag_compliance_level\":\"Não conforme|Parcial A|A|AA|AAA\","
     "\"conformance_summary\":\"string\","
-    "\"pour_principles\":[{\"principle\":\"Perceptivel|Operavel|Compreensivel|Robusto\",\"score\":0-10,\"findings\":\"string\",\"recommendations\":\"string\"}],"
-    "\"wcag_findings\":[{\"criterion\":\"string\",\"level\":\"A|AA|AAA\",\"principle\":\"Perceptivel|Operavel|Compreensivel|Robusto\",\"severity\":\"Alta|Media|Baixa\",\"source\":\"axe|heuristica|ia\",\"finding\":\"string\",\"recommendation\":\"string\",\"code_example\":\"string\"}],"
+    "\"pour_principles\":[{\"principle\":\"Perceptível|Operável|Compreensível|Robusto\",\"score\":0-10,\"findings\":\"string\",\"recommendations\":\"string\"}],"
+    "\"wcag_findings\":[{\"criterion\":\"string\",\"level\":\"A|AA|AAA\",\"principle\":\"Perceptível|Operável|Compreensível|Robusto\",\"severity\":\"Alta|Media|Baixa\",\"source\":\"axe|heuristica|ia\",\"finding\":\"string\",\"recommendation\":\"string\",\"code_example\":\"string\"}],"
     "\"ux_accessibility_findings\":[{\"area\":\"string\",\"severity\":\"Alta|Media|Baixa\",\"finding\":\"string\",\"recommendation\":\"string\"}],"
     "\"top_quick_wins\":[{\"priority\":1,\"action\":\"string\",\"expected_impact\":\"string\"}],"
     "\"summary\":\"string\"}. "
@@ -678,7 +678,8 @@ SYSTEM_MESSAGE = (
     "Para contraste de cores avalie os criterios 1.4.3 (Contraste Minimo, AA >= 4.5:1) e 1.4.11 (Contraste de Elementos Nao Textuais): se o axe ou os dados inline 'contrast' apontarem reprovacao, gere um wcag_finding de severidade Alta citando a razao/elemento real; se nada puder ser medido, recomende validacao manual. "
     "Em CADA wcag_finding preencha o campo 'source' indicando o que embasou o achado: 'axe' quando derivar da auditoria Lighthouse/axe-core (render real), 'heuristica' quando derivar das metricas inline extraidas do HTML cru, ou 'ia' quando for inferencia sua a partir do HTML sem evidencia automatizada direta. "
     "Forneca de 3 a 4 ux_accessibility_findings (foco em legibilidade, contraste, navegacao por teclado, foco visivel, area de toque, feedback, linguagem clara). "
-    "Forneca exatamente 3 top_quick_wins. Seja tecnico, objetivo e MUITO conciso: no maximo 1 frase curta por campo de texto (finding, recommendation, findings, recommendations, conformance_summary, summary, expected_impact, action), e code_example com no maximo 3 linhas. Priorize velocidade de resposta sem perder a precisao tecnica."
+    "Forneca exatamente 3 top_quick_wins. Seja tecnico, objetivo e conciso: no maximo 1 frase curta por campo (finding, recommendation, findings, recommendations, expected_impact, action), code_example com no maximo 3 linhas, e conformance_summary com ate 2 frases. "
+    "EXCECAO: o campo 'summary' (resumo executivo) deve ter de 4 a 6 frases, cobrindo: (1) o nivel geral de conformidade e o overall_score; (2) os principais riscos por principio POUR; (3) os publicos mais impactados (ex.: usuarios de leitor de tela, pessoas com baixa visao, navegacao por teclado); e (4) a recomendacao prioritaria. Use os termos tecnicos corretos do WCAG 2.2 (criterios de sucesso, niveis A/AA/AAA, principios POUR). Priorize precisao tecnica e mantenha a resposta o mais rapida possivel."
 )
 
 AGENT_TEXT = (
@@ -695,7 +696,7 @@ AGENT_TEXT = (
 # Montagem do workflow
 # ---------------------------------------------------------------------------
 workflow = {
-    "name": "UXP-Check V1 - Checagem POUR (UX & Acessibilidade)",
+    "name": "UXP-Check V1 - Checagem POUR (UX)",
     "nodes": [
         {
             "parameters": {
@@ -840,7 +841,7 @@ workflow = {
         {
             "parameters": {
                 "model": "anthropic/claude-sonnet-4.6",
-                "options": {"maxTokens": 5000, "temperature": 0.2}
+                "options": {"maxTokens": 6000, "temperature": 0.2}
             },
             "id": "a1b2c3d4-0008-4000-8000-000000000008",
             "name": "OpenRouter Model",
@@ -893,8 +894,7 @@ workflow = {
     "settings": {"executionOrder": "v1", "binaryMode": "separate", "availableInMCP": True},
     "meta": {"templateCredsSetupCompleted": True},
     "tags": [
-        {"name": "OO-Digital Performance"},
-        {"name": "Acessibilidade"}
+        {"name": "OO-Digital Performance"}
     ]
 }
 
