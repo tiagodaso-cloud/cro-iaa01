@@ -12,7 +12,7 @@
       "id": "ab000001-0000-0000-0000-000000000001",
       "name": "GET - Interface Web",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
+      "typeVersion": 2,
       "position": [
         0,
         0
@@ -38,7 +38,7 @@
       "id": "ab000003-0000-0000-0000-000000000003",
       "name": "Renderizar Interface",
       "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
+      "typeVersion": 1.4,
       "position": [
         304,
         0
@@ -56,7 +56,7 @@
       "id": "ab000004-0000-0000-0000-000000000004",
       "name": "POST - Receber Auditoria",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
+      "typeVersion": 2,
       "position": [
         0,
         240
@@ -251,7 +251,7 @@
     },
     {
       "parameters": {
-        "respondWith": "text",
+        "respondWith": "json",
         "responseBody": "={{ JSON.stringify($json) }}",
         "options": {
           "responseCode": 200,
@@ -259,7 +259,11 @@
             "entries": [
               {
                 "name": "Content-Type",
-                "value": "application/json; charset=utf-8"
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
               }
             ]
           }
@@ -268,7 +272,7 @@
       "id": "ab000012-0000-0000-0000-000000000012",
       "name": "Retornar Resultados",
       "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
+      "typeVersion": 1.4,
       "position": [
         2080,
         240
