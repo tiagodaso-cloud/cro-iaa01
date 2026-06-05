@@ -88,7 +88,8 @@
       "position": [
         304,
         240
-      ]
+      ],
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -129,7 +130,8 @@
       "position": [
         912,
         240
-      ]
+      ],
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -207,7 +209,8 @@
       "position": [
         1472,
         240
-      ]
+      ],
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -235,7 +238,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const raw = $input.item.json.output ?? '';\ntry {\n  const match = raw.match(/{[\\s\\S]*}/);\n  if (!match) throw new Error('JSON nao encontrado na resposta do modelo.');\n  const d = JSON.parse(match[0]);\n  return { json: { ...d, url: $('Prepare Context').item.json.url } };\n} catch(e) {\n  return { json: { error: true, message: 'Falha ao processar: ' + e.message, raw_preview: raw.substring(0, 500), url: $('Prepare Context').item.json.url } };\n}"
+        "jsCode": "const item = $input.item.json;\n// If upstream node failed, item may contain 'error' key from n8n\nconst upstreamError = item.error?.message ?? item.errorMessage ?? null;\nconst raw = item.output ?? '';\n\nif (upstreamError && !raw) {\n  return { json: {\n    error: true,\n    message: 'Erro no agente LLM: ' + upstreamError,\n    url: (() => { try { return $('Prepare Context').item.json.url; } catch(e){ return ''; } })()\n  }};\n}\n\ntry {\n  const match = raw.match(/\\{[\\s\\S]*\\}/);\n  if (!match) throw new Error('JSON nao encontrado na resposta do modelo.');\n  const d = JSON.parse(match[0]);\n  return { json: { ...d, url: (() => { try { return $('Prepare Context').item.json.url; } catch(e){ return d.url ?? ''; } })() } };\n} catch(e) {\n  return { json: {\n    error: true,\n    message: 'Falha ao processar resposta: ' + e.message,\n    raw_preview: raw.substring(0, 500),\n    url: (() => { try { return $('Prepare Context').item.json.url; } catch(e2){ return ''; } })()\n  }};\n}"
       },
       "id": "ab000011-0000-0000-0000-000000000011",
       "name": "Parse JSON Result",
@@ -248,10 +251,18 @@
     },
     {
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ $json }}",
+        "respondWith": "text",
+        "responseBody": "={{ JSON.stringify($json) }}",
         "options": {
-          "responseCode": 200
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ]
+          }
         }
       },
       "id": "ab000012-0000-0000-0000-000000000012",
