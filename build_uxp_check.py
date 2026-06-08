@@ -628,7 +628,17 @@ return { json: { lighthouse: {
 # ---------------------------------------------------------------------------
 # Parse node
 # ---------------------------------------------------------------------------
-PARSE_CODE = r"""const raw = $input.first().json.output ?? '';
+PARSE_CODE = r"""const inp = $input.first().json ?? {};
+const raw = inp.output ?? '';
+
+// Detecta erro propagado pelo no do agente/modelo (ex.: falta de creditos no provedor).
+function errMsg(e) {
+  if (!e) return '';
+  if (typeof e === 'string') return e;
+  if (typeof e === 'object') return e.message || e.description || JSON.stringify(e);
+  return String(e);
+}
+const providerError = errMsg(inp.error);
 
 // Referencias resilientes: usam .first() (fluxo de item unico) e nunca lancam,
 // para garantir que o no Respond sempre receba um JSON valido.
@@ -638,6 +648,9 @@ const metrics = safe(() => $("Analise WCAG 2.2").first().json.wcag_metrics, {});
 const lighthouse = safe(() => $("Processar Lighthouse").first().json.lighthouse, { available: false });
 
 try {
+  if (!raw && providerError) {
+    throw new Error("O modelo de IA nao respondeu. Provedor (OpenRouter): " + providerError + ". Verifique os creditos/credenciais do provedor.");
+  }
   const match = raw.match(/{[\s\S]*}/);
   if (!match) throw new Error("JSON nao encontrado na resposta do modelo.");
   const d = JSON.parse(match[0]);
