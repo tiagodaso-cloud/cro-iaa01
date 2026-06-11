@@ -1,0 +1,11 @@
+=Feedbacks de usuários coletados ({{ $json.total }} itens: {{ $json.positivos }} positivos, {{ $json.negativos }} negativos):
+
+{{ $json.feedbackText }}
+
+---
+Diretrizes atuais do agente:
+
+{{ $json.licoesAtuais }}
+
+---
+Produza a versão consolidada e atualizada das diretrizes de comportamento do agente.

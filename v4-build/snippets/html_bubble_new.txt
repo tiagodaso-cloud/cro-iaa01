@@ -1,0 +1,1 @@
+    row.innerHTML=`<div class="mavatar">P</div><div class="mbubble">${html}${fbBarHtml()}</div>`;
