@@ -1,5 +1,5 @@
 {
-  "name": "SEO Orchestrator V3 – Ingestão Repertório",
+  "name": "SEO Orchestrator V4 – Ingestão Repertório",
   "nodes": [
     {
       "parameters": {
@@ -19,7 +19,7 @@
         "event": "fileCreated",
         "options": {}
       },
-      "id": "077b404a-35a8-49ba-8b6a-c7a8645b3274",
+      "id": "146489a7-fde8-4a63-be25-751639d3849c",
       "name": "Novo Arquivo no Drive",
       "type": "n8n-nodes-base.googleDriveTrigger",
       "typeVersion": 1,
@@ -47,7 +47,7 @@
           }
         }
       },
-      "id": "db2bc25d-d682-4bd8-8909-2b07c0afa611",
+      "id": "2dde9044-2f04-4548-94f9-d09b530f570d",
       "name": "Baixar Arquivo",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
@@ -62,7 +62,7 @@
         "tableName": "seo_repertorio",
         "options": {}
       },
-      "id": "4b06abc7-9139-45af-8ee3-9a754e680301",
+      "id": "3ddd02b3-ff0c-4870-b15b-1eda6032b435",
       "name": "Inserir no Repertório",
       "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
       "typeVersion": 1.3,
@@ -92,7 +92,7 @@
           }
         }
       },
-      "id": "97380c58-cdf4-4001-87f9-fc78f6670f51",
+      "id": "6c0198c5-80b6-4406-bb74-33712ad7ccb1",
       "name": "Carregar Documento",
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
@@ -107,7 +107,7 @@
         "chunkOverlap": 150,
         "options": {}
       },
-      "id": "734845cd-31b7-4adb-ad92-88955177f33d",
+      "id": "a29a6e07-3f0e-4c5f-ac87-b61871823c0a",
       "name": "Dividir Texto",
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
@@ -121,7 +121,7 @@
         "model": "text-embedding-3-small",
         "options": {}
       },
-      "id": "f2626bc5-9a8a-43b9-a509-050f3bdfde0c",
+      "id": "5f2472c4-e96e-4e5d-8ba9-dc16f251ac93",
       "name": "Embeddings OpenAI",
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,

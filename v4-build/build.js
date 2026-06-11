@@ -259,8 +259,8 @@ function applyPhase3(wf, wfName) {
 }
 
 const jobs = [
-  ['SEO_Orchestrator_V2_Fase1.json', 'SEO Orchestrator V4', 'SEO_Orchestrator_V4.json'],
-  ['SEO_Orchestrator_V3.json', 'SEO Orchestrator V4 Completo', 'SEO_Orchestrator_V4_Completo.json']
+  ['SEO_Orchestrator_V2_Fase1.json', 'SEO Orchestrator V3', 'SEO_Orchestrator_V3.json'],
+  [path.join('v3-build', 'fase12_intermediate.json'), 'SEO Orchestrator V4', 'SEO_Orchestrator_V4.json']
 ];
 for (const [input, name, output] of jobs) {
   const wf = JSON.parse(fs.readFileSync(path.join(__dirname, '..', input), 'utf8'));

@@ -10,8 +10,8 @@ const path = require('path');
 const crypto = require('crypto');
 
 const V2_PATH = path.join(__dirname, '..', 'SEO_Orchestrator_V2_Fase1.json');
-const OUT_MAIN = path.join(__dirname, '..', 'SEO_Orchestrator_V3.json');
-const OUT_INGEST = path.join(__dirname, '..', 'SEO_Orchestrator_V3_Ingestao_Repertorio.json');
+const OUT_MAIN = path.join(__dirname, 'fase12_intermediate.json');
+const OUT_INGEST = path.join(__dirname, '..', 'SEO_Orchestrator_V4_Ingestao_Repertorio.json');
 const SNIP = (f) => fs.readFileSync(path.join(__dirname, 'snippets', f), 'utf8').replace(/\n$/, '');
 const uuid = () => crypto.randomUUID();
 
@@ -30,7 +30,7 @@ const need = (name) => {
   return byName[name];
 };
 
-wf.name = 'SEO Orchestrator V3';
+wf.name = 'SEO Orchestrator – Fases 1+2 (intermediário)';
 
 // ---------- HTML ----------
 const respondHtml = need('Responder HTML');
@@ -290,7 +290,7 @@ const embeddingsIngest = {
 };
 
 const ingest = {
-  name: 'SEO Orchestrator V3 – Ingestão Repertório',
+  name: 'SEO Orchestrator V4 – Ingestão Repertório',
   nodes: [trigger, baixar, inserir, loader, splitter, embeddingsIngest],
   connections: {
     'Novo Arquivo no Drive': { main: [[{ node: 'Baixar Arquivo', type: 'main', index: 0 }]] },
