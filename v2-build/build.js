@@ -98,6 +98,15 @@ html = mustReplace(html,
 
 html = mustReplace(html, SNIP('html_fillexample_old.txt'), SNIP('html_fillexample_new.txt'), 'fillExample');
 html = mustReplace(html, SNIP('html_send_old.txt'), SNIP('html_send_new.txt'), 'send()');
+
+// Pipeline roda as 5 fontes em sequência: pior caso passa de 7 min.
+// Janela de polling 140 -> 240 tentativas (12 min) e mensagens coerentes.
+html = mustReplace(html, 'const MAX=140;', 'const MAX=240;', 'poll window');
+html = mustReplace(html,
+  'Timeout: análise demorou mais que o esperado.',
+  'Tempo esgotado aguardando o resultado. A análise pode ter concluído logo em seguida — tente novamente em instantes.',
+  'timeout msg');
+html = html.split('1–3 minutos').join('2–8 minutos');
 respondHtml.parameters.responseBody = html;
 
 // ---------- Branch HTML / Poll ----------
