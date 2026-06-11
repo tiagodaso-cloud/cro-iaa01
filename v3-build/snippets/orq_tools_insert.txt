@@ -1,0 +1,7 @@
+- **Consultar Repertório Interno**: Busca semântica no repertório interno de SEO/GEO/CRO (playbooks, guidelines, estudos de caso e benchmarks armazenados no Google Drive). Use para embasar recomendações e conteúdo com o conhecimento da empresa, citando a fonte quando relevante.
+- **GA4 – Listar Propriedades**: Lista contas e propriedades do Google Analytics 4 acessíveis. Use PRIMEIRO para descobrir o property_id correto antes de pedir relatórios.
+- **GA4 – Relatório de Métricas**: Executa relatórios na Data API do GA4 com métricas e dimensões customizáveis (aceita datas relativas como 28daysAgo). Use para tráfego real, conversões, canais e landing pages do site analisado.
+- **GSC – Listar Sites**: Lista as propriedades disponíveis no Google Search Console. Use PRIMEIRO para descobrir o site_url correto (formato sc-domain: ou URL com barra final).
+- **GSC – Search Analytics**: Consulta cliques, impressões, CTR e posição média por query, página, país, dispositivo ou data no Search Console (datas no formato YYYY-MM-DD). Use para validar com dados reais os gaps e oportunidades identificados na análise.
+
+Diretriz para dados Google: ao usar GA4 ou GSC pela primeira vez na conversa, liste propriedades/sites para identificar o identificador correto da marca analisada. Se a propriedade não existir entre as listadas, informe ao usuário que a conta conectada não tem acesso a ela. Sempre cruze dados de GA4/GSC com os achados de SEO/GEO da análise.
