@@ -1,0 +1,1 @@
+    const txt = el.innerText.replace(/^Exemplo \d+\n?/i,'').trim();

@@ -1,0 +1,14 @@
+=Contexto da análise SEO desta sessão:
+
+{{ $json.ctxJSON }}
+
+---
+Mercado-alvo: {{ $json.market }} · Idioma: {{ $json.lang }}
+
+Histórico da conversa:
+{{ $json.histText }}
+
+---
+Mensagem atual do usuário: {{ $json.message }}
+
+Responda de forma conversacional e aprofundada. Use ferramentas quando necessário para enriquecer a resposta com dados novos. Se houver análise no contexto, correlacione com ela. Use Markdown.

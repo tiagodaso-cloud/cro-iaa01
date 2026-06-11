@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "intent": {
+      "type": "string",
+      "enum": ["full_analysis", "chat"],
+      "description": "full_analysis somente se a mensagem contém uma URL E um tema/keyword associado E o usuário deseja uma análise SEO completa daquela página. Caso contrário, chat."
+    },
+    "url": { "type": "string", "description": "URL completa mencionada na mensagem, se houver" },
+    "topic": { "type": "string", "description": "Tema ou keyword principal da solicitação, se houver" },
+    "market": { "type": "string", "description": "Código do país do mercado-alvo (ex: BR, US, PT). Use BR se não mencionado" },
+    "lang": { "type": "string", "description": "Idioma-alvo no formato BCP-47 (ex: pt-BR, en-US). Use pt-BR se não mencionado" }
+  },
+  "required": ["intent"]
+}

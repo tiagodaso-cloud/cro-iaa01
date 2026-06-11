@@ -1,0 +1,5 @@
+    const isAnalysis=/https?:\/\/\S+/.test(text)&&text.replace(/https?:\/\/\S+/g,'').trim().length>2;
+    addUserBubble(text);
+    addLoadingBubble(isAnalysis);
+    if(isAnalysis) hintEl.textContent='Análise em andamento... 1–3 minutos';
+    else hintEl.textContent='Agente Orquestrador processando... pode acionar ferramentas especializadas';

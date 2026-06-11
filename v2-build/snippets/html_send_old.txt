@@ -1,0 +1,5 @@
+    const isNew=!analysisContext;
+    addUserBubble(text);
+    addLoadingBubble(isNew);
+    if(isNew) hintEl.textContent='Análise em andamento... 1–3 minutos';
+    else hintEl.textContent='Agente Orquestrador processando... pode acionar ferramentas especializadas';

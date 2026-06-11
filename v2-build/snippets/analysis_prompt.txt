@@ -1,0 +1,9 @@
+=Analise os dados coletados de múltiplas fontes especializadas (Query Fan-out, GEO Mapping, On-Page Audit, Core Web Vitals via PSI e CorePulse):
+
+{{ $json.correlationContext }}
+
+Diretrizes:
+- Gere de 3 a 5 itens por seção. Prioridades possíveis: Alta, Média ou Baixa. Cada string com no máximo 200 caracteres.
+- Se houver dados de Core Web Vitals disponíveis, pelo menos UM insight do sumário e UMA correlação devem abordá-los, correlacionando performance técnica com visibilidade GEO e oportunidades de SEO.
+- Se alguma fonte estiver vazia ou com erro, ignore-a e trabalhe apenas com o que estiver disponível.
+- Considere o mercado e idioma-alvo informados no contexto.
