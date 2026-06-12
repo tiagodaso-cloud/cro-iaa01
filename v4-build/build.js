@@ -2,7 +2,7 @@
 /**
  * Fase 3 (loop de feedback) como patch composável:
  *  - SEO_Orchestrator_V4.json          = V2 (Fase 1) + Fase 3  -> usar agora
- *  - SEO_Orchestrator_V4_Completo.json = V3 (Fases 1+2) + Fase 3 -> usar quando a Fase 2 entrar
+ *  - SEO_Orchestrator_V4_Completo.json = V3 (Fase 1 + antiga Fase 2) + Fase 3 -> usar quando a Fase 4 (antiga Fase 2) entrar
  *
  * Componentes: botões 👍/👎 no chat -> tabela seo_feedback; destilação diária
  * de lições via LLM -> tabela seo_lessons; injeção das diretrizes nos prompts.

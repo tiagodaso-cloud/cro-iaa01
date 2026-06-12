@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Gera a V3 a partir do JSON da V2 (Fase 2 do roadmap):
+ * Gera a V3 a partir do JSON da V2 (Fase 4 do roadmap — antiga Fase 2):
  *  - SEO_Orchestrator_V3.json: + GA4/GSC como ferramentas do agente, + RAG
  *    (consulta ao repertório no chat e injeção no contexto da análise)
  *  - SEO_Orchestrator_V3_Ingestao_Repertorio.json: Google Drive -> PGVector
