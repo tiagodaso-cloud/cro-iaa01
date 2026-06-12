@@ -415,6 +415,10 @@
             {
               "name": "category",
               "value": "performance"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyB0Zi_cAInbwEMNrSAq-T4F588TgO--NsI"
             }
           ]
         },
@@ -476,7 +480,7 @@
               "neverError": true
             }
           },
-          "timeout": 45000
+          "timeout": 120000
         }
       },
       "id": "901a34df-bcfd-4dce-b819-ffa9139560ee",
@@ -856,6 +860,10 @@
             {
               "name": "category",
               "value": "performance"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyB0Zi_cAInbwEMNrSAq-T4F588TgO--NsI"
             }
           ]
         },
