@@ -1,0 +1,584 @@
+{
+  "name": "CorePulse Analyzer",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "corepulse",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "1553c851-db55-4140-9266-567c3ef5ec6a",
+      "name": "GET - Interface Web",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        5920,
+        384
+      ],
+      "webhookId": "corepulse-get"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!DOCTYPE html><html lang=\"pt-BR\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>CorePulse Analyzer</title><link href=\"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap\" rel=\"stylesheet\"><link rel=\"icon\" href=\"https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png\"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Plus Jakarta Sans',sans-serif;background:#f4f4f2;color:#111827;line-height:1.6}.hd{background:#fff;padding:0 40px;height:56px;display:flex;align-items:center;box-shadow:0 1px 0 #e5e7eb;position:sticky;top:0;z-index:2}.hdi{max-width:1100px;margin:0 auto;width:100%;display:flex;align-items:center;gap:12px}.lg{height:26px}.pn{font-size:16px;font-weight:800;letter-spacing:-.02em}.pn span{color:#FF5C28}.vb{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}.hr{background:linear-gradient(140deg,#e84e1b,#ff6b3d);padding:40px 40px 88px;position:relative;overflow:hidden}.hr:after{content:'';position:absolute;bottom:0;left:0;right:0;height:72px;background:linear-gradient(to bottom,transparent,#f4f4f2)}.hri{max-width:1100px;margin:0 auto;position:relative;z-index:1;color:#fff}.he{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.75;margin-bottom:10px}.hr h1{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px}.hd2{font-size:16px;max-width:620px;opacity:.9;margin-bottom:24px}.bg{display:flex;gap:8px;flex-wrap:wrap}.bd{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.92);padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600}.wr{max-width:1100px;margin:-48px auto 60px;padding:0 40px;position:relative;z-index:10}.cd{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);padding:40px 44px;margin-bottom:24px}.ct{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}.cs{color:#6b7280;margin-bottom:28px;font-size:14px}.fl{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin-bottom:8px;display:block}.fh{font-size:12px;color:#9ca3af;margin-top:6px;font-weight:500}.fg{margin-bottom:20px}.qi{width:100%;padding:14px 18px;border:2px solid #e5e7eb;border-radius:12px;font-size:15px;font-family:inherit;color:#111827;outline:none;background:#fff;transition:border-color .2s,box-shadow .2s}.qi::placeholder{color:#9ca3af}.qi:focus{border-color:#FF5C28;box-shadow:0 0 0 4px rgba(255,92,40,.1)}textarea.qi{resize:vertical;min-height:120px;font-family:Consolas,Monaco,monospace;font-size:13px}textarea#cx{font-family:inherit;font-size:15px;min-height:80px}.rb{background:linear-gradient(145deg,#ff6535,#FF5C28);color:#fff;border:none;padding:14px 32px;border-radius:12px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(255,92,40,.4);transition:transform .15s}.rb:hover:not(:disabled){transform:translateY(-2px)}.rb:disabled{opacity:.5;cursor:not-allowed}.fb{background:#f3f4f6;border:1px solid #e5e7eb;border-radius:12px;padding:22px 24px;margin-top:24px}.fb h3{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin-bottom:16px}.fgr{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}.fi{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-weight:500}.fc{width:20px;height:20px;background:#FF5C28;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}.ld{display:none;background:#fff;border-radius:16px;padding:40px;margin-bottom:24px;text-align:center}.ld.on{display:block}.sp{width:40px;height:40px;margin:0 auto 18px;border:3px solid rgba(255,92,40,.12);border-top-color:#FF5C28;border-radius:50%;animation:sp .8s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}.lt{font-weight:700;font-size:15px;margin-bottom:4px}.ls{font-size:13px;color:#6b7280}.ok{display:none;background:#ecfdf5;border:2px solid #a7f3d0;border-radius:16px;padding:32px 28px;margin-bottom:16px;text-align:center}.ok.on{display:block}.oi{font-size:42px;margin-bottom:10px}.ok h4{color:#059669;font-weight:800;font-size:20px;margin-bottom:8px}.ok p{color:#065f46;font-size:14px}.er{display:none;background:#fef2f2;border:2px solid #fecaca;border-radius:12px;padding:20px 24px;margin-bottom:16px}.er.on{display:block}.er h4{color:#dc2626;font-weight:800;margin-bottom:6px}.er p{color:#7f1d1d;font-size:14px}@media(max-width:768px){.hd{padding:0 20px}.hr{padding:32px 20px 80px}.wr{padding:0 20px}.cd{padding:24px 20px}.rb{width:100%}}</style></head><body><header class=\"hd\"><div class=\"hdi\"><img src=\"https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png\" class=\"lg\" alt=\"Cadastra\"><div class=\"pn\">Core<span>Pulse</span> Analyzer</div><span class=\"vb\">v1</span></div></header><section class=\"hr\"><div class=\"hri\"><div class=\"he\">CORE WEB VITALS &middot; SEO PERFORMANCE</div><h1>CorePulse Analyzer</h1><p class=\"hd2\">Análise técnica avançada de Core Web Vitals em Mobile e Desktop, com priorização por impacto em SEO e Google Ads. Receba o relatório completo, didático e com exemplos reais no seu e-mail.</p><div class=\"bg\"><div class=\"bd\">Mobile + Desktop</div><div class=\"bd\">Múltiplas URLs</div><div class=\"bd\">Priorização SEO</div><div class=\"bd\">Impacto em Google Ads</div><div class=\"bd\">Como Corrigir</div><div class=\"bd\">Exemplos Reais</div></div></div></section><div class=\"wr\"><div class=\"cd\"><div class=\"ct\">Pré-Análise de Performance &amp; CWV</div><div class=\"cs\">Insira uma ou mais URLs do mesmo site (uma por linha). O relatório consolidado será enviado para o e-mail informado.</div><form id=\"fm\"><div class=\"fg\"><label class=\"fl\" for=\"ur\">URLs para Análise <span style=\"color:#FF5C28\">*</span></label><textarea class=\"qi\" id=\"ur\" placeholder=\"https://www.seusite.com.br/home&#10;https://www.seusite.com.br/produto/abc&#10;https://www.seusite.com.br/categoria/xyz\" required></textarea><div class=\"fh\">Uma URL por linha &middot; máximo de 10 URLs</div></div><div class=\"fg\"><label class=\"fl\" for=\"em\">E-mail para Receber <span style=\"color:#FF5C28\">*</span></label><input class=\"qi\" type=\"email\" id=\"em\" placeholder=\"seu.email@empresa.com.br\" required></div><div class=\"fg\"><label class=\"fl\" for=\"cx\">Contexto do Negócio <span style=\"font-weight:500;color:#9ca3af;text-transform:none;letter-spacing:0\">(opcional)</span></label><textarea class=\"qi\" id=\"cx\" placeholder=\"Ex: E-commerce de moda, páginas de PDP, prioridade de conversão via Google Ads\"></textarea></div><div class=\"er\" id=\"er\" style=\"margin-bottom:16px\"><h4>Erro ao iniciar análise</h4><p id=\"ms\">Não foi possível iniciar. Verifique as URLs e tente novamente.</p></div><button class=\"rb\" type=\"submit\" id=\"bt\">Iniciar Análise</button><div class=\"fb\"><h3>O que você vai receber no e-mail</h3><div class=\"fgr\"><div class=\"fi\"><div class=\"fc\">+</div>Score Mobile &amp; Desktop</div><div class=\"fi\"><div class=\"fc\">+</div>Métricas CWV (LCP, CLS, INP, TBT)</div><div class=\"fi\"><div class=\"fc\">+</div>Achados priorizados por SEO</div><div class=\"fi\"><div class=\"fc\">+</div>Impacto em Google Ads</div><div class=\"fi\"><div class=\"fc\">+</div>Como corrigir (passo a passo)</div><div class=\"fi\"><div class=\"fc\">+</div>Exemplos reais da página</div><div class=\"fi\"><div class=\"fc\">+</div>Quick Wins recomendados</div><div class=\"fi\"><div class=\"fc\">+</div>Resumo executivo</div></div></div></form></div><div class=\"ld\" id=\"ld\"><div class=\"sp\"></div><div class=\"lt\">Iniciando análise...</div><div class=\"ls\">Disparando coleta Mobile + Desktop</div></div><div class=\"ok\" id=\"ok\"><div class=\"oi\">OK</div><h4>Análise iniciada com sucesso!</h4><p>Coletando dados de <strong id=\"oc\">0</strong> URL(s) em Mobile e Desktop, cruzando com a base de conhecimento e gerando o relatório priorizado.<br><br>O relatório completo será enviado para <strong id=\"oe\"></strong> em alguns minutos. Você já pode fechar esta página.</p></div></div><script>document.getElementById('fm').addEventListener('submit',async function(e){e.preventDefault();var ur=document.getElementById('ur').value.trim(),em=document.getElementById('em').value.trim(),cx=document.getElementById('cx').value.trim(),bt=document.getElementById('bt'),ld=document.getElementById('ld'),ok=document.getElementById('ok'),er=document.getElementById('er');var us=ur.split('\\n').map(function(u){return u.trim();}).filter(function(u){return /^https?:\\/\\//i.test(u);});if(!us.length){er.classList.add('on');er.scrollIntoView({behavior:'smooth',block:'nearest'});document.getElementById('ms').textContent='Informe pelo menos uma URL válida.';return;}if(us.length>10){er.classList.add('on');er.scrollIntoView({behavior:'smooth',block:'nearest'});document.getElementById('ms').textContent='Máximo de 10 URLs.';return;}bt.disabled=true;bt.textContent='Enviando...';ld.classList.add('on');er.classList.remove('on');ok.classList.remove('on');try{var r=await fetch(window.location.pathname,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({urls:us.join('\\n'),email:em,context:cx})});if(!r.ok)throw new Error('Erro HTTP '+r.status);document.getElementById('oc').textContent=us.length;document.getElementById('oe').textContent=em;ok.classList.add('on');document.getElementById('fm').reset();}catch(x){er.classList.add('on');er.scrollIntoView({behavior:'smooth',block:'nearest'});document.getElementById('ms').textContent=x.message||'Erro inesperado.';}finally{ld.classList.remove('on');bt.disabled=false;bt.textContent='Iniciar Análise';}});</script></body></html>",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "250282cb-a1c8-4ab6-af84-80453a57eaa8",
+      "name": "Renderizar Interface",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        6160,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "corepulse",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "a9e93714-c5fe-45d1-8653-e71a4f1051ce",
+      "name": "POST - Receber Auditoria",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        5920,
+        704
+      ],
+      "webhookId": "corepulse-post"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Analise iniciada. Voce recebera o relatorio por e-mail em alguns minutos.\" } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "7537567b-a93d-47d6-83dc-651e947b2c08",
+      "name": "Confirmar Recebimento",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        6160,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\nconst urlsRaw = String(body.urls || '');\nconst email = String(body.email || '').trim();\nconst context = String(body.context || '').trim() || 'Nao informado';\nconst mode = String(body.mode || '').trim().toLowerCase() === 'sync' ? 'sync' : 'async';\nif (mode === 'async' && !email) throw new Error('E-mail e obrigatorio.');\nconst runId = 'cp_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);\nconst urls = urlsRaw.split('\\n').map(u => u.trim()).filter(u => u && /^https?:\\/\\//i.test(u)).slice(0, 10);\nif (!urls.length) throw new Error('Nenhuma URL valida informada.');\nreturn urls.map(url => ({ json: { url, email, context, runId, mode, totalUrls: urls.length } }));"
+      },
+      "id": "f48c4767-695c-462f-96ff-343caa88adb6",
+      "name": "Split URLs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6400,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url={{ encodeURIComponent($json.url) }}&strategy=mobile&category=performance&category=accessibility&category=best-practices&category=seo&key=AIzaSyB0Zi_cAInbwEMNrSAq-T4F588TgO--NsI",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 180000
+        }
+      },
+      "id": "849994de-9fbd-4ce5-ba39-49e4ce295380",
+      "name": "PageSpeed Mobile",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        6640,
+        608
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url={{ encodeURIComponent($json.url) }}&strategy=desktop&category=performance&category=accessibility&category=best-practices&category=seo&key=AIzaSyB0Zi_cAInbwEMNrSAq-T4F588TgO--NsI",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 180000
+        }
+      },
+      "id": "bf590464-db21-40e1-893b-611b64c257e0",
+      "name": "PageSpeed Desktop",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        6640,
+        800
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const url = $('Split URLs').item.json.url;\nconst lh = $json.lighthouseResult || {};\nconst audits = lh.audits || {};\nconst cats = lh.categories || {};\nfunction pct(s){ return s==null?null:Math.round(s*100); }\nfunction pickAudit(id){\n  const a = audits[id]; if(!a) return null;\n  const items = (a.details && Array.isArray(a.details.items)) ? a.details.items.slice(0,2).map(it => ({\n    url: it.url || null,\n    snippet: ((it.snippet || (it.node && it.node.snippet) || '')+'').slice(0,160) || null,\n    selector: (it.node && it.node.selector) || null,\n    wastedBytes: it.wastedBytes || 0,\n    wastedMs: it.wastedMs || 0\n  })) : [];\n  return { id, title: a.title, score: a.score, displayValue: a.displayValue || '', items };\n}\nconst KEY = ['largest-contentful-paint','cumulative-layout-shift','total-blocking-time','interactive','first-contentful-paint','speed-index','server-response-time','render-blocking-resources','unused-javascript','unused-css-rules','uses-responsive-images','total-byte-weight','mainthread-work-breakdown','third-party-summary','preload-lcp-image','uses-text-compression','viewport','meta-description','document-title','is-crawlable','image-alt','color-contrast'];\nconst failingAudits = KEY.map(pickAudit).filter(a => a && (a.score === null || a.score < 0.9));\nreturn { json: { url, mobile: {\n  finalUrl: lh.finalUrl || url,\n  scores: {\n    performance: pct(cats.performance && cats.performance.score),\n    accessibility: pct(cats.accessibility && cats.accessibility.score),\n    bestPractices: pct(cats['best-practices'] && cats['best-practices'].score),\n    seo: pct(cats.seo && cats.seo.score)\n  },\n  metrics: {\n    lcp: audits['largest-contentful-paint'] && audits['largest-contentful-paint'].displayValue,\n    cls: audits['cumulative-layout-shift'] && audits['cumulative-layout-shift'].displayValue,\n    tbt: audits['total-blocking-time'] && audits['total-blocking-time'].displayValue,\n    fcp: audits['first-contentful-paint'] && audits['first-contentful-paint'].displayValue,\n    si: audits['speed-index'] && audits['speed-index'].displayValue,\n    tti: audits.interactive && audits.interactive.displayValue\n  },\n  failingAudits\n} } };"
+      },
+      "id": "dc68efe4-75cb-432a-9288-3f01d5bb59c3",
+      "name": "Estruturar Mobile",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6880,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const url = $('Split URLs').item.json.url;\nconst lh = $json.lighthouseResult || {};\nconst audits = lh.audits || {};\nconst cats = lh.categories || {};\nfunction pct(s){ return s==null?null:Math.round(s*100); }\nfunction pickAudit(id){\n  const a = audits[id]; if(!a) return null;\n  const items = (a.details && Array.isArray(a.details.items)) ? a.details.items.slice(0,2).map(it => ({\n    url: it.url || null,\n    snippet: ((it.snippet || (it.node && it.node.snippet) || '')+'').slice(0,160) || null,\n    selector: (it.node && it.node.selector) || null,\n    wastedBytes: it.wastedBytes || 0,\n    wastedMs: it.wastedMs || 0\n  })) : [];\n  return { id, title: a.title, score: a.score, displayValue: a.displayValue || '', items };\n}\nconst KEY = ['largest-contentful-paint','cumulative-layout-shift','total-blocking-time','interactive','first-contentful-paint','speed-index','server-response-time','render-blocking-resources','unused-javascript','unused-css-rules','uses-responsive-images','total-byte-weight','mainthread-work-breakdown','third-party-summary','preload-lcp-image','uses-text-compression','viewport','meta-description','document-title','is-crawlable','image-alt','color-contrast'];\nconst failingAudits = KEY.map(pickAudit).filter(a => a && (a.score === null || a.score < 0.9));\nreturn { json: { url, desktop: {\n  finalUrl: lh.finalUrl || url,\n  scores: {\n    performance: pct(cats.performance && cats.performance.score),\n    accessibility: pct(cats.accessibility && cats.accessibility.score),\n    bestPractices: pct(cats['best-practices'] && cats['best-practices'].score),\n    seo: pct(cats.seo && cats.seo.score)\n  },\n  metrics: {\n    lcp: audits['largest-contentful-paint'] && audits['largest-contentful-paint'].displayValue,\n    cls: audits['cumulative-layout-shift'] && audits['cumulative-layout-shift'].displayValue,\n    tbt: audits['total-blocking-time'] && audits['total-blocking-time'].displayValue,\n    fcp: audits['first-contentful-paint'] && audits['first-contentful-paint'].displayValue,\n    si: audits['speed-index'] && audits['speed-index'].displayValue,\n    tti: audits.interactive && audits.interactive.displayValue\n  },\n  failingAudits\n} } };"
+      },
+      "id": "6807b533-f1b8-4910-a4f4-860433ed0285",
+      "name": "Estruturar Desktop",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6880,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "url",
+        "options": {}
+      },
+      "id": "ab787229-6fd1-4326-bee1-0f78141f0129",
+      "name": "Combinar Mobile+Desktop",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        7120,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const all = $input.all();\nconst first = $('Split URLs').first().json;\nconst pages = all.map(it => ({ url: it.json.url, mobile: it.json.mobile || null, desktop: it.json.desktop || null }));\nreturn [{ json: { runId: first.runId, email: first.email, context: first.context, generatedAt: new Date().toISOString(), totalUrls: pages.length, pages } }];\n"
+      },
+      "id": "c20d13bf-04a2-415d-b497-28ac34cff6dc",
+      "name": "Consolidar URLs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7312,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "maxTokens": 12000,
+          "temperature": 0.15,
+          "timeout": 300000
+        }
+      },
+      "id": "efa5fe0b-4ff3-4e37-b1f4-cb28984c2c10",
+      "name": "OpenRouter Sonnet 4.6",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        7824,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Voce esta analisando {{ $json.totalUrls }} URL(s) do mesmo site.\n\nContexto do negocio: {{ $json.context }}\n\nDados estruturados do Lighthouse (Mobile + Desktop) por URL:\n\n{{ JSON.stringify($json.pages, null, 2) }}\n\nGere o relatorio em JSON conforme a estrutura especificada no system message. Use os exemplos reais presentes em failingAudits[].items para popular real_example. Priorize por impacto em SEO organico e Google Ads.",
+        "options": {
+          "systemMessage": "Especialista em SEO Tecnico, UX e Web Performance, com foco em Core Web Vitals e impacto em ranqueamento organico (Google Search) e em Quality Score / Ad Rank (Google Ads).\n\nRETORNE EXCLUSIVAMENTE JSON VALIDO, sem markdown, no schema:\n\n{\n  \"executive_summary\": \"resumo executivo 3-5 frases pt-BR com diagnostico do site\",\n  \"overall_health\": \"Crítico|Atenção|Saudável\",\n  \"site_level_insights\": [\"insight 1\", \"insight 2\", \"insight 3\"],\n  \"pages_overview\": [\n    { \"url\":\"...\", \"mobile_perf\":0, \"desktop_perf\":0, \"mobile_seo\":0, \"desktop_seo\":0, \"mobile_a11y\":0, \"desktop_a11y\":0, \"lcp_mobile\":\"\", \"cls_mobile\":\"\", \"tbt_mobile\":\"\", \"lcp_desktop\":\"\", \"cls_desktop\":\"\", \"tbt_desktop\":\"\", \"page_verdict\":\"frase curta\" }\n  ],\n  \"prioritized_findings\": [\n    {\n      \"priority_rank\": 1,\n      \"title\": \"titulo curto\",\n      \"category\": \"Performance|Acessibilidade|Boas Práticas|SEO Técnico\",\n      \"severity\": \"Crítica|Alta|Média|Baixa\",\n      \"affected_devices\": [\"mobile\",\"desktop\"],\n      \"affected_urls\": [\"url1\"],\n      \"problem_description\": \"explicacao tecnica 2-3 frases\",\n      \"seo_impact\": \"como afeta SEO organico (CWV signal, indexacao, crawl, ranking) - especifico\",\n      \"ads_impact\": \"como afeta Google Ads (Quality Score, LPE, CPC, Ad Rank) - string vazia se nao se aplica\",\n      \"how_to_fix\": \"passo a passo didatico em 3-6 bullets separados por ' | '. Ex: 'Adicionar fetchpriority na imagem LCP | Pre-carregar fonte critica | Comprimir para WebP'\",\n      \"real_example\": { \"type\":\"url|snippet|selector\", \"content\":\"recurso real de failingAudits[].items\", \"explanation\":\"por que e problematico\" },\n      \"estimated_effort\": \"Fácil|Médio|Difícil\",\n      \"expected_impact\": \"ganho esperado em 1 frase\"\n    }\n  ],\n  \"quick_wins\": [ { \"action\":\"acao em 1 frase\", \"why\":\"justificativa\" } ]\n}\n\nPRIORIZACAO (priority_rank crescente, 1 = mais critico):\n1. Impacto em CWV (LCP, INP/TBT, CLS) — Google ranking signal.\n2. Problemas que afetam multiplas URLs (escala).\n3. Problemas que afetam Quality Score do Google Ads (LPE, velocidade mobile).\n4. Acessibilidade e SEO Tecnico (meta, canonical, hreflang, alt) impactam ranqueamento.\n5. Itens criticos para indexacao (is-crawlable, http-status, robots) vem primeiro.\n\nEXEMPLOS REAIS - sempre que houver failingAudits[].items, use o PRIMEIRO item relevante:\n- URL de recurso: type='url', content=URL completa\n- Trecho de codigo: type='snippet', content=trecho (max 200 chars)\n- Seletor CSS: type='selector', content=seletor\n- Sem item: type='snippet', content='', explanation='Aplica-se a pagina inteira'\n\nHOW-TO-FIX: voz imperativa, acionavel, didatico. Cada bullet em 1 linha. Use ' | ' como separador. Cite atributos/ferramentas (fetchpriority, loading=lazy, content-visibility, srcset, etc).\n\nMaximo 10 prioritized_findings e 5 quick_wins. Seja preciso e tecnico.",
+          "maxIterations": 1,
+          "enableStreaming": false
+        }
+      },
+      "id": "2b5216b8-2b34-4deb-b07e-5311eb3dd667",
+      "name": "Analista CWV + SEO",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        7584,
+        944
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "var r=$input.first().json.output||'';\nvar m=$('Consolidar URLs').first().json;\nfunction e(s){return String(s==null?'':s).replace(/[&<>\"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#039;'})[c];});}\nfunction pj(x){if(x&&typeof x==='object')return x;var z=String(x).match(/\\{[\\s\\S]*\\}/);if(!z)throw new Error('JSON não encontrado');return JSON.parse(z[0]);}\nvar d=pj(r);\nvar hc={'Crítico':'#dc2626','Atenção':'#d97706','Saudável':'#059669'}[d.overall_health]||'#6b7280';\nvar sc={'Crítica':'#dc2626','Alta':'#ea580c','Média':'#d97706','Baixa':'#059669'};\nvar sb={'Crítica':'#fef2f2','Alta':'#fff7ed','Média':'#fffbeb','Baixa':'#ecfdf5'};\nfunction nc(n){if(n==null)return '#9ca3af';if(n>=90)return '#059669';if(n>=50)return '#d97706';return '#dc2626';}\nfunction sx(n){return '<td style=\"padding:8px;text-align:center;font-weight:700;color:'+nc(n)+'\">'+(n==null?'-':n)+'</td>';}\nfunction rx(x){if(!x||!x.content)return '<div style=\"font-size:12px;color:#9ca3af;font-style:italic\">Sem exemplo específico - aplica-se à página inteira.</div>';\nvar s=e(String(x.content).slice(0,400));\nif(x.type==='url')return '<div style=\"background:#f3f4f6;border-left:3px solid #6366f1;padding:10px 12px;border-radius:6px;font-family:Consolas,monospace;font-size:12px;word-break:break-all\"><div style=\"font-size:10px;color:#6366f1;font-weight:700;text-transform:uppercase;margin-bottom:4px\">Recurso afetado</div>'+s+'</div>'+(x.explanation?'<div style=\"font-size:12px;color:#6b7280;margin-top:6px;font-style:italic\">'+e(x.explanation)+'</div>':'');\nif(x.type==='selector')return '<div style=\"background:#f3f4f6;border-left:3px solid #8b5cf6;padding:10px 12px;border-radius:6px;font-family:Consolas,monospace;font-size:12px\"><div style=\"font-size:10px;color:#8b5cf6;font-weight:700;text-transform:uppercase;margin-bottom:4px\">Elemento (CSS Selector)</div>'+s+'</div>'+(x.explanation?'<div style=\"font-size:12px;color:#6b7280;margin-top:6px;font-style:italic\">'+e(x.explanation)+'</div>':'');\nreturn '<div style=\"background:#1f2937;color:#e5e7eb;padding:10px 12px;border-radius:6px;font-family:Consolas,monospace;font-size:12px;overflow-x:auto;white-space:pre-wrap\"><div style=\"font-size:10px;color:#fbbf24;font-weight:700;text-transform:uppercase;margin-bottom:4px\">Trecho de codigo</div>'+s+'</div>'+(x.explanation?'<div style=\"font-size:12px;color:#6b7280;margin-top:6px;font-style:italic\">'+e(x.explanation)+'</div>':'');}\nfunction rf(t){var p=String(t||'').split('|').map(function(x){return x.trim();}).filter(Boolean);if(!p.length)return '';return '<ol style=\"margin:6px 0 0 0;padding-left:20px\">'+p.map(function(x){return '<li style=\"font-size:13px;line-height:1.6;color:#1f2937;margin-bottom:4px\">'+e(x)+'</li>';}).join('')+'</ol>';}\nvar fn=Array.isArray(d.prioritized_findings)?d.prioritized_findings:[];\nvar fh=fn.map(function(f){return '<div style=\"border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin-bottom:14px\"><div style=\"background:'+(sb[f.severity]||'#f9fafb')+';padding:14px 16px;border-bottom:1px solid #e5e7eb\"><div style=\"display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px\"><span style=\"background:'+(sc[f.severity]||'#6b7280')+';color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px;text-transform:uppercase\">#'+f.priority_rank+' &middot; '+e(f.severity||'Media')+'</span><span style=\"background:#fff;color:#374151;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid #e5e7eb\">'+e(f.category||'')+'</span>'+(Array.isArray(f.affected_devices)?f.affected_devices.map(function(v){return '<span style=\"background:#eef2ff;color:#4338ca;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px\">'+e(v)+'</span>';}).join(''):'')+'</div><div style=\"font-size:16px;font-weight:800;color:#111827;line-height:1.3\">'+e(f.title||'')+'</div></div><div style=\"padding:16px\"><div style=\"font-size:13px;color:#374151;line-height:1.6;margin-bottom:14px\">'+e(f.problem_description||'')+'</div>'+(Array.isArray(f.affected_urls)&&f.affected_urls.length?'<div style=\"font-size:11px;color:#6b7280;margin-bottom:14px\"><strong>URLs afetadas:</strong> '+f.affected_urls.map(function(u){return e(u);}).join(', ')+'</div>':'')+'<div style=\"margin-bottom:14px\"><div style=\"background:#eff6ff;border-left:3px solid #2563eb;padding:10px 12px;border-radius:6px;margin-bottom:10px\"><div style=\"font-size:10px;color:#2563eb;font-weight:800;text-transform:uppercase;margin-bottom:4px\">Impacto SEO</div><div style=\"font-size:13px;color:#1e3a8a;line-height:1.5\">'+e(f.seo_impact||'')+'</div></div>'+(f.ads_impact?'<div style=\"background:#fef3c7;border-left:3px solid #d97706;padding:10px 12px;border-radius:6px\"><div style=\"font-size:10px;color:#d97706;font-weight:800;text-transform:uppercase;margin-bottom:4px\">Impacto Google Ads</div><div style=\"font-size:13px;color:#78350f;line-height:1.5\">'+e(f.ads_impact)+'</div></div>':'')+'</div><div style=\"margin-bottom:14px\"><div style=\"font-size:11px;color:#059669;font-weight:800;text-transform:uppercase;margin-bottom:4px\">Como Corrigir</div>'+rf(f.how_to_fix)+'</div><div style=\"margin-bottom:10px\"><div style=\"font-size:11px;color:#6b7280;font-weight:800;text-transform:uppercase;margin-bottom:6px\">Exemplo Real</div>'+rx(f.real_example)+'</div><div style=\"display:flex;gap:14px;font-size:12px;color:#6b7280;padding-top:10px;border-top:1px solid #f3f4f6\"><span><strong>Esforço:</strong> '+e(f.estimated_effort||'-')+'</span><span><strong>Ganho:</strong> '+e(f.expected_impact||'-')+'</span></div></div></div>';}).join('');\nvar ov=Array.isArray(d.pages_overview)?d.pages_overview:[];\nvar or=ov.map(function(p){return '<tr style=\"border-bottom:1px solid #f3f4f6\"><td style=\"padding:8px;font-size:12px;color:#1f2937;word-break:break-all;max-width:240px\">'+e(p.url||'')+'</td>'+sx(p.mobile_perf)+sx(p.desktop_perf)+sx(p.mobile_seo)+sx(p.desktop_seo)+sx(p.mobile_a11y)+sx(p.desktop_a11y)+'<td style=\"padding:8px;font-size:11px;color:#6b7280;font-family:Consolas,monospace\">'+e(p.lcp_mobile||'-')+' / '+e(p.cls_mobile||'-')+'</td></tr>';}).join('');\nvar ins=Array.isArray(d.site_level_insights)?d.site_level_insights:[];\nvar ih=ins.length?'<ul style=\"margin:8px 0 0 0;padding-left:20px\">'+ins.map(function(i){return '<li style=\"font-size:13px;line-height:1.6;color:#374151;margin-bottom:4px\">'+e(i)+'</li>';}).join('')+'</ul>':'';\nvar qw=Array.isArray(d.quick_wins)?d.quick_wins:[];\nvar qh=qw.map(function(q,i){return '<div style=\"background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:12px 14px;margin-bottom:8px\"><div style=\"font-size:13px;font-weight:700;color:#065f46;margin-bottom:4px\">QW '+(i+1)+'. '+e(q.action||'')+'</div><div style=\"font-size:12px;color:#047857\">'+e(q.why||'')+'</div></div>';}).join('');\nvar dt=new Date(m.generatedAt).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});\nvar h='<!DOCTYPE html><html><head><meta charset=\"UTF-8\"></head><body style=\"margin:0;padding:0;background:#f4f4f2;font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#111827\"><div style=\"max-width:760px;margin:0 auto;background:#fff\"><div style=\"background:linear-gradient(140deg,#e84e1b,#ff6b3d);padding:32px;color:#fff\"><div style=\"font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:8px\">CorePulse Analyzer &middot; Core Web Vitals Report</div><div style=\"font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px\">Relatório de Performance &amp; SEO</div><div style=\"font-size:13px;opacity:.9\">'+m.totalUrls+' URL(s) em Mobile e Desktop &middot; '+dt+'</div></div><div style=\"padding:28px 32px\"><div style=\"background:'+hc+';color:#fff;display:inline-block;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:800;text-transform:uppercase;margin-bottom:14px\">Status Geral: '+e(d.overall_health||'-')+'</div><div style=\"font-size:14px;line-height:1.7;color:#374151;background:#f9fafb;padding:18px 20px;border-radius:10px;border-left:4px solid '+hc+'\">'+e(d.executive_summary||'')+'</div>'+(ins.length?'<div style=\"margin-top:18px\"><div style=\"font-size:12px;font-weight:800;text-transform:uppercase;color:#6b7280;margin-bottom:4px\">Insights cross-páginas</div>'+ih+'</div>':'')+'</div>'+(or?'<div style=\"padding:0 32px 28px\"><div style=\"font-size:16px;font-weight:800;margin-bottom:12px\">Visão Geral por URL</div><div style=\"overflow-x:auto\"><table style=\"width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden\"><thead><tr style=\"background:#f9fafb\"><th style=\"padding:10px;text-align:left;font-size:11px;color:#6b7280;text-transform:uppercase\">URL</th><th style=\"padding:10px;font-size:11px;color:#6b7280;text-transform:uppercase\">Perf M</th><th style=\"padding:10px;font-size:11px;color:#6b7280;text-transform:uppercase\">Perf D</th><th style=\"padding:10px;font-size:11px;color:#6b7280;text-transform:uppercase\">SEO M</th><th style=\"padding:10px;font-size:11px;color:#6b7280;text-transform:uppercase\">SEO D</th><th style=\"padding:10px;font-size:11px;color:#6b7280;text-transform:uppercase\">A11y M</th><th style=\"padding:10px;font-size:11px;color:#6b7280;text-transform:uppercase\">A11y D</th><th style=\"padding:10px;font-size:11px;color:#6b7280;text-transform:uppercase\">LCP/CLS M</th></tr></thead><tbody>'+or+'</tbody></table></div></div>':'')+(fh?'<div style=\"padding:0 32px 28px\"><div style=\"font-size:18px;font-weight:800;margin-bottom:6px\">Achados Priorizados</div><div style=\"font-size:12px;color:#6b7280;margin-bottom:16px\">Ordenados pelo impacto em SEO orgânico e Google Ads. Comece pelo #1.</div>'+fh+'</div>':'')+(qh?'<div style=\"padding:0 32px 28px\"><div style=\"font-size:16px;font-weight:800;margin-bottom:12px\">Quick Wins</div>'+qh+'</div>':'')+'<div style=\"padding:18px 32px;background:#f9fafb;border-top:1px solid #e5e7eb;text-align:center;font-size:11px;color:#9ca3af\">Gerado automaticamente pelo CorePulse Analyzer &middot; Run ID: '+e(m.runId)+'</div></div></body></html>';\nreturn [{json:{email:m.email,html:h,subject:'CorePulse Analyzer: Relatório de SEO - Core Web Vitals ('+m.totalUrls+' URL'+(m.totalUrls>1?'s':'')+')'}}];"
+      },
+      "id": "79502de1-c886-4e3a-b1d8-8edd3697e38c",
+      "name": "Montar E-mail HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7920,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Automação SEO | Cadastra & Adtail"
+        }
+      },
+      "id": "20614e90-1bcb-4bdc-9878-c6ed86f9a1f8",
+      "name": "Enviar Relatorio",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        8144,
+        704
+      ],
+      "webhookId": "ef9f138b-3bf5-4696-be4b-5856d8777cb7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "86962b10-0580-48e0-ad4d-200007c12064",
+              "leftValue": "={{ String($json.body.mode ?? '').toLowerCase() }}",
+              "rightValue": "sync",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ad622453-af06-4041-b495-b9b9e66b3710",
+      "name": "IF – Sync?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        6032,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "04420cfe-9c28-43a9-82df-12ee0f78e277",
+              "leftValue": "={{ String($('Split URLs').first().json.mode ?? '') }}",
+              "rightValue": "sync",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "98285e4d-c663-4da8-86f0-97d120344954",
+      "name": "IF – Responder Sync?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        7472,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Payload compacto para a chamada síncrona (orquestrador): métricas da 1ª URL\nconst d = $input.first()?.json ?? {};\nconst p = (d.pages && d.pages[0]) || {};\nconst m = p.mobile || {};\nconst dk = p.desktop || {};\nconst ms = m.scores || {};\nconst mm = m.metrics || {};\nconst grade = (s) => s == null ? null : (s >= 90 ? 'good' : s >= 50 ? 'needs-improvement' : 'poor');\nreturn [{ json: {\n  status: 'ok', mode: 'sync', url: p.url ?? null, generatedAt: d.generatedAt ?? null,\n  score: ms.performance ?? null,\n  scores: ms,\n  lcp: mm.lcp ?? null, fcp: mm.fcp ?? null, cls: mm.cls ?? null,\n  tbt: mm.tbt ?? null, si: mm.si ?? null, tti: mm.tti ?? null,\n  inp: null,\n  grade: grade(ms.performance ?? null),\n  desktop_score: (dk.scores || {}).performance ?? null,\n  failing_audits: (m.failingAudits || []).slice(0, 10).map(a => ({ id: a.id, title: a.title, displayValue: a.displayValue })),\n  summary: 'CWV mobile (lab): performance ' + (ms.performance ?? 'n/d') + '/100 · LCP ' + (mm.lcp ?? 'n/d') + ' · CLS ' + (mm.cls ?? 'n/d') + ' · TBT ' + (mm.tbt ?? 'n/d') + ' · desktop ' + ((dk.scores || {}).performance ?? 'n/d') + '/100.'\n} }];"
+      },
+      "id": "2c219b27-be6e-4500-8b45-2363943d3110",
+      "name": "Formatar Sync",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7584,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "5d6c1fe9-6cca-40e8-943d-db5d1bef1821",
+      "name": "Responder Sync",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        7792,
+        320
+      ]
+    }
+  ],
+  "connections": {
+    "GET - Interface Web": {
+      "main": [
+        [
+          {
+            "node": "Renderizar Interface",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST - Receber Auditoria": {
+      "main": [
+        [
+          {
+            "node": "IF – Sync?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmar Recebimento": {
+      "main": [
+        [
+          {
+            "node": "Split URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split URLs": {
+      "main": [
+        [
+          {
+            "node": "PageSpeed Mobile",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "PageSpeed Desktop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PageSpeed Mobile": {
+      "main": [
+        [
+          {
+            "node": "Estruturar Mobile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PageSpeed Desktop": {
+      "main": [
+        [
+          {
+            "node": "Estruturar Desktop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estruturar Mobile": {
+      "main": [
+        [
+          {
+            "node": "Combinar Mobile+Desktop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estruturar Desktop": {
+      "main": [
+        [
+          {
+            "node": "Combinar Mobile+Desktop",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Combinar Mobile+Desktop": {
+      "main": [
+        [
+          {
+            "node": "Consolidar URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidar URLs": {
+      "main": [
+        [
+          {
+            "node": "IF – Responder Sync?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Sonnet 4.6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analista CWV + SEO",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analista CWV + SEO": {
+      "main": [
+        [
+          {
+            "node": "Montar E-mail HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar E-mail HTML": {
+      "main": [
+        [
+          {
+            "node": "Enviar Relatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF – Sync?": {
+      "main": [
+        [
+          {
+            "node": "Split URLs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Confirmar Recebimento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF – Responder Sync?": {
+      "main": [
+        [
+          {
+            "node": "Formatar Sync",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analista CWV + SEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Sync": {
+      "main": [
+        [
+          {
+            "node": "Responder Sync",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
