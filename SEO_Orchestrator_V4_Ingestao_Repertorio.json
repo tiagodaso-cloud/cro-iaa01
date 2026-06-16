@@ -42,9 +42,9 @@
         "triggerOn": "specificFolder",
         "folderToWatch": {
           "__rl": true,
-          "mode": "list",
-          "value": "",
-          "cachedResultName": "PREENCHER: pasta RAG — SEO Técnico"
+          "mode": "url",
+          "value": "https://drive.google.com/drive/folders/1niY476nOCqmvfIrgor48wVydB3rmhlTX",
+          "cachedResultName": "SEO Técnico"
         },
         "event": "fileCreated",
         "options": {}
@@ -152,9 +152,9 @@
         "triggerOn": "specificFolder",
         "folderToWatch": {
           "__rl": true,
-          "mode": "list",
-          "value": "",
-          "cachedResultName": "PREENCHER: pasta RAG — Estratégia"
+          "mode": "url",
+          "value": "https://drive.google.com/drive/folders/1ksOo4h_UT1_1hyt5zfTE9FUa1PiviPEZ",
+          "cachedResultName": "Estratégia"
         },
         "event": "fileCreated",
         "options": {}
@@ -262,9 +262,9 @@
         "triggerOn": "specificFolder",
         "folderToWatch": {
           "__rl": true,
-          "mode": "list",
-          "value": "",
-          "cachedResultName": "PREENCHER: pasta RAG — Conteúdo & Link Building"
+          "mode": "url",
+          "value": "https://drive.google.com/drive/folders/16OHiTHMtxSsoMG2-03NWqDe_acKqeQKN",
+          "cachedResultName": "Conteúdo & Link Building"
         },
         "event": "fileCreated",
         "options": {}
@@ -372,9 +372,9 @@
         "triggerOn": "specificFolder",
         "folderToWatch": {
           "__rl": true,
-          "mode": "list",
-          "value": "",
-          "cachedResultName": "PREENCHER: pasta RAG — Retail Search"
+          "mode": "url",
+          "value": "https://drive.google.com/drive/folders/1Mo-jMdnnX9z6Wq0vI5EZcQ2pkgTW4aDC",
+          "cachedResultName": "Retail Search"
         },
         "event": "fileCreated",
         "options": {}
@@ -482,9 +482,9 @@
         "triggerOn": "specificFolder",
         "folderToWatch": {
           "__rl": true,
-          "mode": "list",
-          "value": "",
-          "cachedResultName": "PREENCHER: pasta RAG — GEO"
+          "mode": "url",
+          "value": "https://drive.google.com/drive/folders/1jF2uMyLe8-LPeEFoJITdXjzIbtV6ghMF",
+          "cachedResultName": "GEO"
         },
         "event": "fileCreated",
         "options": {}

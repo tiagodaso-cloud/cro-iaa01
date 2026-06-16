@@ -945,7 +945,8 @@
       "position": [
         1776,
         5760
-      ]
+      ],
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
