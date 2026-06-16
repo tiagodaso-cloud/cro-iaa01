@@ -560,8 +560,10 @@
       "parameters": {
         "model": "anthropic/claude-sonnet-4.6",
         "options": {
-          "maxTokens": 8192,
-          "temperature": 0.1
+          "maxTokens": 4096,
+          "temperature": 0.1,
+          "timeout": 120000,
+          "maxRetries": 1
         }
       },
       "id": "002c4d57-be9f-4923-86eb-1be0fa37b397",
@@ -707,14 +709,17 @@
       "position": [
         224,
         5536
-      ]
+      ],
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "model": "anthropic/claude-sonnet-4.6",
         "options": {
           "maxTokens": 4096,
-          "temperature": 0.5
+          "temperature": 0.5,
+          "timeout": 120000,
+          "maxRetries": 1
         }
       },
       "id": "d9c56566-17d4-4811-a331-b8005ca0be4a",
@@ -899,7 +904,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const output = ($input.first()?.json?.output ?? '').trim();\nreturn [{ json: { role:'assistant', messageType:'text', message:output, analysisContext:null } }];"
+        "jsCode": "const out = ($input.first()?.json?.output ?? '').trim();\nconst message = out || '⚠️ Não consegui concluir a resposta desta vez (o agente excedeu o limite de iterações ou uma ferramenta falhou). Tente reformular a pergunta ou enviar novamente.';\nreturn [{ json: { role: 'assistant', messageType: 'text', message, analysisContext: null } }];"
       },
       "id": "bd2b1c13-5568-4a62-a215-95e2f05ddcd0",
       "name": "Formatar Conversa",
