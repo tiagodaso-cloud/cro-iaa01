@@ -682,7 +682,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const d = $('Definir Rota').first()?.json ?? {};\nconst message = d.message ?? '';\nconst history = Array.isArray(d.history) ? d.history : [];\nconst ctx = d.analysisContext;\n\n// Diretrizes aprendidas (vindas do nó Carregar Lições)\nlet licoes = '';\ntry {\n  const rows = $input.all().map(i => i.json).filter(r => r && typeof r.licoes === 'string' && r.licoes.trim());\n  if (rows.length) licoes = rows[0].licoes.slice(0, 4000);\n} catch (e) {}\n\nconst histText = history.length\n  ? history.map(m => (m.role === 'user' ? 'Usuário' : 'Assistente') + ': ' + m.content).join('\\n\\n')\n  : '(início da conversa)';\n\nconst ctxJSON = ctx ? JSON.stringify({\n  url_analisada: ctx.url_analisada,\n  topico: ctx.topico,\n  mercado: ctx.mercado,\n  idioma: ctx.idioma,\n  sumario: ctx.sumario,\n  correlacoes: ctx.correlacoes,\n  gaps_oportunidades: ctx.gaps_oportunidades,\n  plano_acao: ctx.plano_acao,\n  proximos_passos: ctx.proximos_passos,\n  cwv_dados: {\n    performance_score: ctx.psi_score,\n    lcp: ctx.psi_lcp, fcp: ctx.psi_fcp, cls: ctx.psi_cls, tbt: ctx.psi_tbt,\n    campo_geral: ctx.psi_overall\n  }\n}, null, 2) : '(nenhuma análise completa foi realizada nesta sessão ainda)';\n\nreturn [{ json: {\n  message,\n  histText,\n  ctxJSON,\n  licoes: licoes || '(nenhuma diretriz registrada ainda)',\n  url:    ctx?.url_analisada ?? d.url   ?? '',\n  topico: ctx?.topico        ?? d.topic ?? '',\n  market: d.market ?? 'BR',\n  lang:   d.lang   ?? 'pt-BR'\n} }];"
+        "jsCode": "const d = $('Definir Rota').first()?.json ?? {};\nconst message = d.message ?? '';\nconst history = Array.isArray(d.history) ? d.history : [];\nconst ctx = d.analysisContext;\n\n// Diretrizes aprendidas (vindas do nó Carregar Lições)\nlet licoes = '';\ntry {\n  const rows = $('Carregar Lições').all().map(i => i.json).filter(r => r && typeof r.licoes === 'string' && r.licoes.trim());\n  if (rows.length) licoes = rows[0].licoes.slice(0, 4000);\n} catch (e) {}\n\nlet repertorio = '(nenhum repertório interno relevante)';\ntry {\n  const docs = $('Buscar Repertório (Chat)').all().map(i => i.json).map(r => ({\n    trecho: String(r.document?.pageContent ?? r.pageContent ?? '').slice(0, 700),\n    fonte: r.document?.metadata?.file_name ?? r.metadata?.file_name ?? null,\n    expertise: r.document?.metadata?.expertise ?? r.metadata?.expertise ?? null\n  })).filter(r => r.trecho);\n  if (docs.length) repertorio = docs.map(r => '- [' + (r.expertise || 'n/d') + '] ' + (r.fonte ? '(' + r.fonte + ') ' : '') + r.trecho).join('\\n');\n} catch (e) {}\n\nconst histText = history.length\n  ? history.map(m => (m.role === 'user' ? 'Usuário' : 'Assistente') + ': ' + m.content).join('\\n\\n')\n  : '(início da conversa)';\n\nconst ctxJSON = ctx ? JSON.stringify({\n  url_analisada: ctx.url_analisada,\n  topico: ctx.topico,\n  mercado: ctx.mercado,\n  idioma: ctx.idioma,\n  sumario: ctx.sumario,\n  correlacoes: ctx.correlacoes,\n  gaps_oportunidades: ctx.gaps_oportunidades,\n  plano_acao: ctx.plano_acao,\n  proximos_passos: ctx.proximos_passos,\n  cwv_dados: {\n    performance_score: ctx.psi_score,\n    lcp: ctx.psi_lcp, fcp: ctx.psi_fcp, cls: ctx.psi_cls, tbt: ctx.psi_tbt,\n    campo_geral: ctx.psi_overall\n  }\n}, null, 2) : '(nenhuma análise completa foi realizada nesta sessão ainda)';\n\nreturn [{ json: {\n  message,\n  histText,\n  ctxJSON,\n  licoes: licoes || '(nenhuma diretriz registrada ainda)',\n  repertorio,\n  url:    ctx?.url_analisada ?? d.url   ?? '',\n  topico: ctx?.topico        ?? d.topic ?? '',\n  market: d.market ?? 'BR',\n  lang:   d.lang   ?? 'pt-BR'\n} }];"
       },
       "id": "eec07d67-4d7e-4657-9f26-7dc2e137396a",
       "name": "Preparar Conversa",
@@ -696,9 +696,9 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Contexto da análise SEO desta sessão:\n\n{{ $json.ctxJSON }}\n\n---\nData de hoje: {{ $now.toFormat('yyyy-LL-dd') }} · Mercado-alvo: {{ $json.market }} · Idioma: {{ $json.lang }}\n\nHistórico da conversa:\n{{ $json.histText }}\n\nDiretrizes aprendidas com feedback dos usuários (aplique-as):\n{{ $json.licoes }}\n\n---\nMensagem atual do usuário: {{ $json.message }}\n\nResponda de forma conversacional e aprofundada. Use ferramentas quando necessário para enriquecer a resposta com dados novos. Se houver análise no contexto, correlacione com ela. Use Markdown.",
+        "text": "=Contexto da análise SEO desta sessão:\n\n{{ $json.ctxJSON }}\n\n---\nData de hoje: {{ $now.toFormat('yyyy-LL-dd') }} · Mercado-alvo: {{ $json.market }} · Idioma: {{ $json.lang }}\n\nHistórico da conversa:\n{{ $json.histText }}\n\nDiretrizes aprendidas com feedback dos usuários (aplique-as):\n{{ $json.licoes }}\n\nRepertório interno relevante (use quando pertinente e cite a fonte):\n{{ $json.repertorio }}\n\n---\nMensagem atual do usuário: {{ $json.message }}\n\nResponda de forma conversacional e aprofundada. Use ferramentas quando necessário para enriquecer a resposta com dados novos. Se houver análise no contexto, correlacione com ela. Use Markdown.",
         "options": {
-          "systemMessage": "Você é um especialista sênior em SEO técnico, GEO (Generative Engine Optimization) e CRO com acesso a ferramentas especializadas de análise. Você também domina a criação de conteúdo SEO otimizado para múltiplos formatos editoriais.\n\nVocê está em conversa com o usuário. Pode haver ou não uma análise completa nesta sessão:\n- Se houver análise no contexto, aprofunde os resultados e correlacione novos dados com ela.\n- Se NÃO houver análise, atenda diretamente usando suas ferramentas: keyword solta → Fan-out e GEO Mapping; apenas URL → Auditoria On-Page e Core Web Vitals; pedidos de conteúdo → use os dados disponíveis ou colete via ferramentas antes de escrever. Quando fizer sentido, sugira que o usuário envie \"URL + tema\" em uma única mensagem para disparar a análise completa multi-fonte.\n- Considere o mercado e o idioma-alvo informados no prompt ao acionar ferramentas (parâmetros market/lang).\n\nFerramentas disponíveis:\n\n- **Analisar Keyword via Fan-out**: Expande uma keyword em múltiplos LLMs (ChatGPT, Gemini, Perplexity). Use para explorar keywords alternativas, entender como concorrentes aparecem nas IAs, ou aprofundar análise de queries específicas.\n- **Mapear Visibilidade GEO**: Mapeia prompts reais de usuários e visibilidade de uma keyword em engines generativas. Use quando o usuário quiser testar keywords diferentes ou entender presença da marca nas IAs.\n- **Auditar Página On-Page**: Auditoria técnica completa de uma URL. Use para analisar páginas específicas além da URL principal ou comparar entre páginas.\n- **Verificar Core Web Vitals**: Verifica performance e CWV de qualquer URL via PageSpeed Insights. Use para comparar páginas, verificar melhorias após otimizações, ou analisar concorrentes.\n- **Auditar Agentic Browsing**: Audita como agentes de IA navegam e agem em uma página (bloqueio de bots, llms.txt, clareza estrutural e de ações). Use quando o usuário quiser saber se a página está pronta para navegadores agênticos e compras feitas por agentes.\n- **Consultar Repertório Interno**: Busca semântica no repertório interno de SEO/GEO/CRO (playbooks, guidelines, estudos de caso e benchmarks armazenados no Google Drive). Use para embasar recomendações e conteúdo com o conhecimento da empresa, citando a fonte quando relevante.\n- **GA4 – Listar Propriedades**: Lista contas e propriedades do Google Analytics 4 acessíveis. Use PRIMEIRO para descobrir o property_id correto antes de pedir relatórios.\n- **GA4 – Relatório de Métricas**: Executa relatórios na Data API do GA4 com métricas e dimensões customizáveis (aceita datas relativas como 28daysAgo). Use para tráfego real, conversões, canais e landing pages do site analisado.\n- **GSC – Listar Sites**: Lista as propriedades disponíveis no Google Search Console. Use PRIMEIRO para descobrir o site_url correto (formato sc-domain: ou URL com barra final).\n- **GSC – Search Analytics**: Consulta cliques, impressões, CTR e posição média por query, página, país, dispositivo ou data no Search Console (datas no formato YYYY-MM-DD). Use para validar com dados reais os gaps e oportunidades identificados na análise.\n\nDiretriz para dados Google: ao usar GA4 ou GSC pela primeira vez na conversa, liste propriedades/sites para identificar o identificador correto da marca analisada. Se a propriedade não existir entre as listadas, informe ao usuário que a conta conectada não tem acesso a ela. Sempre cruze dados de GA4/GSC com os achados de SEO/GEO da análise.\n\nO sistema coleta feedbacks (👍/👎) dos usuários e aprende com eles: as \"Diretrizes aprendidas\" incluídas no prompt refletem esse aprendizado e devem ser seguidas com prioridade.\n\n---\n\n## Geração de Conteúdo SEO (capacidade nativa — sem ferramentas externas)\n\nQuando o usuário solicitar criação de conteúdo, gere diretamente usando os dados da análise existente como base. Siga rigorosamente a estrutura de cada formato:\n\n### Texto de Apoio (página de categoria)\n1. H1 contendo a keyword principal.\n2. Linha `categoriasRelacionadas` com 3 a 8 itens separados por \" | \".\n3. Seções separadas por heading tags com conteúdo completo e informativo.\n4. Priorize menções a categorias relacionadas ao longo do texto.\n5. Sem seções de \"leia mais\" e sem linkagens internas.\n6. FAQ com 5 perguntas e respostas ao final.\n\n### Blogpost\n1. Title SEO (linha única).\n2. Meta description (até ~160 caracteres).\n3. H1 com a keyword principal.\n4. Introdução que contextualiza o tema.\n5. Seções H2 desenvolvendo o tema em profundidade; H3 para subtópicos se necessário.\n6. Conclusão sem chamada comercial forçada.\nRequisitos SEO: keyword natural ao longo do texto, variações semânticas, estrutura escaneável, sem FAQ.\n\n### PDP (página de produto)\n1. H2 de abertura contextualizando o produto e sua proposta.\n2. 2 a 4 seções H3: aplicações do produto, benefícios de uso, público-alvo, cuidados/orientações de uso.\n3. Seção final H3 opcional com produtos ou categorias relacionadas.\n4. Entre 400 e 700 palavras (salvo instrução diferente).\nRegras: não repita specs técnicas da ficha, não invente dados técnicos, sem preços ou promoções.\n\n### Meta Tags\nEntregue exatamente neste formato:\n```\nTitle: [título SEO]\nDescription: [meta description]\n```\nRegras: keyword no Title, sufixo de marca correto (ex: \"| Panvel\", \"| Decathlon\"), Title entre 45–60 caracteres incluindo sufixo, Description entre 130–160 caracteres, sem ponto final no Title, sem emojis, sem frases genéricas.\n\n### Regras globais de escrita (todos os formatos)\n- Português natural, humano e fluido — sem linguagem genérica ou corporativa vazia.\n- Sem travessões, metáforas desnecessárias ou frases prontas.\n- Sem repetições estruturais entre parágrafos.\n- Não explique o processo de escrita nem mencione IA, assistentes ou modelos.\n- Nunca cite concorrentes nem invente dados ou estatísticas.\n- Sem placeholders.\n\n---\n\n## Regras gerais de resposta\n- Para perguntas sobre dados já coletados, responda diretamente sem usar ferramentas.\n- Use ferramentas apenas quando a pergunta requer dados novos ou de uma URL/keyword diferente.\n- Ao usar uma ferramenta, explique brevemente o que está fazendo antes de apresentar os resultados.\n- Correlacione novos dados com a análise existente para gerar insights mais profundos.\n- Responda em português, com precisão técnica e foco em impacto de negócio.\n- Use Markdown para formatar a resposta.",
+          "systemMessage": "Você é um especialista sênior em SEO técnico, GEO (Generative Engine Optimization) e CRO com acesso a ferramentas especializadas de análise. Você também domina a criação de conteúdo SEO otimizado para múltiplos formatos editoriais.\n\nVocê está em conversa com o usuário. Pode haver ou não uma análise completa nesta sessão:\n- Se houver análise no contexto, aprofunde os resultados e correlacione novos dados com ela.\n- Se NÃO houver análise, atenda diretamente usando suas ferramentas: keyword solta → Fan-out e GEO Mapping; apenas URL → Auditoria On-Page e Core Web Vitals; pedidos de conteúdo → use os dados disponíveis ou colete via ferramentas antes de escrever. Quando fizer sentido, sugira que o usuário envie \"URL + tema\" em uma única mensagem para disparar a análise completa multi-fonte.\n- Considere o mercado e o idioma-alvo informados no prompt ao acionar ferramentas (parâmetros market/lang).\n\nFerramentas disponíveis:\n\n- **Analisar Keyword via Fan-out**: Expande uma keyword em múltiplos LLMs (ChatGPT, Gemini, Perplexity). Use para explorar keywords alternativas, entender como concorrentes aparecem nas IAs, ou aprofundar análise de queries específicas.\n- **Mapear Visibilidade GEO**: Mapeia prompts reais de usuários e visibilidade de uma keyword em engines generativas. Use quando o usuário quiser testar keywords diferentes ou entender presença da marca nas IAs.\n- **Auditar Página On-Page**: Auditoria técnica completa de uma URL. Use para analisar páginas específicas além da URL principal ou comparar entre páginas.\n- **Verificar Core Web Vitals**: Verifica performance e CWV de qualquer URL via PageSpeed Insights. Use para comparar páginas, verificar melhorias após otimizações, ou analisar concorrentes.\n- **Auditar Agentic Browsing**: Audita como agentes de IA navegam e agem em uma página (bloqueio de bots, llms.txt, clareza estrutural e de ações). Use quando o usuário quiser saber se a página está pronta para navegadores agênticos e compras feitas por agentes.\n\nO repertório interno de SEO/GEO/CRO relevante à mensagem é fornecido automaticamente no contexto (bloco \"Repertório interno relevante\"). Use-o para embasar recomendações e cite a fonte quando pertinente.\n\n\n\nO sistema coleta feedbacks (👍/👎) dos usuários e aprende com eles: as \"Diretrizes aprendidas\" incluídas no prompt refletem esse aprendizado e devem ser seguidas com prioridade.\n\n---\n\n## Geração de Conteúdo SEO (capacidade nativa — sem ferramentas externas)\n\nQuando o usuário solicitar criação de conteúdo, gere diretamente usando os dados da análise existente como base. Siga rigorosamente a estrutura de cada formato:\n\n### Texto de Apoio (página de categoria)\n1. H1 contendo a keyword principal.\n2. Linha `categoriasRelacionadas` com 3 a 8 itens separados por \" | \".\n3. Seções separadas por heading tags com conteúdo completo e informativo.\n4. Priorize menções a categorias relacionadas ao longo do texto.\n5. Sem seções de \"leia mais\" e sem linkagens internas.\n6. FAQ com 5 perguntas e respostas ao final.\n\n### Blogpost\n1. Title SEO (linha única).\n2. Meta description (até ~160 caracteres).\n3. H1 com a keyword principal.\n4. Introdução que contextualiza o tema.\n5. Seções H2 desenvolvendo o tema em profundidade; H3 para subtópicos se necessário.\n6. Conclusão sem chamada comercial forçada.\nRequisitos SEO: keyword natural ao longo do texto, variações semânticas, estrutura escaneável, sem FAQ.\n\n### PDP (página de produto)\n1. H2 de abertura contextualizando o produto e sua proposta.\n2. 2 a 4 seções H3: aplicações do produto, benefícios de uso, público-alvo, cuidados/orientações de uso.\n3. Seção final H3 opcional com produtos ou categorias relacionadas.\n4. Entre 400 e 700 palavras (salvo instrução diferente).\nRegras: não repita specs técnicas da ficha, não invente dados técnicos, sem preços ou promoções.\n\n### Meta Tags\nEntregue exatamente neste formato:\n```\nTitle: [título SEO]\nDescription: [meta description]\n```\nRegras: keyword no Title, sufixo de marca correto (ex: \"| Panvel\", \"| Decathlon\"), Title entre 45–60 caracteres incluindo sufixo, Description entre 130–160 caracteres, sem ponto final no Title, sem emojis, sem frases genéricas.\n\n### Regras globais de escrita (todos os formatos)\n- Português natural, humano e fluido — sem linguagem genérica ou corporativa vazia.\n- Sem travessões, metáforas desnecessárias ou frases prontas.\n- Sem repetições estruturais entre parágrafos.\n- Não explique o processo de escrita nem mencione IA, assistentes ou modelos.\n- Nunca cite concorrentes nem invente dados ou estatísticas.\n- Sem placeholders.\n\n---\n\n## Regras gerais de resposta\n- Para perguntas sobre dados já coletados, responda diretamente sem usar ferramentas.\n- Use ferramentas apenas quando a pergunta requer dados novos ou de uma URL/keyword diferente.\n- Ao usar uma ferramenta, explique brevemente o que está fazendo antes de apresentar os resultados.\n- Correlacione novos dados com a análise existente para gerar insights mais profundos.\n- Responda em português, com precisão técnica e foco em impacto de negócio.\n- Use Markdown para formatar a resposta.",
           "maxIterations": 8
         }
       },
@@ -930,30 +930,6 @@
     },
     {
       "parameters": {
-        "mode": "retrieve-as-tool",
-        "toolDescription": "Busca semântica no repertório interno de SEO/GEO/CRO (playbooks, guidelines e estudos de caso do Google Drive). Informe um termo ou pergunta para recuperar os trechos mais relevantes. O repertório é organizado em 5 expertises: SEO Técnico, Estratégia, Conteúdo & Link Building, Retail Search e GEO; cada trecho retornado traz sua expertise nos metadados.",
-        "qdrantCollection": {
-          "__rl": true,
-          "mode": "id",
-          "value": "seo_repertorio",
-          "cachedResultName": "seo_repertorio"
-        },
-        "topK": 4,
-        "includeDocumentMetadata": true,
-        "options": {}
-      },
-      "id": "ab1c5d21-0d2a-4ed3-8a0a-135b449b202d",
-      "name": "Consultar Repertório Interno",
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
-      "typeVersion": 1.3,
-      "position": [
-        1776,
-        5760
-      ],
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "mode": "load",
         "qdrantCollection": {
           "__rl": true,
@@ -1000,7 +976,8 @@
       "position": [
         1136,
         5760
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -1029,7 +1006,8 @@
       "position": [
         1296,
         5760
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -1054,7 +1032,8 @@
       "position": [
         1456,
         5760
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -1083,7 +1062,8 @@
       "position": [
         1616,
         5760
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -1489,6 +1469,30 @@
       "position": [
         1136,
         5760
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "load",
+        "qdrantCollection": {
+          "__rl": true,
+          "mode": "id",
+          "value": "seo_repertorio",
+          "cachedResultName": "seo_repertorio"
+        },
+        "prompt": "={{ $('Definir Rota').first().json.message }}",
+        "topK": 5,
+        "includeDocumentMetadata": true,
+        "options": {}
+      },
+      "id": "e93e71bb-4e36-41a5-be92-26f47e363e34",
+      "name": "Buscar Repertório (Chat)",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        40,
+        5536
       ],
       "onError": "continueRegularOutput"
     }
@@ -1916,17 +1920,6 @@
         ]
       ]
     },
-    "Consultar Repertório Interno": {
-      "ai_tool": [
-        [
-          {
-            "node": "Agente Orquestrador",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "GA4 – Listar Propriedades": {
       "ai_tool": [
         [
@@ -1975,12 +1968,12 @@
       "ai_embedding": [
         [
           {
-            "node": "Consultar Repertório Interno",
+            "node": "Buscar Repertório",
             "type": "ai_embedding",
             "index": 0
           },
           {
-            "node": "Buscar Repertório",
+            "node": "Buscar Repertório (Chat)",
             "type": "ai_embedding",
             "index": 0
           }
@@ -2031,7 +2024,7 @@
       "main": [
         [
           {
-            "node": "Preparar Conversa",
+            "node": "Buscar Repertório (Chat)",
             "type": "main",
             "index": 0
           }
@@ -2154,6 +2147,17 @@
           {
             "node": "Agente Orquestrador",
             "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Repertório (Chat)": {
+      "main": [
+        [
+          {
+            "node": "Preparar Conversa",
+            "type": "main",
             "index": 0
           }
         ]
