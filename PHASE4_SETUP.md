@@ -8,7 +8,7 @@ Materializa o **círculo virtuoso**: o humano alimenta a solução (arquivos no 
  1. sobe materiais de referência ──▶ 5 pastas de RAG no Drive
     (uma por expertise)                       │
                                               ▼
-                              [Ingestão] Drive → PGVector (seo_repertorio)
+                              [Ingestão] Drive → Qdrant (coleção seo_repertorio)
                                    chunks tagueados com `expertise`
                                               │
  2. usa o chat / análises ◀───────────────────┤ recuperação cita a expertise
@@ -51,10 +51,11 @@ Crie **dois** conjuntos de 5 pastas (10 no total) — mantenha-os separados para
 
 ## Passos de ativação
 
-1. **Ingestão** (`SEO_Orchestrator_V4_Ingestao_Repertorio.json`): importe e, em cada um dos 5 gatilhos `Drive: <expertise>`, selecione a pasta de **RAG** correspondente. Vincule as credenciais Google Drive + OpenAI (embeddings). Os chunks entram em `seo_repertorio` com o metadado `expertise`.
-2. **Trilha** (`SEO_Orchestrator_V4_Trilha_Conhecimento.json`): importe e, no nó **Preparar Trilhas**, preencha o objeto `PASTAS` com os IDs das 5 pastas de **Trilha**. Vincule Google Docs + OpenRouter. Cadência: o `Agendar Trilha` roda semanal (altere `field`/`triggerAtHour` para diário se quiser mais frequência).
-3. **NotebookLM**: crie **5 notebooks** (um por expertise) e adicione como fonte a pasta de **Trilha** correspondente. O NotebookLM sincroniza do Drive — a cada ciclo, um novo Google Doc datado entra na trilha daquela expertise.
-4. **Orquestrador V4**: já recuperação ciente de expertise (cada trecho recuperado traz sua expertise; a análise e o chat atribuem recomendações por área).
+1. **Vetor (Qdrant)**: tenha um Qdrant disponível (Qdrant Cloud free tier ou self-host) e configure a credencial `Qdrant API` (URL + API key) no n8n. A coleção `seo_repertorio` é criada automaticamente na primeira ingestão (vetores de 1536 dims, distância cosine — compatível com `text-embedding-3-small`); não precisa criá-la à mão.
+2. **Ingestão** (`SEO_Orchestrator_V4_Ingestao_Repertorio.json`): importe e, em cada um dos 5 gatilhos `Drive: <expertise>`, selecione a pasta de **RAG** correspondente. Vincule Google Drive + OpenAI (embeddings) + Qdrant nos 5 nós `Inserir`. Os chunks entram na coleção `seo_repertorio` com o metadado `expertise`.
+3. **Trilha** (`SEO_Orchestrator_V4_Trilha_Conhecimento.json`): importe e, no nó **Preparar Trilhas**, preencha o objeto `PASTAS` com os IDs das 5 pastas de **Trilha**. Vincule Google Docs + OpenRouter. Cadência: o `Agendar Trilha` roda semanal (altere `field`/`triggerAtHour` para diário se quiser mais frequência).
+4. **NotebookLM**: crie **5 notebooks** (um por expertise) e adicione como fonte a pasta de **Trilha** correspondente. O NotebookLM sincroniza do Drive — a cada ciclo, um novo Google Doc datado entra na trilha daquela expertise.
+5. **Orquestrador V4**: importe; vincule a credencial Qdrant nos nós `Buscar Repertório` e `Consultar Repertório Interno`. A recuperação já é ciente de expertise (cada trecho traz sua expertise; análise e chat atribuem recomendações por área).
 
 ## Por que a ponte é via Drive
 

@@ -928,14 +928,19 @@
       "parameters": {
         "mode": "retrieve-as-tool",
         "toolDescription": "Busca semântica no repertório interno de SEO/GEO/CRO (playbooks, guidelines e estudos de caso do Google Drive). Informe um termo ou pergunta para recuperar os trechos mais relevantes. O repertório é organizado em 5 expertises: SEO Técnico, Estratégia, Conteúdo & Link Building, Retail Search e GEO; cada trecho retornado traz sua expertise nos metadados.",
-        "tableName": "seo_repertorio",
+        "qdrantCollection": {
+          "__rl": true,
+          "mode": "id",
+          "value": "seo_repertorio",
+          "cachedResultName": "seo_repertorio"
+        },
         "topK": 4,
         "includeDocumentMetadata": true,
         "options": {}
       },
       "id": "ab1c5d21-0d2a-4ed3-8a0a-135b449b202d",
       "name": "Consultar Repertório Interno",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
       "typeVersion": 1.3,
       "position": [
         1776,
@@ -945,7 +950,12 @@
     {
       "parameters": {
         "mode": "load",
-        "tableName": "seo_repertorio",
+        "qdrantCollection": {
+          "__rl": true,
+          "mode": "id",
+          "value": "seo_repertorio",
+          "cachedResultName": "seo_repertorio"
+        },
         "prompt": "={{ $json.topic }}",
         "topK": 4,
         "includeDocumentMetadata": true,
@@ -953,7 +963,7 @@
       },
       "id": "9f7d08af-3710-4242-912e-341bb3a07f21",
       "name": "Buscar Repertório",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
       "typeVersion": 1.3,
       "position": [
         240,
