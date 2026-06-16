@@ -18,13 +18,12 @@
     },
     {
       "parameters": {
-        "model": "text-embedding-3-small",
-        "options": {}
+        "modelName": "models/gemini-embedding-001"
       },
       "id": "48c42968-8229-4497-a28a-6c73ca9c07c1",
-      "name": "Embeddings OpenAI",
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.2,
+      "name": "Embeddings Gemini",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
       "position": [
         320,
         1100
@@ -613,37 +612,6 @@
         ]
       ]
     },
-    "Embeddings OpenAI": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Inserir: SEO Técnico",
-            "type": "ai_embedding",
-            "index": 0
-          },
-          {
-            "node": "Inserir: Estratégia",
-            "type": "ai_embedding",
-            "index": 0
-          },
-          {
-            "node": "Inserir: Conteúdo & Link Building",
-            "type": "ai_embedding",
-            "index": 0
-          },
-          {
-            "node": "Inserir: Retail Search",
-            "type": "ai_embedding",
-            "index": 0
-          },
-          {
-            "node": "Inserir: GEO",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Drive: SEO Técnico": {
       "main": [
         [
@@ -804,6 +772,37 @@
           {
             "node": "Inserir: GEO",
             "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Inserir: SEO Técnico",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Inserir: Estratégia",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Inserir: Conteúdo & Link Building",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Inserir: Retail Search",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Inserir: GEO",
+            "type": "ai_embedding",
             "index": 0
           }
         ]
