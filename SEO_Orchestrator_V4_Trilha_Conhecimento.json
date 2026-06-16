@@ -147,7 +147,7 @@
       "parameters": {
         "mode": "runOnceForEachItem",
         "language": "javaScript",
-        "jsCode": "const out = String($input.first()?.json?.output ?? '').trim();\nconst src = $('Preparar Trilhas').item.json;\nconst body = out || ('# Trilha ' + (src.expertise || '') + '\\n\\nSem conteúdo gerado nesta execução.');\nreturn [{ json: {\n  body,\n  title: src.titulo,\n  folderId: src.trilhaFolderId,\n  expertise: src.expertise,\n  skip: !src.trilhaFolderId\n} }];"
+        "jsCode": "const out = String($json.output ?? '').trim();\nconst src = $('Preparar Trilhas').item.json;\nconst body = out || ('# Trilha ' + (src.expertise || '') + '\\n\\nSem conteúdo gerado nesta execução.');\nreturn [{ json: {\n  body,\n  title: src.titulo,\n  folderId: src.trilhaFolderId,\n  expertise: src.expertise,\n  skip: !src.trilhaFolderId\n} }];"
       },
       "id": "d54bd16d-73ab-4f0c-b915-960957a4f012",
       "name": "Formatar Nota",
