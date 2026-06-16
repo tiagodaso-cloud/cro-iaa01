@@ -1,0 +1,312 @@
+{
+  "name": "SEO Orchestrator V4 – Trilha de Conhecimento",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "863f74c8-a41d-4b0f-9283-9de24e733310",
+      "name": "Agendar Trilha",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "seo_feedback"
+        },
+        "matchType": "anyCondition",
+        "filters": {},
+        "returnAll": false,
+        "limit": 200,
+        "orderBy": true,
+        "orderByColumn": "createdAt",
+        "orderByDirection": "DESC"
+      },
+      "id": "e5e52cd4-0c59-45b6-a219-2f2996930179",
+      "name": "Carregar Feedbacks",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => r && r.rating);\nconst fmt = (r) => '[' + (r.rating === 'up' ? 'positivo' : 'negativo') + '] usuário: \"' +\n  String(r.mensagem_usuario || '').slice(0, 200) + '\" | resposta: \"' +\n  String(r.resposta_assistente || '').slice(0, 300) + '\"' +\n  (r.comentario ? ' | comentário: \"' + String(r.comentario).slice(0, 300) + '\"' : '');\nconst positivos = rows.filter(r => r.rating === 'up').length;\nconst negativos = rows.length - positivos;\nconst feedbackText = rows.length ? rows.slice(0, 100).map(fmt).join('\\n') : '(sem feedbacks recentes)';\nreturn [{ json: { total: rows.length, positivos, negativos, feedbackText } }];"
+      },
+      "id": "d6a410e2-7486-4cc1-8d12-89f180bee8cf",
+      "name": "Agregar Sinais",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "seo_lessons"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chave",
+              "condition": "eq",
+              "keyValue": "global"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "id": "89a498cd-b00b-4f7c-a178-1938bc54c9ea",
+      "name": "Carregar Lições",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Sinais agregados + diretrizes atuais → 1 item por expertise (5 trilhas)\nconst sig = $('Agregar Sinais').first()?.json ?? {};\nconst lessonRows = $input.all().map(i => i.json).filter(r => r && typeof r.licoes === 'string' && r.licoes.trim());\nconst licoesAtuais = lessonRows.length ? lessonRows[0].licoes : '(nenhuma diretriz registrada ainda)';\n\n// PREENCHA com os IDs das 5 pastas de Trilha no Drive (uma por expertise).\n// São as FONTES dos 5 notebooks no NotebookLM — NÃO use as mesmas pastas do RAG.\nconst PASTAS = {\n  'SEO Técnico':              '',\n  'Estratégia':               '',\n  'Conteúdo & Link Building': '',\n  'Retail Search':            '',\n  'GEO':                      ''\n};\nconst ESCOPO = {\n  'SEO Técnico': 'Indexação, crawl budget, arquitetura de informação, Core Web Vitals/performance, dados estruturados, status codes, sitemaps e robots.',\n  'Estratégia': 'Priorização e roadmap de SEO, análise competitiva, posicionamento, definição de KPIs e construção de business case.',\n  'Conteúdo & Link Building': 'Produção editorial, clusters de tópicos/keywords, E-E-A-T, construção de autoridade, link building e digital PR.',\n  'Retail Search': 'SEO para e-commerce e marketplaces, páginas de categoria e PDP, busca interna, feeds de produto e interface com retail media.',\n  'GEO': 'Visibilidade em engines generativas (ChatGPT, Gemini, Perplexity), citações, query fan-out, mapeamento de prompts, agentic browsing e llms.txt.'\n};\nconst hoje = new Date().toISOString().slice(0, 10);\nreturn Object.keys(ESCOPO).map(exp => ({ json: {\n  expertise: exp,\n  escopo: ESCOPO[exp],\n  trilhaFolderId: PASTAS[exp] || '',\n  titulo: hoje + ' — Trilha ' + exp,\n  total: sig.total ?? 0,\n  positivos: sig.positivos ?? 0,\n  negativos: sig.negativos ?? 0,\n  feedbackText: sig.feedbackText ?? '(sem feedbacks recentes)',\n  licoesAtuais\n} }));"
+      },
+      "id": "de8601b0-fe6e-4129-89fd-154a27af05b0",
+      "name": "Preparar Trilhas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Expertise: {{ $json.expertise }}\nEscopo desta expertise: {{ $json.escopo }}\n\nSinais recentes de uso do SEO Orchestrator ({{ $json.total }} feedbacks: {{ $json.positivos }} positivos, {{ $json.negativos }} negativos):\n{{ $json.feedbackText }}\n\nDiretrizes de comportamento atualmente aprendidas pelo sistema:\n{{ $json.licoesAtuais }}\n\nEscreva a nota deste ciclo para a trilha de conhecimento de \"{{ $json.expertise }}\".",
+        "options": {
+          "systemMessage": "Você é o curador da trilha de conhecimento de uma equipe de SEO/GEO/CRO. Sua função é transformar os sinais de uso de um agente (feedbacks dos usuários e diretrizes aprendidas) em uma nota de aprendizado por expertise que TREINA a equipe humana.\n\nEscreva SEMPRE em Markdown, em português, focando EXCLUSIVAMENTE na expertise informada — ignore sinais que pertençam a outras expertises.\n\nEstrutura da nota:\n# Trilha {expertise} — {data}\n## O que mudou\n(2-4 bullets: padrões observados nos feedbacks e diretrizes relevantes a esta expertise; se não houver novidade, escreva \"Sem novidades relevantes neste ciclo\" e prossiga.)\n## Boas práticas reforçadas\n(2-4 bullets acionáveis para a equipe aplicar.)\n## Pontos de atenção / lacunas\n(1-3 bullets: o que os feedbacks negativos ou a ausência de repertório sugerem que falta estudar ou documentar.)\n## Sugestão de curadoria\n(1-2 bullets: que tipo de material a equipe deveria adicionar à pasta de RAG desta expertise para fechar as lacunas.)\n\nRegras: não invente dados ou métricas; seja específico e acionável; no máximo ~350 palavras; nunca cite concorrentes do cliente; não mencione IA, modelos ou este processo.",
+          "maxIterations": 1
+        }
+      },
+      "id": "0c758e3c-6255-4c9b-92d7-107c5bc37c18",
+      "name": "Destilar Trilha",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.4
+        }
+      },
+      "id": "ad46b16f-5732-42af-8e01-931ccc559da2",
+      "name": "OpenRouter – Trilha",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        660,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const out = String($input.first()?.json?.output ?? '').trim();\nconst src = $('Preparar Trilhas').item.json;\nconst body = out || ('# Trilha ' + (src.expertise || '') + '\\n\\nSem conteúdo gerado nesta execução.');\nreturn [{ json: {\n  body,\n  title: src.titulo,\n  folderId: src.trilhaFolderId,\n  expertise: src.expertise,\n  skip: !src.trilhaFolderId\n} }];"
+      },
+      "id": "d54bd16d-73ab-4f0c-b915-960957a4f012",
+      "name": "Formatar Nota",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "document",
+        "operation": "create",
+        "folderId": "={{ $json.folderId }}",
+        "title": "={{ $json.title }}"
+      },
+      "id": "5e925aac-a33a-4615-a4f8-656e8058d2ee",
+      "name": "Criar Doc Trilha",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1140,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "document",
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "object": "text",
+              "action": "insert",
+              "locationChoice": "endOfSegmentLocation",
+              "insertSegment": "body",
+              "text": "={{ $('Formatar Nota').item.json.body }}"
+            }
+          ]
+        },
+        "updateFields": {}
+      },
+      "id": "1118642a-f647-463b-9267-e363aab466b8",
+      "name": "Inserir Conteúdo",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1380,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Agendar Trilha": {
+      "main": [
+        [
+          {
+            "node": "Carregar Feedbacks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Carregar Feedbacks": {
+      "main": [
+        [
+          {
+            "node": "Agregar Sinais",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agregar Sinais": {
+      "main": [
+        [
+          {
+            "node": "Carregar Lições",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Carregar Lições": {
+      "main": [
+        [
+          {
+            "node": "Preparar Trilhas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Trilhas": {
+      "main": [
+        [
+          {
+            "node": "Destilar Trilha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Destilar Trilha": {
+      "main": [
+        [
+          {
+            "node": "Formatar Nota",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter – Trilha": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Destilar Trilha",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Nota": {
+      "main": [
+        [
+          {
+            "node": "Criar Doc Trilha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Doc Trilha": {
+      "main": [
+        [
+          {
+            "node": "Inserir Conteúdo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

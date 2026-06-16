@@ -3,6 +3,35 @@
   "nodes": [
     {
       "parameters": {
+        "chunkSize": 1200,
+        "chunkOverlap": 150,
+        "options": {}
+      },
+      "id": "dc294c94-596b-4c67-a6aa-8699e28f54be",
+      "name": "Dividir Texto",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        760,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "48c42968-8229-4497-a28a-6c73ca9c07c1",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        1100
+      ]
+    },
+    {
+      "parameters": {
         "pollTimes": {
           "item": [
             {
@@ -14,13 +43,14 @@
         "folderToWatch": {
           "__rl": true,
           "mode": "list",
-          "value": ""
+          "value": "",
+          "cachedResultName": "PREENCHER: pasta RAG — SEO Técnico"
         },
         "event": "fileCreated",
         "options": {}
       },
-      "id": "f20f6703-453e-4318-a4ed-a1304778494c",
-      "name": "Novo Arquivo no Drive",
+      "id": "ace02941-2438-4237-9872-8104a2df71a0",
+      "name": "Drive: SEO Técnico",
       "type": "n8n-nodes-base.googleDriveTrigger",
       "typeVersion": 1,
       "position": [
@@ -47,8 +77,8 @@
           }
         }
       },
-      "id": "433677dc-d34c-448a-ae43-643d0173a9f6",
-      "name": "Baixar Arquivo",
+      "id": "8f5f5c0b-5a12-4b4b-973f-462f7547c5de",
+      "name": "Baixar: SEO Técnico",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
@@ -62,8 +92,8 @@
         "tableName": "seo_repertorio",
         "options": {}
       },
-      "id": "e76e004e-ba72-42a9-a25c-0b1870af4f09",
-      "name": "Inserir no Repertório",
+      "id": "d7bdfb5b-286c-4f86-8586-7975ce7d842f",
+      "name": "Inserir: SEO Técnico",
       "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
       "typeVersion": 1.3,
       "position": [
@@ -87,68 +117,472 @@
               {
                 "name": "file_id",
                 "value": "={{ $json.id }}"
+              },
+              {
+                "name": "expertise",
+                "value": "SEO Técnico"
               }
             ]
           }
         }
       },
-      "id": "7f5e4137-b780-4ccb-867f-630de737a106",
-      "name": "Carregar Documento",
+      "id": "d6c26a55-2664-49e6-967d-0b08fd452d5e",
+      "name": "Doc: SEO Técnico",
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        432,
-        208
+        560,
+        130
       ]
     },
     {
       "parameters": {
-        "chunkSize": 1200,
-        "chunkOverlap": 150,
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "PREENCHER: pasta RAG — Estratégia"
+        },
+        "event": "fileCreated",
         "options": {}
       },
-      "id": "b6cc4953-db34-4daf-8acf-9f7be46c8f9a",
-      "name": "Dividir Texto",
-      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "id": "a3f01e7f-f3d8-4653-9208-73bbc2ae6af5",
+      "name": "Drive: Estratégia",
+      "type": "n8n-nodes-base.googleDriveTrigger",
       "typeVersion": 1,
       "position": [
-        528,
-        400
+        -220,
+        230
       ]
     },
     {
       "parameters": {
-        "model": "text-embedding-3-small",
+        "resource": "file",
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain",
+              "sheetsToFormat": "text/csv",
+              "slidesToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "id": "289745c3-537f-4ee1-8f3f-7749e493f124",
+      "name": "Baixar: Estratégia",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        40,
+        230
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "seo_repertorio",
         "options": {}
       },
-      "id": "6451b4f9-3bb0-4700-96c3-3e1adea4f398",
-      "name": "Embeddings OpenAI",
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.2,
+      "id": "1f76d29f-cdad-4349-bf23-679f05c6eac5",
+      "name": "Inserir: Estratégia",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
       "position": [
-        240,
-        208
+        320,
+        230
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "binaryMode": "allInputData",
+        "loader": "auto",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file_name",
+                "value": "={{ $json.name }}"
+              },
+              {
+                "name": "file_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "expertise",
+                "value": "Estratégia"
+              }
+            ]
+          }
+        }
+      },
+      "id": "b8078f64-31e2-412d-9629-6534973b27ea",
+      "name": "Doc: Estratégia",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "PREENCHER: pasta RAG — Conteúdo & Link Building"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "d6ef08d3-592e-4cd5-829e-03681c776c3e",
+      "name": "Drive: Conteúdo & Link Building",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain",
+              "sheetsToFormat": "text/csv",
+              "slidesToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "id": "a80125ca-50af-4b9b-b320-355a6d3ccec1",
+      "name": "Baixar: Conteúdo & Link Building",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        40,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "seo_repertorio",
+        "options": {}
+      },
+      "id": "40fd816d-2881-42c3-9043-ba1cf100ad7e",
+      "name": "Inserir: Conteúdo & Link Building",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "binaryMode": "allInputData",
+        "loader": "auto",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file_name",
+                "value": "={{ $json.name }}"
+              },
+              {
+                "name": "file_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "expertise",
+                "value": "Conteúdo & Link Building"
+              }
+            ]
+          }
+        }
+      },
+      "id": "4cb8d8a5-ecec-4ea5-89fe-c1d04e1ad757",
+      "name": "Doc: Conteúdo & Link Building",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        590
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "PREENCHER: pasta RAG — Retail Search"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "82ac743d-e607-4fa9-a8dd-92120c539dad",
+      "name": "Drive: Retail Search",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        690
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain",
+              "sheetsToFormat": "text/csv",
+              "slidesToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "id": "8f86dadd-8567-4b6e-8cfb-9411829288a3",
+      "name": "Baixar: Retail Search",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        40,
+        690
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "seo_repertorio",
+        "options": {}
+      },
+      "id": "8726b749-0707-4758-a577-b92c9829415c",
+      "name": "Inserir: Retail Search",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        690
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "binaryMode": "allInputData",
+        "loader": "auto",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file_name",
+                "value": "={{ $json.name }}"
+              },
+              {
+                "name": "file_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "expertise",
+                "value": "Retail Search"
+              }
+            ]
+          }
+        }
+      },
+      "id": "e929dbff-8d19-4602-8ca7-d38602f8721d",
+      "name": "Doc: Retail Search",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "PREENCHER: pasta RAG — GEO"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "0bbe25b9-8c47-4e2a-aefd-62f345f86a05",
+      "name": "Drive: GEO",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        920
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain",
+              "sheetsToFormat": "text/csv",
+              "slidesToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "id": "c3a0b70f-b16d-44ec-ae30-cf2c3c1e3a5e",
+      "name": "Baixar: GEO",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        40,
+        920
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "seo_repertorio",
+        "options": {}
+      },
+      "id": "f39998f3-547a-4ac3-aee6-109c1a3ba2e3",
+      "name": "Inserir: GEO",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        920
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "binaryMode": "allInputData",
+        "loader": "auto",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file_name",
+                "value": "={{ $json.name }}"
+              },
+              {
+                "name": "file_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "expertise",
+                "value": "GEO"
+              }
+            ]
+          }
+        }
+      },
+      "id": "1aca0f1f-8699-4f98-903a-8083337050f7",
+      "name": "Doc: GEO",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        1050
       ]
     }
   ],
   "connections": {
-    "Novo Arquivo no Drive": {
-      "main": [
+    "Dividir Texto": {
+      "ai_textSplitter": [
         [
           {
-            "node": "Baixar Arquivo",
-            "type": "main",
+            "node": "Doc: SEO Técnico",
+            "type": "ai_textSplitter",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Baixar Arquivo": {
-      "main": [
-        [
+          },
           {
-            "node": "Inserir no Repertório",
-            "type": "main",
+            "node": "Doc: Estratégia",
+            "type": "ai_textSplitter",
+            "index": 0
+          },
+          {
+            "node": "Doc: Conteúdo & Link Building",
+            "type": "ai_textSplitter",
+            "index": 0
+          },
+          {
+            "node": "Doc: Retail Search",
+            "type": "ai_textSplitter",
+            "index": 0
+          },
+          {
+            "node": "Doc: GEO",
+            "type": "ai_textSplitter",
             "index": 0
           }
         ]
@@ -158,30 +592,193 @@
       "ai_embedding": [
         [
           {
-            "node": "Inserir no Repertório",
+            "node": "Inserir: SEO Técnico",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Inserir: Estratégia",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Inserir: Conteúdo & Link Building",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Inserir: Retail Search",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Inserir: GEO",
             "type": "ai_embedding",
             "index": 0
           }
         ]
       ]
     },
-    "Carregar Documento": {
+    "Drive: SEO Técnico": {
+      "main": [
+        [
+          {
+            "node": "Baixar: SEO Técnico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar: SEO Técnico": {
+      "main": [
+        [
+          {
+            "node": "Inserir: SEO Técnico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Doc: SEO Técnico": {
       "ai_document": [
         [
           {
-            "node": "Inserir no Repertório",
+            "node": "Inserir: SEO Técnico",
             "type": "ai_document",
             "index": 0
           }
         ]
       ]
     },
-    "Dividir Texto": {
-      "ai_textSplitter": [
+    "Drive: Estratégia": {
+      "main": [
         [
           {
-            "node": "Carregar Documento",
-            "type": "ai_textSplitter",
+            "node": "Baixar: Estratégia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar: Estratégia": {
+      "main": [
+        [
+          {
+            "node": "Inserir: Estratégia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Doc: Estratégia": {
+      "ai_document": [
+        [
+          {
+            "node": "Inserir: Estratégia",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive: Conteúdo & Link Building": {
+      "main": [
+        [
+          {
+            "node": "Baixar: Conteúdo & Link Building",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar: Conteúdo & Link Building": {
+      "main": [
+        [
+          {
+            "node": "Inserir: Conteúdo & Link Building",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Doc: Conteúdo & Link Building": {
+      "ai_document": [
+        [
+          {
+            "node": "Inserir: Conteúdo & Link Building",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive: Retail Search": {
+      "main": [
+        [
+          {
+            "node": "Baixar: Retail Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar: Retail Search": {
+      "main": [
+        [
+          {
+            "node": "Inserir: Retail Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Doc: Retail Search": {
+      "ai_document": [
+        [
+          {
+            "node": "Inserir: Retail Search",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive: GEO": {
+      "main": [
+        [
+          {
+            "node": "Baixar: GEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar: GEO": {
+      "main": [
+        [
+          {
+            "node": "Inserir: GEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Doc: GEO": {
+      "ai_document": [
+        [
+          {
+            "node": "Inserir: GEO",
+            "type": "ai_document",
             "index": 0
           }
         ]
