@@ -54,28 +54,66 @@ push({
   ]),
   id: 'n_cfg', name: 'Configurar Monitor', type: 'n8n-nodes-base.code', typeVersion: 2, position: [680, 300]
 });
+// Coleta via RSS do Reddit (sem app OAuth — a API self-service foi fechada em nov/2025).
+// Preencha user= e feed= (token das suas RSS preferences: reddit.com/prefs/feeds) e o User-Agent.
 push({
   parameters: {
-    resource: 'post', operation: 'search', location: 'allReddit',
-    keyword: '={{ $json.query }}', returnAll: false, limit: 25,
-    additionalFields: { sort: 'new' }
+    method: 'GET',
+    url: 'https://www.reddit.com/search.rss',
+    sendQuery: true,
+    queryParameters: { parameters: [
+      { name: 'q', value: '={{ $json.query }}' },
+      { name: 'sort', value: 'new' },
+      { name: 'type', value: 'link' },
+      { name: 'limit', value: '25' },
+      { name: 'include_over_18', value: 'on' },
+      { name: 'user', value: 'COLE_AQUI_O_PARAM_user' },
+      { name: 'feed', value: 'COLE_AQUI_O_TOKEN_feed' }
+    ] },
+    sendHeaders: true,
+    headerParameters: { parameters: [
+      { name: 'User-Agent', value: 'web:estacio-brand-monitor:v1.0 (by /u/SEU_USUARIO_REDDIT)' }
+    ] },
+    options: { response: { response: { neverError: true, responseFormat: 'text' } }, timeout: 30000 }
   },
-  id: 'n_reddit', name: 'Buscar no Reddit', type: 'n8n-nodes-base.reddit', typeVersion: 1, position: [900, 300]
+  id: 'n_reddit', name: 'Buscar no Reddit (RSS)', type: 'n8n-nodes-base.httpRequest', typeVersion: 4.3, position: [900, 300]
 });
 
 // ---------- Normalização / dedup / lote ----------
 push({
   parameters: code([
+    'const decode = (s) => String(s || "")',
+    '  .replace(/<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>/g, "$1")',
+    '  .replace(/&#0?39;|&#x27;|&apos;/gi, String.fromCharCode(39))',
+    '  .replace(/&quot;/g, String.fromCharCode(34))',
+    '  .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")',
+    '  .replace(/<[^>]+>/g, " ")',
+    '  .replace(/\\s+/g, " ").trim();',
     'const vistos = new Set();',
     'const out = [];',
     'for (const it of $input.all()) {',
-    '  const p = it.json || {};',
-    '  const id = p.name || (p.id ? "t3_" + p.id : null);',
-    '  if (!id || vistos.has(id)) continue;',
-    '  vistos.add(id);',
-    '  const permalink = p.permalink ? "https://www.reddit.com" + p.permalink : (p.url || "");',
-    '  const texto = String(p.selftext || "").replace(/\\s+/g, " ").trim().slice(0, 600);',
-    '  out.push({ json: { reddit_id: id, titulo: String(p.title || "").trim(), subreddit: p.subreddit || "", autor: p.author || "", url: permalink, criado_utc: p.created_utc || 0, score: p.score || 0, num_comentarios: p.num_comments || 0, texto } });',
+    '  const j = it.json || {};',
+    '  const xml = String(j.data || j.body || j.text || (typeof j === "string" ? j : "") || "");',
+    '  const tag = xml.indexOf("<entry") >= 0 ? "entry" : "item";',
+    '  const partes = xml.split("<" + tag).slice(1);',
+    '  for (const e of partes) {',
+    '    const grab = (t) => { const m = e.match(new RegExp("<" + t + "[^>]*>([\\\\s\\\\S]*?)</" + t + ">")); return m ? m[1] : ""; };',
+    '    const linkM = e.match(/<link[^>]*href="([^"]+)"/) || e.match(/<link>([^<]+)<\\/link>/);',
+    '    let url = linkM ? String(linkM[1]).replace(/&amp;/g, "&") : "";',
+    '    const idM = url.match(/comments\\/([a-z0-9]+)/i);',
+    '    const reddit_id = idM ? ("t3_" + idM[1]) : (decode(grab("id")) || url);',
+    '    if (!reddit_id || vistos.has(reddit_id)) continue;',
+    '    vistos.add(reddit_id);',
+    '    const titulo = decode(grab("title"));',
+    '    const srM = url.match(/reddit\\.com\\/r\\/([^\\/]+)/i);',
+    '    const subreddit = srM ? srM[1] : "";',
+    '    const autor = decode(grab("name")).replace(/^\\/?u(?:ser)?\\//, "");',
+    '    const pub = decode(grab("published")) || decode(grab("updated")) || decode(grab("pubDate"));',
+    '    const tms = Date.parse(pub); const criado_utc = isFinite(tms) ? Math.floor(tms / 1000) : 0;',
+    '    const texto = decode(grab("content") || grab("summary") || grab("description")).slice(0, 600);',
+    '    if (!titulo && !texto) continue;',
+    '    out.push({ json: { reddit_id, titulo, subreddit, autor, url, criado_utc, score: 0, num_comentarios: 0, texto } });',
+    '  }',
     '}',
     'return out;'
   ]),
@@ -312,7 +350,7 @@ push({
   id: 'n_note1', name: 'Nota Visao', type: 'n8n-nodes-base.stickyNote', typeVersion: 1, position: [200, 60]
 });
 push({
-  parameters: { content: '## Configurar antes de ativar\n1. Credencial Reddit (OAuth2) em "Buscar no Reddit".\n2. Credencial Gmail (OAuth2) nos nós de envio.\n3. Credencial OpenRouter nos 2 modelos.\n4. Destinatário dos e-mails (hoje: ' + EMAIL + ').\n5. Termos de busca em "Configurar Monitor".', height: 220, width: 360, color: 3 },
+  parameters: { content: '## Configurar antes de ativar\n1. RSS do Reddit: no nó "Buscar no Reddit (RSS)" preencha user= e feed= (token em reddit.com/prefs/feeds) e o User-Agent com seu usuário. Sem custo, sem app OAuth.\n2. Credencial Gmail (OAuth2) nos nós de envio.\n3. Credencial OpenRouter nos 2 modelos.\n4. Destinatário dos e-mails (hoje: ' + EMAIL + ').\n5. Termos de busca em "Configurar Monitor".\n\nObs.: via RSS, score e nº de comentários vêm como 0 (não expostos no feed).', height: 260, width: 380, color: 3 },
   id: 'n_note2', name: 'Nota Config', type: 'n8n-nodes-base.stickyNote', typeVersion: 1, position: [600, 60]
 });
 push({
@@ -326,8 +364,8 @@ const connections = {
   'Disparo Manual': main(['Ler Historico']),
   'A Cada Hora': main(['Ler Historico']),
   'Ler Historico': main(['Configurar Monitor']),
-  'Configurar Monitor': main(['Buscar no Reddit']),
-  'Buscar no Reddit': main(['Normalizar Posts']),
+  'Configurar Monitor': main(['Buscar no Reddit (RSS)']),
+  'Buscar no Reddit (RSS)': main(['Normalizar Posts']),
   'Normalizar Posts': main(['Filtrar Novos']),
   'Filtrar Novos': main(['Montar Lote']),
   'Montar Lote': main(['Classificar Conversas']),

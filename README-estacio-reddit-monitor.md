@@ -15,12 +15,13 @@ Gerador (fonte de verdade, editável): [`build-estacio-monitor.js`](./build-esta
 
 | Requisito | Onde acontece |
 |---|---|
-| **Monitorar conversas críticas/relevantes** sobre a marca e medir sentimento | `Buscar no Reddit` → `Classificar Conversas` (LLM): `relevante`, `sentimento`, `score_sentimento (-1..1)`, `criticidade` |
+| **Monitorar conversas críticas/relevantes** sobre a marca e medir sentimento | `Buscar no Reddit (RSS)` → `Classificar Conversas` (LLM): `relevante`, `sentimento`, `score_sentimento (-1..1)`, `criticidade` |
 | **Identificar tópicos/dores, possíveis crises** e sinalizar **pautas SEO** e/ou **ações com influenciadores** | `Montar Analise Agregada` (tendências dos últimos 7 dias) → `Gerar Pautas e Report` (LLM) produz `dores_recorrentes`, `riscos_reputacao`, `pautas_seo`, `acoes_influenciadores` |
 | **Alertas + notificação da equipe + reports estruturados a cada hora** | Trigger `A Cada Hora` → e-mail `Enviar Report Horario`; conversas Alta/Crítica → e-mail `Enviar Alerta Critico` |
 
 Decisões acordadas: **canal = E-mail (Gmail)** · **SEO = somente IA (sem Ahrefs)** ·
-**entrega = push no canal + Data Table (histórico)**.
+**entrega = push no canal + Data Table (histórico)** · **coleta = RSS gratuito do Reddit**
+(a API self-service do Reddit foi fechada em nov/2025).
 
 ---
 
@@ -28,7 +29,7 @@ Decisões acordadas: **canal = E-mail (Gmail)** · **SEO = somente IA (sem Ahref
 
 ```
 Disparo Manual ─┐
-A Cada Hora ────┴─► Ler Historico ─► Configurar Monitor ─► Buscar no Reddit
+A Cada Hora ────┴─► Ler Historico ─► Configurar Monitor ─► Buscar no Reddit (RSS)
    ─► Normalizar Posts ─► Filtrar Novos ─► Montar Lote ─► Classificar Conversas (LLM)
    ─► Processar Classificacao ─┬─► Salvar Posts Vistos            (dedup + histórico)
                                └─► Filtrar Relevantes ─► Montar Analise Agregada
@@ -59,8 +60,10 @@ O JSON referencia esses IDs diretamente.
 ## Importar e ativar
 
 1. **n8n → Workflows → Import from File** → selecione `estacio-reddit-monitor.json`.
-2. Configure as credenciais (nós marcados pedem seleção):
-   - **Reddit (OAuth2)** no nó `Buscar no Reddit`.
+2. Configure as credenciais / parâmetros:
+   - **Reddit (RSS, grátis):** no nó `Buscar no Reddit (RSS)` preencha os parâmetros de query
+     `user=` e `feed=` (token das suas *RSS preferences* em <https://www.reddit.com/prefs/feeds>)
+     e ajuste o header `User-Agent` com seu usuário. **Não precisa de app/OAuth.**
    - **Gmail (OAuth2)** nos nós `Enviar Report Horario` e `Enviar Alerta Critico`.
    - **OpenRouter** nos modelos `OpenRouter - Classificacao` e `OpenRouter - Report`
      (já vem vinculado a `OpenRouter account 51`; confirme).
@@ -82,6 +85,19 @@ node build-estacio-monitor.js   # regrava estacio-reddit-monitor.json
 ```
 
 ---
+
+## Coleta via RSS (por que e limitações)
+
+Desde **nov/2025** o Reddit fechou o acesso self-service à API e, em **mai/2026**, passou a
+bloquear os endpoints `.json` não autenticados. Por isso a coleta usa o **feed RSS**
+(`https://www.reddit.com/search.rss`) com o token `user=`/`feed=` da conta — **gratuito e sem
+app OAuth**. O parser (nó `Normalizar Posts`) lê o Atom/XML e normaliza os posts.
+
+Limitações do RSS: não expõe `score` nem nº de comentários (gravados como `0`); a criticidade
+é inferida pelo texto (título + corpo). Se o Reddit responder 403 a uma busca, o `neverError`
+mantém o fluxo (aquela query apenas não retorna itens). Se precisar de dados mais ricos
+(comentários, engajamento) no futuro, dá para trocar a coleta por Apify/SERP API sem mexer no
+resto do workflow.
 
 ## Nota técnica
 
