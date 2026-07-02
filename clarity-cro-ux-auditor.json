@@ -1,5 +1,5 @@
 {
-  "name": "Clarity CRO/UX Auditor",
+  "name": "IA Clarity Tracker - MIT",
   "nodes": [
     {
       "parameters": {
@@ -11,7 +11,7 @@
           ]
         }
       },
-      "id": "dfd4df74-2ce2-49b4-a0fa-037baa3bc8e4",
+      "id": "3f4bf006-7b46-4a23-a8ad-942768b4c69d",
       "name": "Agendamento Diário",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
@@ -25,58 +25,40 @@
         "assignments": {
           "assignments": [
             {
-              "id": "4b6af4cf-b065-475d-83e2-cf9a58b01aad",
+              "id": "9aa70786-4c6b-4e6b-ba2a-335fc4d39833",
               "name": "clarityApiUrl",
               "type": "string",
               "value": "https://www.clarity.ms/export-data/api/v1/project-live-insights"
             },
             {
-              "id": "cde11c04-117c-478d-b546-2a9bf62958aa",
+              "id": "1ec0572b-7b18-4f11-98ac-9f4032130ad8",
               "name": "numOfDays",
               "type": "string",
               "value": "3"
             },
             {
-              "id": "150b161e-14d7-46db-ab87-110e60af3074",
+              "id": "42ad0f1f-0814-4d0d-a7a0-6140c55d1958",
               "name": "projectName",
               "type": "string",
-              "value": "Meu Site"
+              "value": "Mitsubishi"
             },
             {
-              "id": "51145559-70f5-465c-b341-9c31d26c7c46",
+              "id": "04aa5246-f9cf-4d3e-97d2-bec8efa032c5",
               "name": "alertFrustrationThreshold",
               "type": "number",
               "value": 15
             },
             {
-              "id": "68a5c1ff-3fd2-4f2f-ae25-79bff1318489",
+              "id": "1f47b02f-4887-4c40-9b58-1d5687629c74",
               "name": "minSessionsForAlert",
               "type": "number",
               "value": 20
-            },
-            {
-              "id": "80022297-48b4-4bf4-8737-fbf562eaad05",
-              "name": "slackWebhookUrl",
-              "type": "string",
-              "value": ""
-            },
-            {
-              "id": "de52489b-0a01-4a78-b6a2-30270fa5cf33",
-              "name": "emailFrom",
-              "type": "string",
-              "value": "cro@seudominio.com"
-            },
-            {
-              "id": "d4d1ac6c-bdb8-4d84-85e5-914952ea8cb7",
-              "name": "emailTo",
-              "type": "string",
-              "value": "voce@seudominio.com"
             }
           ]
         },
         "options": {}
       },
-      "id": "c8d12505-7818-42a7-b847-683b78c6514c",
+      "id": "450bbed6-e3ab-488e-a950-1a28857fb37e",
       "name": "Config",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -107,7 +89,7 @@
           "timeout": 45000
         }
       },
-      "id": "b71b2987-bab5-42df-a936-572a6a4d4ac3",
+      "id": "b654e3a0-82a6-4661-b4b4-ea62c1a10993",
       "name": "Clarity – Por URL",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -141,7 +123,7 @@
           "timeout": 45000
         }
       },
-      "id": "e949bad3-3724-4c0a-b7e8-70b11b6c3f17",
+      "id": "e48e3382-31ae-41a0-94ba-4d527b84ac0a",
       "name": "Clarity – Por Dispositivo",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -183,7 +165,7 @@
           "timeout": 45000
         }
       },
-      "id": "2f84e4df-9146-4383-a0b4-3baf74dc2d99",
+      "id": "84688805-b5d0-46c8-94ce-f5ae8b262848",
       "name": "Clarity – Origem de Tráfego",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -221,7 +203,7 @@
           "timeout": 45000
         }
       },
-      "id": "25ad0ffc-9ea6-4cbc-a81a-9ef8a753ee4e",
+      "id": "69875624-85ac-4b3b-8f71-893ef6216713",
       "name": "Clarity – Navegador e SO",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -237,7 +219,7 @@
       "parameters": {
         "jsCode": "// ============================================================\n// Processa as respostas da Data Export API do Microsoft Clarity\n// e calcula métricas derivadas de CRO/UX (fricção + engajamento)\n// ============================================================\nconst cfg = $('Config').first().json;\n\nconst num = (v) => {\n  if (v === null || v === undefined) return 0;\n  const n = parseFloat(String(v).replace(',', '.'));\n  return isNaN(n) ? 0 : n;\n};\n\n// Lê a saída de um nó HTTP do Clarity de forma tolerante a falhas\nfunction getMetrics(nodeName) {\n  try {\n    const items = $(nodeName).all().map(i => i.json);\n    if (!items.length) return [];\n    if (items.length === 1 && Array.isArray(items[0])) return items[0];\n    if (items.length === 1 && Array.isArray(items[0].body)) return items[0].body;\n    return items.filter(m => m && m.metricName);\n  } catch (e) { return []; }\n}\n\n// Métricas de fricção do Clarity + pesos do Score de Frustração\nconst FRICTION_METRICS = {\n  RageClickCount:   { key: 'rageClicks',      weight: 0.35, label: 'Rage clicks' },\n  DeadClickCount:   { key: 'deadClicks',      weight: 0.20, label: 'Dead clicks' },\n  QuickbackClick:   { key: 'quickbacks',      weight: 0.15, label: 'Quickbacks' },\n  ExcessiveScroll:  { key: 'excessiveScroll', weight: 0.10, label: 'Scroll excessivo' },\n  ErrorClickCount:  { key: 'errorClicks',     weight: 0.10, label: 'Error clicks' },\n  ScriptErrorCount: { key: 'scriptErrors',    weight: 0.10, label: 'Erros de script' }\n};\n\n// Agrupa as métricas por valor de dimensão (URL, Device, Source...)\nfunction buildRows(metrics, dimKeys) {\n  const rows = {};\n  const rowOf = (entry) => {\n    const dim = dimKeys\n      .map(k => entry[k] ?? entry[k.toLowerCase()] ?? entry[k.charAt(0).toLowerCase() + k.slice(1)])\n      .filter(v => v !== undefined && v !== null && v !== '')\n      .join(' · ') || 'Geral';\n    if (!rows[dim]) rows[dim] = {\n      dimension: dim, sessions: 0, botSessions: 0, users: 0,\n      pagesPerSession: null, scrollDepth: null,\n      totalTimeSec: 0, activeTimeSec: 0, friction: {}, frictionScore: 0\n    };\n    return rows[dim];\n  };\n  for (const m of metrics) {\n    const info = Array.isArray(m.information) ? m.information : [];\n    for (const e of info) {\n      const r = rowOf(e);\n      switch (m.metricName) {\n        case 'Traffic':\n          r.sessions    += num(e.totalSessionCount);\n          r.botSessions += num(e.totalBotSessionCount);\n          r.users       += num(e.distinctUserCount);\n          r.pagesPerSession = num(e.PagesPerSessionPercentage ?? e.pagesPerSessionPercentage);\n          break;\n        case 'ScrollDepth':\n          r.scrollDepth = num(e.averageScrollDepth);\n          break;\n        case 'EngagementTime':\n          r.totalTimeSec  += num(e.totalTime);\n          r.activeTimeSec += num(e.activeTime);\n          break;\n        default:\n          if (FRICTION_METRICS[m.metricName]) {\n            const f = FRICTION_METRICS[m.metricName];\n            r.friction[f.key] = {\n              sessions: num(e.sessionsCount),\n              pct:      num(e.sessionsWithMetricPercentage),\n              total:    num(e.subTotal),\n              pagesViews: num(e.pagesViews ?? e.pagesVisited)\n            };\n          }\n      }\n    }\n  }\n  // Score de Frustração por linha (0–100): média ponderada dos % de sessões com fricção\n  for (const r of Object.values(rows)) {\n    let score = 0;\n    for (const f of Object.values(FRICTION_METRICS)) {\n      score += f.weight * (r.friction[f.key]?.pct ?? 0);\n    }\n    r.frictionScore = Math.round(Math.min(100, score) * 10) / 10;\n  }\n  return Object.values(rows).sort((a, b) => b.frictionScore - a.frictionScore || b.sessions - a.sessions);\n}\n\nconst byUrl    = buildRows(getMetrics('Clarity – Por URL'), ['URL', 'Url']);\nconst byDevice = buildRows(getMetrics('Clarity – Por Dispositivo'), ['Device']);\nconst bySource = buildRows(getMetrics('Clarity – Origem de Tráfego'), ['Source', 'Medium', 'Campaign']);\nconst byTech   = buildRows(getMetrics('Clarity – Navegador e SO'), ['Browser', 'OS']);\n\n// Visão geral agregada (ponderada por sessões) a partir do corte por URL\nfunction aggregate(rows) {\n  const t = { sessions: 0, botSessions: 0, users: 0, activeTime: 0, totalTime: 0 };\n  let scrollW = 0, scrollS = 0;\n  const fric = {};\n  for (const r of rows) {\n    t.sessions += r.sessions; t.botSessions += r.botSessions; t.users += r.users;\n    t.activeTime += r.activeTimeSec; t.totalTime += r.totalTimeSec;\n    if (r.scrollDepth !== null && r.sessions > 0) { scrollW += r.scrollDepth * r.sessions; scrollS += r.sessions; }\n    for (const f of Object.values(FRICTION_METRICS)) {\n      const fr = r.friction[f.key];\n      if (fr) {\n        fric[f.key] = fric[f.key] || { sessions: 0, total: 0 };\n        fric[f.key].sessions += fr.sessions;\n        fric[f.key].total    += fr.total;\n      }\n    }\n  }\n  const pctOf = k => t.sessions ? Math.round((fric[k]?.sessions ?? 0) / t.sessions * 1000) / 10 : 0;\n  let score = 0;\n  for (const f of Object.values(FRICTION_METRICS)) score += f.weight * pctOf(f.key);\n  return {\n    sessions: t.sessions,\n    botSessions: t.botSessions,\n    botPct: (t.sessions + t.botSessions) ? Math.round(t.botSessions / (t.sessions + t.botSessions) * 1000) / 10 : 0,\n    users: t.users,\n    avgScrollDepth: scrollS ? Math.round(scrollW / scrollS * 10) / 10 : null,\n    avgActiveTimeSec: t.sessions ? Math.round(t.activeTime / t.sessions) : null,\n    avgTotalTimeSec:  t.sessions ? Math.round(t.totalTime / t.sessions) : null,\n    frictionRates: Object.fromEntries(Object.values(FRICTION_METRICS).map(f =>\n      [f.key, { label: f.label, pctSessions: pctOf(f.key), totalOcorrencias: fric[f.key]?.total ?? 0 }])),\n    frustrationScore: Math.round(Math.min(100, score) * 10) / 10\n  };\n}\nconst overview = aggregate(byUrl);\n\n// Alertas: páginas com fricção acima do threshold e tráfego relevante\nconst minSessions = num(cfg.minSessionsForAlert) || 20;\nconst threshold   = num(cfg.alertFrustrationThreshold) || 15;\nconst alerts = byUrl\n  .filter(r => r.sessions >= minSessions && r.frictionScore >= threshold)\n  .slice(0, 10)\n  .map(r => ({ url: r.dimension, sessions: r.sessions, frictionScore: r.frictionScore }));\n\nconst apiStatus = {\n  porUrl: byUrl.length, porDispositivo: byDevice.length,\n  origemTrafego: bySource.length, navegadorSo: byTech.length\n};\n\nconst today = new Date().toISOString().slice(0, 10);\nreturn [{ json: {\n  generatedAt: new Date().toISOString(),\n  snapshotDate: today,\n  projectName: cfg.projectName || 'Meu Projeto',\n  periodDays: num(cfg.numOfDays) || 3,\n  overview,\n  byUrl: byUrl.slice(0, 15),\n  byDevice,\n  bySource: bySource.slice(0, 12),\n  byTech: byTech.slice(0, 12),\n  alerts,\n  apiStatus\n}}];"
       },
-      "id": "8678d838-0d71-44fa-b5d3-37a62e1f77c1",
+      "id": "bca8670c-6b90-45f3-981b-ea1debd7f332",
       "name": "Processar Métricas Clarity",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -266,7 +248,7 @@
         },
         "returnAll": true
       },
-      "id": "3dd2254d-3311-44ec-9d0a-e609fdb4868d",
+      "id": "109559c7-ccda-459c-9b19-a004a453b76e",
       "name": "Ler Snapshots Anteriores",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
@@ -281,7 +263,7 @@
       "parameters": {
         "jsCode": "// ============================================================\n// Compara o snapshot atual com o snapshot anterior salvo na\n// Data Table `clarity_snapshots` e calcula variações (%)\n// ============================================================\nconst current = $('Processar Métricas Clarity').first().json;\n\nconst prevRows = $input.all()\n  .map(i => i.json)\n  .filter(r => r && r.snapshotDate && r.snapshotDate < current.snapshotDate)\n  .sort((a, b) => String(b.snapshotDate).localeCompare(String(a.snapshotDate)));\n\nlet prev = null;\nif (prevRows[0]?.metrics) {\n  try {\n    prev = typeof prevRows[0].metrics === 'string'\n      ? JSON.parse(prevRows[0].metrics)\n      : prevRows[0].metrics;\n  } catch (e) { prev = null; }\n}\n\n// variação percentual arredondada (null se não comparável)\nfunction delta(cur, old) {\n  if (cur === null || cur === undefined || old === null || old === undefined || old === 0) return null;\n  return Math.round(((cur - old) / old) * 1000) / 10;\n}\n\nlet trends = null;\nif (prev?.overview) {\n  const c = current.overview, p = prev.overview;\n  trends = {\n    comparadoCom: prevRows[0].snapshotDate,\n    sessionsPct:         delta(c.sessions, p.sessions),\n    usersPct:            delta(c.users, p.users),\n    frustrationScorePct: delta(c.frustrationScore, p.frustrationScore),\n    scrollDepthPct:      delta(c.avgScrollDepth, p.avgScrollDepth),\n    rageClicksPct:       delta(c.frictionRates?.rageClicks?.pctSessions, p.frictionRates?.rageClicks?.pctSessions),\n    deadClicksPct:       delta(c.frictionRates?.deadClicks?.pctSessions, p.frictionRates?.deadClicks?.pctSessions),\n    quickbacksPct:       delta(c.frictionRates?.quickbacks?.pctSessions, p.frictionRates?.quickbacks?.pctSessions)\n  };\n}\n\nreturn [{ json: { ...current, trends } }];"
       },
-      "id": "da4b0e09-30b3-4130-97c5-02b2a6cfd46d",
+      "id": "01e328c0-9ab9-42a1-bcb5-0a099387424a",
       "name": "Comparar Tendências",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -293,9 +275,9 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Você é um consultor sênior de CRO (Conversion Rate Optimization) e UX Research, especialista em análise comportamental com Microsoft Clarity. Você domina heurísticas de Nielsen, frameworks de priorização (ICE), desenho de testes A/B e diagnóstico de fricção de interface.\n\n## DADOS DA AUDITORIA (Microsoft Clarity Data Export API, últimos {{ $json.periodDays }} dia(s))\nProjeto: {{ $json.projectName }} | Data: {{ $json.snapshotDate }}\n\n{{ JSON.stringify({ visaoGeral: $json.overview, tendenciasVsSnapshotAnterior: $json.trends, paginasOrdenadasPorFriccao: $json.byUrl, dispositivos: $json.byDevice, origensDeTrafego: $json.bySource, navegadorESistema: $json.byTech, alertasCriticos: $json.alerts }) }}\n\n## GLOSSÁRIO DAS MÉTRICAS\n- frustrationScore: índice composto 0–100 (ponderação: rage clicks 35%, dead clicks 20%, quickbacks 15%, scroll excessivo 10%, error clicks 10%, erros de script 10%). Quanto maior, pior.\n- rageClicks: cliques repetidos e rápidos no mesmo elemento (frustração aguda).\n- deadClicks: cliques sem nenhum efeito (expectativa de interatividade quebrada).\n- quickbacks: usuário entra na página e volta imediatamente (conteúdo não corresponde à expectativa).\n- excessiveScroll: rolagem muito além do esperado (dificuldade em encontrar conteúdo).\n- errorClicks / scriptErrors: cliques imediatamente antes de erro de JavaScript / erros de script na sessão.\n- pct em frictionRates = % de sessões afetadas. avgScrollDepth = profundidade média de rolagem (%).\n\n## SUA TAREFA\nProduza uma auditoria CRO/UX acionável. Seja específico: cite as URLs, dispositivos e origens exatas dos dados. Nunca invente números que não estejam nos dados. Se um corte estiver vazio (API não retornou), ignore-o sem especular.\n\nResponda SOMENTE com um JSON válido (sem markdown, sem cercas de código, sem texto antes ou depois), exatamente neste schema:\n{\n  \"resumo_executivo\": {\n    \"nota_geral\": <0-100, saúde geral de UX: 100 = excelente>,\n    \"nivel_urgencia\": \"baixa|media|alta|critica\",\n    \"sintese\": \"<3-5 frases: principal achado, impacto provável em conversão e o que fazer primeiro>\"\n  },\n  \"diagnostico\": [\n    { \"area\": \"<pagina/dispositivo/origem/tecnologia>\", \"achado\": \"<o que os dados mostram>\", \"evidencia\": \"<números exatos dos dados>\", \"severidade\": \"baixa|media|alta|critica\", \"causa_provavel\": \"<hipótese de causa UX>\" }\n  ],\n  \"quick_wins\": [\n    { \"acao\": \"<mudança simples implementável em <1 semana>\", \"motivo\": \"<por que resolve>\", \"pagina_alvo\": \"<URL ou área>\", \"prazo\": \"<ex: 2 dias>\" }\n  ],\n  \"hipoteses_ab\": [\n    { \"pagina\": \"<URL>\", \"hipotese\": \"Se <mudança>, então <métrica> vai <direção> porque <razão>\", \"variante_proposta\": \"<descrição da variante B>\", \"metrica_primaria\": \"<métrica a medir>\", \"impact\": <1-10>, \"confidence\": <1-10>, \"ease\": <1-10>, \"ice_score\": <média dos 3> }\n  ],\n  \"investigar_no_clarity\": [\n    { \"o_que\": \"<o que investigar manualmente no painel do Clarity>\", \"ferramenta\": \"Recordings|Heatmaps|Funnels|Journeys\", \"filtro_sugerido\": \"<filtro exato: ex. Rage clicks = sim + URL contém /checkout + Device = Mobile>\", \"pergunta_a_responder\": \"<pergunta de pesquisa UX>\" }\n  ],\n  \"plano_30_dias\": [\n    { \"semana\": 1, \"foco\": \"<tema da semana>\", \"acoes\": [\"<ação 1>\", \"<ação 2>\"] }\n  ]\n}\n\nRegras: diagnostico com 4-8 itens ordenados por severidade; quick_wins com 3-6 itens; hipoteses_ab com 3-5 itens ordenados por ice_score; investigar_no_clarity com 4-6 itens; plano_30_dias com 4 semanas."
+        "text": "=Você é um consultor sênior de CRO (Conversion Rate Optimization) e UX Research, especialista em análise comportamental com Microsoft Clarity. Você domina heurísticas de Nielsen, frameworks de priorização e diagnóstico de fricção de interface.\n\n## DADOS DA AUDITORIA (Microsoft Clarity Data Export API, últimos {{ $json.periodDays }} dia(s))\nProjeto: {{ $json.projectName }} | Data: {{ $json.snapshotDate }}\n\n{{ JSON.stringify({ visaoGeral: $json.overview, tendenciasVsSnapshotAnterior: $json.trends, paginasOrdenadasPorFriccao: $json.byUrl, dispositivos: $json.byDevice, origensDeTrafego: $json.bySource, navegadorESistema: $json.byTech, alertasCriticos: $json.alerts }) }}\n\n## GLOSSÁRIO DAS MÉTRICAS\n- frustrationScore: índice composto 0–100 (ponderação: rage clicks 35%, dead clicks 20%, quickbacks 15%, scroll excessivo 10%, error clicks 10%, erros de script 10%). Quanto maior, pior.\n- rageClicks: cliques repetidos e rápidos no mesmo elemento (frustração aguda).\n- deadClicks: cliques sem nenhum efeito (expectativa de interatividade quebrada).\n- quickbacks: usuário entra na página e volta imediatamente (conteúdo não corresponde à expectativa).\n- excessiveScroll: rolagem muito além do esperado (dificuldade em encontrar conteúdo).\n- errorClicks / scriptErrors: cliques imediatamente antes de erro de JavaScript / erros de script na sessão.\n- pct em frictionRates = % de sessões afetadas. avgScrollDepth = profundidade média de rolagem (%).\n\n## SUA TAREFA\nProduza uma auditoria CRO/UX acionável. Seja específico: cite as URLs, dispositivos e origens exatas dos dados. Nunca invente números que não estejam nos dados. Se um corte estiver vazio (API não retornou), ignore-o sem especular.\n\nResponda SOMENTE com um JSON válido (sem markdown, sem cercas de código, sem texto antes ou depois), exatamente neste schema:\n{\n  \"resumo_executivo\": {\n    \"nota_geral\": <0-100, saúde geral de UX: 100 = excelente>,\n    \"nivel_urgencia\": \"baixa|media|alta|critica\",\n    \"sintese\": \"<3-5 frases: principal achado, impacto provável em conversão e o que fazer primeiro>\"\n  },\n  \"diagnostico\": [\n    { \"area\": \"<pagina/dispositivo/origem/tecnologia>\", \"achado\": \"<o que os dados mostram>\", \"evidencia\": \"<números exatos dos dados>\", \"severidade\": \"baixa|media|alta|critica\", \"causa_provavel\": \"<hipótese de causa UX>\" }\n  ],\n  \"quick_wins\": [\n    { \"acao\": \"<mudança simples implementável em <1 semana>\", \"motivo\": \"<por que resolve>\", \"pagina_alvo\": \"<URL ou área>\", \"prazo\": \"<ex: 2 dias>\" }\n  ],\n  \"investigar_no_clarity\": [\n    { \"o_que\": \"<o que investigar manualmente no painel do Clarity>\", \"ferramenta\": \"Recordings|Heatmaps|Funnels|Journeys\", \"filtro_sugerido\": \"<filtro exato: ex. Rage clicks = sim + URL contém /checkout + Device = Mobile>\", \"pergunta_a_responder\": \"<pergunta de pesquisa UX>\" }\n  ]\n}\n\nRegras: diagnostico com 4-8 itens ordenados por severidade; quick_wins com 3-6 itens; investigar_no_clarity com 4-6 itens."
       },
-      "id": "964bd5ef-7253-46e8-9ed5-9c8989df80d8",
+      "id": "7110a753-17e4-4585-8dca-24bf65426fa7",
       "name": "Agente CRO/UX",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
@@ -312,7 +294,7 @@
           "temperature": 0.3
         }
       },
-      "id": "66143218-8730-4c6e-b68c-e394903b5708",
+      "id": "17e47b29-45a5-47a4-a111-673a6d81400c",
       "name": "OpenRouter – CRO",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
@@ -323,9 +305,9 @@
     },
     {
       "parameters": {
-        "jsCode": "// ============================================================\n// Extrai o JSON da análise da IA (de forma robusta) e monta o\n// relatório HTML final + texto de alerta para o Slack\n// ============================================================\nconst raw = $input.first().json;\nlet text = raw.text ?? raw.output ?? raw.response ?? '';\nif (typeof text !== 'string') text = JSON.stringify(text);\n\nlet analysis = null;\ntry { analysis = JSON.parse(text); } catch (e) {\n  const fence = text.match(/```(?:json)?\\s*([\\s\\S]*?)```/);\n  if (fence) { try { analysis = JSON.parse(fence[1]); } catch (e2) {} }\n  if (!analysis) {\n    const m = text.match(/\\{[\\s\\S]*\\}/);\n    if (m) { try { analysis = JSON.parse(m[0]); } catch (e3) {} }\n  }\n}\nif (!analysis) analysis = {\n  resumo_executivo: { nota_geral: null, nivel_urgencia: 'media', sintese: text.slice(0, 1200) || 'Análise indisponível nesta execução.' },\n  diagnostico: [], quick_wins: [], hipoteses_ab: [], investigar_no_clarity: [], plano_30_dias: []\n};\n\nconst data = $('Comparar Tendências').first().json;\nconst ov = data.overview || {};\nconst fr = ov.frictionRates || {};\n\nconst esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst fmt = n => (n === null || n === undefined) ? '—' : Number(n).toLocaleString('pt-BR');\nconst pct = n => (n === null || n === undefined) ? '—' : Number(n).toLocaleString('pt-BR') + '%';\nconst mmss = s => (s === null || s === undefined) ? '—' : Math.floor(s / 60) + 'm ' + Math.round(s % 60) + 's';\n\nfunction trendArrow(v, invert) {\n  if (v === null || v === undefined) return '';\n  const good = invert ? v < 0 : v > 0;\n  const color = v === 0 ? '#6b7280' : good ? '#059669' : '#dc2626';\n  const arrow = v > 0 ? '▲' : v < 0 ? '▼' : '＝';\n  return `<span style=\"color:${color};font-size:11px;font-weight:700\"> ${arrow} ${Math.abs(v).toLocaleString('pt-BR')}%</span>`;\n}\nfunction scoreColor(s) { return s >= 25 ? '#dc2626' : s >= 15 ? '#ea580c' : s >= 8 ? '#d97706' : '#059669'; }\nfunction sevBadge(sev) {\n  const s = String(sev || 'media').toLowerCase();\n  const map = { critica: '#dc2626', alta: '#ea580c', media: '#d97706', baixa: '#059669' };\n  const c = map[s.normalize('NFD').replace(/[̀-ͯ]/g, '')] || '#d97706';\n  return `<span style=\"background:${c}1a;color:${c};font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;text-transform:uppercase\">${esc(sev)}</span>`;\n}\n\nconst kpi = (label, value, extra) =>\n  `<td style=\"padding:12px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;text-align:center;min-width:100px\">\n     <div style=\"font-size:11px;color:#64748b;margin-bottom:4px\">${esc(label)}</div>\n     <div style=\"font-size:20px;font-weight:800;color:#0f172a\">${value}${extra || ''}</div>\n   </td>`;\n\nfunction frictionRow(r) {\n  const f = r.friction || {};\n  const p = k => f[k]?.pct !== undefined ? pct(f[k].pct) : '—';\n  return `<tr>\n    <td style=\"padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;word-break:break-all;max-width:280px\">${esc(r.dimension)}</td>\n    <td style=\"padding:8px;border-bottom:1px solid #e2e8f0;text-align:right;font-size:12px\">${fmt(r.sessions)}</td>\n    <td style=\"padding:8px;border-bottom:1px solid #e2e8f0;text-align:center\"><span style=\"font-weight:800;color:${scoreColor(r.frictionScore)}\">${fmt(r.frictionScore)}</span></td>\n    <td style=\"padding:8px;border-bottom:1px solid #e2e8f0;text-align:center;font-size:12px\">${p('rageClicks')}</td>\n    <td style=\"padding:8px;border-bottom:1px solid #e2e8f0;text-align:center;font-size:12px\">${p('deadClicks')}</td>\n    <td style=\"padding:8px;border-bottom:1px solid #e2e8f0;text-align:center;font-size:12px\">${p('quickbacks')}</td>\n    <td style=\"padding:8px;border-bottom:1px solid #e2e8f0;text-align:center;font-size:12px\">${r.scrollDepth !== null ? pct(r.scrollDepth) : '—'}</td>\n  </tr>`;\n}\nfunction frictionTable(title, rows) {\n  if (!rows?.length) return '';\n  return `<h3 style=\"font-size:15px;color:#0f172a;margin:28px 0 10px\">${esc(title)}</h3>\n  <div style=\"overflow-x:auto\"><table style=\"width:100%;border-collapse:collapse;font-family:inherit\">\n    <tr style=\"background:#f1f5f9\">\n      <th style=\"padding:8px;text-align:left;font-size:11px;color:#475569\">Dimensão</th>\n      <th style=\"padding:8px;text-align:right;font-size:11px;color:#475569\">Sessões</th>\n      <th style=\"padding:8px;text-align:center;font-size:11px;color:#475569\">Score Fricção</th>\n      <th style=\"padding:8px;text-align:center;font-size:11px;color:#475569\">Rage %</th>\n      <th style=\"padding:8px;text-align:center;font-size:11px;color:#475569\">Dead %</th>\n      <th style=\"padding:8px;text-align:center;font-size:11px;color:#475569\">Quickback %</th>\n      <th style=\"padding:8px;text-align:center;font-size:11px;color:#475569\">Scroll médio</th>\n    </tr>${rows.map(frictionRow).join('')}\n  </table></div>`;\n}\n\nconst t = data.trends || {};\nconst re = analysis.resumo_executivo || {};\n\nconst diagHtml = (analysis.diagnostico || []).map(d => `\n  <div style=\"border-left:3px solid #94a3b8;background:#f8fafc;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:8px\">\n    <div style=\"margin-bottom:4px\">${sevBadge(d.severidade)} <strong style=\"font-size:13px\">${esc(d.area)}</strong></div>\n    <div style=\"font-size:13px;color:#334155\">${esc(d.achado)}</div>\n    <div style=\"font-size:12px;color:#64748b;margin-top:4px\">📊 ${esc(d.evidencia)}</div>\n    ${d.causa_provavel ? `<div style=\"font-size:12px;color:#64748b;margin-top:2px\">💡 Causa provável: ${esc(d.causa_provavel)}</div>` : ''}\n  </div>`).join('');\n\nconst qwHtml = (analysis.quick_wins || []).map((q, i) => `\n  <div style=\"display:flex;gap:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;margin-bottom:6px\">\n    <div style=\"min-width:22px;height:22px;background:#059669;color:#fff;border-radius:50%;text-align:center;font-size:12px;font-weight:700;line-height:22px\">${i + 1}</div>\n    <div style=\"font-size:13px;color:#14532d\"><strong>${esc(q.acao)}</strong><br>\n      <span style=\"color:#166534\">${esc(q.motivo)}</span>\n      <span style=\"color:#64748b;font-size:12px\"> · ${esc(q.pagina_alvo || '')} · ⏱ ${esc(q.prazo || '')}</span></div>\n  </div>`).join('');\n\nconst abHtml = (analysis.hipoteses_ab || []).map(h => `\n  <div style=\"border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;margin-bottom:8px\">\n    <div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:4px\">\n      <strong style=\"font-size:13px;word-break:break-all\">${esc(h.pagina)}</strong>\n      <span style=\"background:#eef2ff;color:#4338ca;font-size:11px;font-weight:800;padding:2px 10px;border-radius:12px\">ICE ${esc(h.ice_score)}</span>\n    </div>\n    <div style=\"font-size:13px;color:#334155\">${esc(h.hipotese)}</div>\n    <div style=\"font-size:12px;color:#64748b;margin-top:4px\">🧪 ${esc(h.variante_proposta)} · 🎯 ${esc(h.metrica_primaria)} · I:${esc(h.impact)} C:${esc(h.confidence)} E:${esc(h.ease)}</div>\n  </div>`).join('');\n\nconst invHtml = (analysis.investigar_no_clarity || []).map(v => `\n  <div style=\"background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;margin-bottom:6px;font-size:13px;color:#713f12\">\n    <strong>${esc(v.ferramenta)}:</strong> ${esc(v.o_que)}<br>\n    <span style=\"font-size:12px;color:#854d0e\">🔎 Filtro: ${esc(v.filtro_sugerido)}<br>❓ ${esc(v.pergunta_a_responder)}</span>\n  </div>`).join('');\n\nconst planHtml = (analysis.plano_30_dias || []).map(w => `\n  <tr>\n    <td style=\"padding:8px;border-bottom:1px solid #e2e8f0;font-weight:700;font-size:12px;white-space:nowrap\">Semana ${esc(w.semana)}</td>\n    <td style=\"padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px\">${esc(w.foco)}</td>\n    <td style=\"padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px\">${(w.acoes || []).map(esc).join('<br>• ')}</td>\n  </tr>`).join('');\n\nconst alertsHtml = (data.alerts || []).length ? `\n  <div style=\"background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 14px;margin:16px 0\">\n    <strong style=\"color:#dc2626;font-size:13px\">🚨 ${data.alerts.length} página(s) acima do limite de fricção</strong>\n    <ul style=\"margin:6px 0 0 18px;font-size:12px;color:#7f1d1d\">\n      ${data.alerts.map(a => `<li style=\"word-break:break-all\">${esc(a.url)} — score ${a.frictionScore} (${fmt(a.sessions)} sessões)</li>`).join('')}\n    </ul>\n  </div>` : '';\n\nconst gsColor = scoreColor(ov.frustrationScore ?? 0);\nconst html = `<!DOCTYPE html><html lang=\"pt-BR\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>Auditoria CRO/UX – ${esc(data.projectName)}</title></head>\n<body style=\"margin:0;background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif;color:#0f172a\">\n<div style=\"max-width:860px;margin:0 auto;padding:24px 16px\">\n  <div style=\"background:linear-gradient(135deg,#1e3a8a,#3b82f6);border-radius:12px;padding:22px 26px;color:#fff\">\n    <h1 style=\"margin:0;font-size:20px\">🔬 Auditoria CRO/UX — Microsoft Clarity</h1>\n    <p style=\"margin:6px 0 0;font-size:13px;opacity:.85\">${esc(data.projectName)} · últimos ${esc(data.periodDays)} dia(s) · gerado em ${new Date(data.generatedAt).toLocaleString('pt-BR')}${t.comparadoCom ? ' · comparado com ' + esc(t.comparadoCom) : ''}</p>\n  </div>\n\n  <div style=\"background:#fff;border-radius:12px;padding:22px 26px;margin-top:14px\">\n    <table style=\"width:100%;border-collapse:separate;border-spacing:6px\"><tr>\n      ${kpi('Sessões', fmt(ov.sessions), trendArrow(t.sessionsPct, false))}\n      ${kpi('Usuários únicos', fmt(ov.users), trendArrow(t.usersPct, false))}\n      ${kpi('Score Frustração', `<span style=\"color:${gsColor}\">${fmt(ov.frustrationScore)}</span>`, trendArrow(t.frustrationScorePct, true))}\n      ${kpi('Scroll médio', pct(ov.avgScrollDepth), trendArrow(t.scrollDepthPct, false))}\n    </tr><tr>\n      ${kpi('Tempo ativo/sessão', mmss(ov.avgActiveTimeSec))}\n      ${kpi('Rage clicks', pct(fr.rageClicks?.pctSessions), trendArrow(t.rageClicksPct, true))}\n      ${kpi('Dead clicks', pct(fr.deadClicks?.pctSessions), trendArrow(t.deadClicksPct, true))}\n      ${kpi('Tráfego bot', pct(ov.botPct))}\n    </tr></table>\n    ${alertsHtml}\n  </div>\n\n  <div style=\"background:#fff;border-radius:12px;padding:22px 26px;margin-top:14px\">\n    <h2 style=\"font-size:16px;margin:0 0 8px\">💡 Resumo Executivo ${re.nota_geral !== null && re.nota_geral !== undefined ? `— Nota UX: <span style=\"color:${re.nota_geral >= 70 ? '#059669' : re.nota_geral >= 40 ? '#d97706' : '#dc2626'}\">${esc(re.nota_geral)}/100</span>` : ''} ${sevBadge(re.nivel_urgencia)}</h2>\n    <p style=\"font-size:13px;color:#334155;line-height:1.6;margin:0\">${esc(re.sintese)}</p>\n    ${diagHtml ? `<h3 style=\"font-size:15px;margin:22px 0 10px\">🔍 Diagnóstico de Fricção</h3>${diagHtml}` : ''}\n    ${qwHtml ? `<h3 style=\"font-size:15px;margin:22px 0 10px\">⚡ Quick Wins</h3>${qwHtml}` : ''}\n    ${abHtml ? `<h3 style=\"font-size:15px;margin:22px 0 10px\">🧪 Hipóteses de Teste A/B (priorização ICE)</h3>${abHtml}` : ''}\n    ${invHtml ? `<h3 style=\"font-size:15px;margin:22px 0 10px\">🎥 Investigar manualmente no Clarity</h3>${invHtml}` : ''}\n    ${planHtml ? `<h3 style=\"font-size:15px;margin:22px 0 10px\">🗓 Plano de 30 dias</h3><table style=\"width:100%;border-collapse:collapse\">${planHtml}</table>` : ''}\n  </div>\n\n  <div style=\"background:#fff;border-radius:12px;padding:22px 26px;margin-top:14px\">\n    <h2 style=\"font-size:16px;margin:0\">📊 Dados por corte</h2>\n    ${frictionTable('Páginas com maior fricção', data.byUrl)}\n    ${frictionTable('Por dispositivo', data.byDevice)}\n    ${frictionTable('Por origem de tráfego (Source · Medium · Campaign)', data.bySource)}\n    ${frictionTable('Por navegador e sistema (erros técnicos)', data.byTech)}\n  </div>\n\n  <p style=\"text-align:center;font-size:11px;color:#94a3b8;margin:18px 0\">Gerado automaticamente via n8n + Microsoft Clarity Data Export API · cortes vazios indicam chamadas sem dados no período</p>\n</div></body></html>`;\n\nconst alert = (data.alerts || []).length > 0;\nconst topAlert = data.alerts?.[0];\nconst slackText =\n  `🔬 *Auditoria CRO/UX Clarity* — ${data.projectName} (${data.snapshotDate})\\n` +\n  `Score de frustração: *${ov.frustrationScore}/100* | Sessões: ${fmt(ov.sessions)} | Rage clicks: ${pct(fr.rageClicks?.pctSessions)} das sessões\\n` +\n  (alert ? `🚨 *${data.alerts.length} página(s) críticas.* Pior: ${topAlert.url} (score ${topAlert.frictionScore})\\n` : '✅ Nenhuma página acima do limite de fricção.\\n') +\n  `Urgência: ${re.nivel_urgencia || 'n/d'} — ${(re.sintese || '').slice(0, 400)}`;\n\nreturn [{ json: {\n  snapshotDate: data.snapshotDate,\n  projectName: data.projectName,\n  frustrationScore: ov.frustrationScore ?? 0,\n  alert,\n  slackText,\n  html,\n  analysis,\n  metrics: {\n    generatedAt: data.generatedAt, snapshotDate: data.snapshotDate, periodDays: data.periodDays,\n    overview: ov, byUrl: data.byUrl, byDevice: data.byDevice, bySource: data.bySource,\n    byTech: data.byTech, alerts: data.alerts, apiStatus: data.apiStatus, trends: data.trends\n  }\n}}];"
+        "jsCode": "// ============================================================\n// Extrai o JSON da análise da IA (de forma robusta) e prepara\n// o snapshot para salvar na Data Table `clarity_snapshots`\n// ============================================================\nconst raw = $input.first().json;\nlet text = raw.text ?? raw.output ?? raw.response ?? '';\nif (typeof text !== 'string') text = JSON.stringify(text);\n\nlet analysis = null;\ntry { analysis = JSON.parse(text); } catch (e) {\n  const fence = text.match(/```(?:json)?\\s*([\\s\\S]*?)```/);\n  if (fence) { try { analysis = JSON.parse(fence[1]); } catch (e2) {} }\n  if (!analysis) {\n    const m = text.match(/\\{[\\s\\S]*\\}/);\n    if (m) { try { analysis = JSON.parse(m[0]); } catch (e3) {} }\n  }\n}\nif (!analysis) analysis = {\n  resumo_executivo: { nota_geral: null, nivel_urgencia: 'media', sintese: text.slice(0, 1200) || 'Análise indisponível nesta execução.' },\n  diagnostico: [], quick_wins: [], investigar_no_clarity: []\n};\n\nconst data = $('Comparar Tendências').first().json;\n\nreturn [{ json: {\n  snapshotDate: data.snapshotDate,\n  projectName: data.projectName,\n  frustrationScore: data.overview?.frustrationScore ?? 0,\n  analysis,\n  metrics: {\n    generatedAt: data.generatedAt, snapshotDate: data.snapshotDate, periodDays: data.periodDays,\n    overview: data.overview, byUrl: data.byUrl, byDevice: data.byDevice, bySource: data.bySource,\n    byTech: data.byTech, alerts: data.alerts, apiStatus: data.apiStatus, trends: data.trends\n  }\n}}];"
       },
-      "id": "125b29de-6e40-49f7-91d1-780df7792f32",
+      "id": "1a494958-3a76-4759-b5e0-722c234c31e4",
       "name": "Formatar Relatório",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -363,8 +345,7 @@
             "projectName": "={{ $json.projectName }}",
             "frustrationScore": "={{ $json.frustrationScore }}",
             "metrics": "={{ JSON.stringify($json.metrics) }}",
-            "analysis": "={{ JSON.stringify($json.analysis) }}",
-            "report": "={{ $json.html }}"
+            "analysis": "={{ JSON.stringify($json.analysis) }}"
           },
           "matchingColumns": [
             "snapshotDate"
@@ -372,96 +353,14 @@
         },
         "options": {}
       },
-      "id": "d811abde-547e-4464-8d1f-dd920129b4a2",
+      "id": "1db5a683-3c79-4df7-b1b3-9d6b53b055fd",
       "name": "Salvar Snapshot",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
-        2300,
-        120
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "23daafd5-9674-472d-981a-634c7c2ae470",
-              "leftValue": "={{ $json.alert }}",
-              "rightValue": "",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            },
-            {
-              "id": "1e1dcefa-6da6-47f9-96f7-bc320620e099",
-              "leftValue": "={{ $('Config').first().json.slackWebhookUrl }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "notEmpty",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "ecb42ff3-abb9-413c-b3fd-00940f131e87",
-      "name": "IF – Alerta Crítico?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        2300,
+        2260,
         300
       ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $('Config').first().json.slackWebhookUrl }}",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ text: $json.slackText }) }}",
-        "options": {}
-      },
-      "id": "849ab6dc-7a96-4f1c-9088-0b4c3b7505b2",
-      "name": "Notificar Slack",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        2520,
-        300
-      ],
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "fromEmail": "={{ $('Config').first().json.emailFrom }}",
-        "toEmail": "={{ $('Config').first().json.emailTo }}",
-        "subject": "=🔬 Auditoria CRO/UX Clarity – {{ $json.projectName }} – {{ $json.snapshotDate }}",
-        "html": "={{ $json.html }}",
-        "options": {}
-      },
-      "id": "a1694eb3-8adb-48f6-978e-36924fb4d3b1",
-      "name": "Enviar E-mail",
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 2.1,
-      "position": [
-        2300,
-        480
-      ],
-      "disabled": true,
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -469,7 +368,7 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "95fdd98f-07f4-493e-a627-8bc67287637c",
+      "id": "dd4ef56b-951c-48f3-9df4-69a23e78f38b",
       "name": "GET – Relatório CRO",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
@@ -477,7 +376,7 @@
         180,
         760
       ],
-      "webhookId": "24e1133e-f677-4807-b3f7-ac5ab545bf61"
+      "webhookId": "a72dd47f-4b73-499a-b19d-fee6e1dc3d3d"
     },
     {
       "parameters": {
@@ -494,7 +393,7 @@
         },
         "returnAll": true
       },
-      "id": "7938ad3b-273c-46a2-be60-ece5574416f2",
+      "id": "81ef282c-6255-40dc-85d2-b4e4a60163cb",
       "name": "Ler Relatórios Salvos",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
@@ -507,9 +406,9 @@
     },
     {
       "parameters": {
-        "jsCode": "// Seleciona o relatório mais recente (ou por ?date=YYYY-MM-DD)\nconst q = $('GET – Relatório CRO').first().json.query ?? {};\nconst rows = $input.all().map(i => i.json).filter(r => r && r.report);\nrows.sort((a, b) => String(b.snapshotDate).localeCompare(String(a.snapshotDate)));\nconst row = q.date ? rows.find(r => String(r.snapshotDate) === String(q.date)) : rows[0];\nconst html = row ? row.report :\n  '<!DOCTYPE html><html lang=\"pt-BR\"><body style=\"font-family:sans-serif;padding:48px;color:#334155\">' +\n  '<h2>Nenhum relatório disponível ainda</h2><p>Execute o workflow de auditoria primeiro. ' +\n  'Você também pode acessar um dia específico com <code>?date=YYYY-MM-DD</code>.</p></body></html>';\nreturn [{ json: { html } }];"
+        "jsCode": "// ============================================================\n// Renderiza o dashboard CRO/UX (padrão visual Cadastra) com\n// seletor de data a partir dos snapshots da Data Table\n// ============================================================\nconst q = $('GET – Relatório CRO').first().json.query ?? {};\nconst rowsRaw = $input.all().map(i => i.json).filter(r => r && r.snapshotDate && r.metrics);\nrowsRaw.sort((a, b) => String(b.snapshotDate).localeCompare(String(a.snapshotDate)));\n\nconst dates = [...new Set(rowsRaw.map(r => String(r.snapshotDate)))];\nconst selDate = (q.date && dates.includes(String(q.date))) ? String(q.date) : dates[0];\nconst row = rowsRaw.find(r => String(r.snapshotDate) === selDate);\n\nconst esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst parse = v => { try { return typeof v === 'string' ? JSON.parse(v) : v; } catch (e) { return null; } };\nconst fmt  = n => (n === null || n === undefined) ? '—' : Number(n).toLocaleString('pt-BR');\nconst pct  = n => (n === null || n === undefined) ? '—' : Number(n).toLocaleString('pt-BR') + '%';\nconst mmss = s => (s === null || s === undefined) ? '—' : Math.floor(s / 60) + 'm ' + Math.round(s % 60) + 's';\n\nconst CSS = `\n*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}\n:root{--ox:#FF5C28;--dark:#111827;--gray:#6b7280;--gray-light:#9ca3af;--bg:#f4f4f2;--white:#ffffff;--line:#e5e7eb;--line-soft:#f3f4f6;--green:#059669;--green-bg:#ecfdf5;--green-border:#a7f3d0;--yellow:#d97706;--yellow-bg:#fffbeb;--yellow-border:#fde68a;--red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;--purple:#7c3aed;--purple-bg:#f5f3ff;--purple-border:#ddd6fe;--sans:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace;--r:12px;--r-lg:16px;--shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);--shadow-lg:0 4px 24px rgba(0,0,0,.08),0 12px 48px rgba(0,0,0,.06)}\nbody{font-family:var(--sans);background:var(--bg);color:var(--dark);line-height:1.6;min-height:100vh}\n.header{background:var(--white);padding:0 40px;height:56px;display:flex;align-items:center;box-shadow:0 1px 0 var(--line);position:sticky;top:0;z-index:200}\n.header-inner{max-width:1100px;margin:0 auto;width:100%;display:flex;align-items:center;gap:12px}\n.logo{height:26px}.product-name{font-size:16px;font-weight:800;letter-spacing:-.02em}\n.product-name span{color:var(--ox)}\n.version-badge{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}\n.hero{background:linear-gradient(140deg,#e84e1b 0%,#ff6b3d 100%);padding:40px 40px 88px;position:relative;overflow:hidden}\n.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:72px;background:linear-gradient(to bottom,transparent,var(--bg))}\n.hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1;color:#fff}\n.hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.75;margin-bottom:10px}\n.hero h1{font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px}\n.hero-desc{font-size:15px;max-width:640px;opacity:.9;line-height:1.6;margin-bottom:20px}\n.hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}\n.hero-badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.92);padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600}\n.date-pick{display:flex;align-items:center;gap:10px}\n.date-pick label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.8}\n.date-pick select{padding:10px 16px;border:none;border-radius:var(--r);font-size:14px;font-weight:700;font-family:var(--sans);color:var(--dark);background:var(--white);cursor:pointer;box-shadow:var(--shadow);outline:none;min-width:180px}\n.wrap{max-width:1100px;margin:-48px auto 60px;padding:0 40px;position:relative;z-index:10}\n.card{background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);padding:36px 40px;margin-bottom:20px}\n.card-title{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}\n.card-sub{color:var(--gray);margin-bottom:24px;font-size:14px;line-height:1.6}\n.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:8px}\n.kpi{background:var(--line-soft);border:1px solid var(--line);border-radius:var(--r);padding:16px;text-align:center;border-top:3px solid var(--ox)}\n.kpi-val{font-size:24px;font-weight:800;letter-spacing:-.04em;color:var(--dark);line-height:1.15;margin-bottom:4px}\n.kpi-lbl{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.06em}\n.kpi-trend{font-size:11px;font-weight:700;display:block;margin-top:2px}\n.score-frac{font-size:2em;font-weight:800;letter-spacing:-.04em;line-height:1}\n.score-frac.hi{color:var(--green)}.score-frac.mid{color:var(--yellow)}.score-frac.lo{color:var(--red)}\n.geo-badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}\n.geo-badge.poor{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}\n.geo-badge.fair{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border)}\n.geo-badge.good{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}\n.section{background:var(--white);border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07)}\n.section-head{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}\n.section-head:hover{background:var(--line-soft)}.section-title{font-size:14px;font-weight:800;letter-spacing:-.01em}\n.chev{color:var(--gray-light);font-size:13px}\n.section-body{padding:22px}.section-body.hidden{display:none}\n.audit-item{border-left:4px solid var(--line);padding:12px 16px;margin:8px 0;background:var(--line-soft);border-radius:0 var(--r) var(--r) 0}\n.audit-item.fail{border-left-color:var(--red)}.audit-item.warning{border-left-color:var(--yellow)}.audit-item.pass{border-left-color:var(--green)}\n.audit-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}\n.audit-title{font-size:13px;font-weight:700}\n.audit-finding{font-size:13px;color:var(--gray);margin-bottom:4px}\n.audit-rec{font-size:12px;color:var(--dark);font-style:italic}\n.impact-tag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.04em}\n.impact-tag.critical{background:#b91c1c;color:#fff}.impact-tag.serious{background:#ea580c;color:#fff}\n.impact-tag.moderate{background:#f59e0b;color:#1f2937}.impact-tag.minor{background:#3b82f6;color:#fff}\n.feat-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--white);border:1px solid var(--line);border-radius:8px;font-size:13px;line-height:1.5;margin-bottom:8px}\n.feat-check{width:22px;height:22px;background:var(--ox);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}\n.check-block{background:var(--line-soft);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;margin-bottom:10px}\n.check-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}\n.tool-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)}\n.filter-code{font-family:var(--mono);font-size:11px;background:#1e1e2e;color:#a6e3a1;padding:6px 10px;border-radius:6px;white-space:pre-wrap;word-break:break-all;margin:6px 0}\n.check-q{font-size:12px;color:var(--purple);font-style:italic}\n.infra-alert{background:var(--red-bg);border:2px solid var(--red-border);border-radius:var(--r);padding:18px 22px;margin-top:16px}\n.infra-alert-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#be123c;margin-bottom:8px}\n.infra-alert ul{margin-left:18px;font-size:13px;color:#881337}\n.infra-alert li{margin-bottom:3px;word-break:break-all}\n.tbl-wrap{overflow-x:auto;margin-bottom:18px}\n.tbl-title{font-size:13px;font-weight:800;margin:14px 0 8px;letter-spacing:-.01em}\n.tbl{width:100%;border-collapse:collapse;font-size:12.5px}\n.tbl th{background:var(--line-soft);color:var(--gray);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}\n.tbl th.c,.tbl td.c{text-align:center}.tbl th.r,.tbl td.r{text-align:right}\n.tbl td{padding:9px 10px;border-bottom:1px solid var(--line-soft);word-break:break-all;max-width:340px}\n.tbl tr:hover td{background:var(--line-soft)}\n.score-pill{font-weight:800}\n.sev-legend{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:11px;color:var(--gray);margin-top:14px}\n.footer-note{text-align:center;font-size:11px;color:var(--gray-light);margin:24px 0}\n@media(max-width:640px){.header,.hero{padding-left:20px;padding-right:20px}.wrap{padding:0 16px}.card{padding:24px 20px}}\n`;\n\nfunction scoreCls(v, invert) {\n  if (v === null || v === undefined) return 'mid';\n  if (invert) return v >= 25 ? 'lo' : v >= 8 ? 'mid' : 'hi';\n  return v >= 70 ? 'hi' : v >= 40 ? 'mid' : 'lo';\n}\nfunction trendArrow(v, invert) {\n  if (v === null || v === undefined) return '';\n  const good = invert ? v < 0 : v > 0;\n  const color = v === 0 ? 'var(--gray-light)' : good ? 'var(--green)' : 'var(--red)';\n  const arrow = v > 0 ? '▲' : v < 0 ? '▼' : '＝';\n  return `<span class=\"kpi-trend\" style=\"color:${color}\">${arrow} ${Math.abs(v).toLocaleString('pt-BR')}% vs anterior</span>`;\n}\nfunction sevTag(sev) {\n  const s = String(sev || 'media').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');\n  const map = { critica: 'critical', alta: 'serious', media: 'moderate', baixa: 'minor' };\n  return `<span class=\"impact-tag ${map[s] || 'moderate'}\">${esc(sev)}</span>`;\n}\nfunction sevItemCls(sev) {\n  const s = String(sev || 'media').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');\n  return (s === 'critica' || s === 'alta') ? 'fail' : s === 'media' ? 'warning' : 'pass';\n}\nfunction urgBadge(u) {\n  const s = String(u || 'media').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');\n  const cls = (s === 'critica' || s === 'alta') ? 'poor' : s === 'media' ? 'fair' : 'good';\n  return `<span class=\"geo-badge ${cls}\">urgência ${esc(u || 'média')}</span>`;\n}\nfunction section(icon, title, bodyHtml, open) {\n  if (!bodyHtml) return '';\n  return `<div class=\"section\">\n    <div class=\"section-head\" onclick=\"tg(this)\"><div class=\"section-title\">${icon} ${esc(title)}</div><span class=\"chev\">${open ? '▾' : '▸'}</span></div>\n    <div class=\"section-body${open ? '' : ' hidden'}\">${bodyHtml}</div>\n  </div>`;\n}\nfunction frictionTable(title, rows) {\n  if (!rows || !rows.length) return '';\n  const tr = rows.map(r => {\n    const f = r.friction || {};\n    const p = k => f[k]?.pct !== undefined ? pct(f[k].pct) : '—';\n    const sc = r.frictionScore >= 25 ? 'var(--red)' : r.frictionScore >= 15 ? '#ea580c' : r.frictionScore >= 8 ? 'var(--yellow)' : 'var(--green)';\n    return `<tr>\n      <td>${esc(r.dimension)}</td>\n      <td class=\"r\">${fmt(r.sessions)}</td>\n      <td class=\"c\"><span class=\"score-pill\" style=\"color:${sc}\">${fmt(r.frictionScore)}</span></td>\n      <td class=\"c\">${p('rageClicks')}</td>\n      <td class=\"c\">${p('deadClicks')}</td>\n      <td class=\"c\">${p('quickbacks')}</td>\n      <td class=\"c\">${r.scrollDepth !== null && r.scrollDepth !== undefined ? pct(r.scrollDepth) : '—'}</td>\n    </tr>`;\n  }).join('');\n  return `<div class=\"tbl-title\">${esc(title)}</div><div class=\"tbl-wrap\"><table class=\"tbl\">\n    <tr><th>Dimensão</th><th class=\"r\">Sessões</th><th class=\"c\">Score Fricção</th><th class=\"c\">Rage %</th><th class=\"c\">Dead %</th><th class=\"c\">Quickback %</th><th class=\"c\">Scroll médio</th></tr>\n    ${tr}</table></div>`;\n}\n\nfunction page(heroExtra, inner) {\n  return `<!DOCTYPE html><html lang=\"pt-BR\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>IA Clarity Tracker - MIT</title>\n<link href=\"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap\" rel=\"stylesheet\">\n<style>${CSS}</style></head><body>\n<header class=\"header\"><div class=\"header-inner\">\n  <img src=\"https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png\" class=\"logo\" alt=\"Cadastra\">\n  <div class=\"product-name\">IA Clarity <span>Tracker</span></div>\n  <span class=\"version-badge\">MIT</span>\n</div></header>\n<section class=\"hero\"><div class=\"hero-inner\">\n  <div class=\"hero-eyebrow\">CRO · UX RESEARCH · BEHAVIOR ANALYTICS</div>\n  <h1>Auditoria CRO/UX — Microsoft Clarity</h1>\n  <p class=\"hero-desc\">Monitoramento diário de fricção e engajamento com dados comportamentais do Microsoft Clarity: rage clicks, dead clicks, quickbacks, scroll e erros — com diagnóstico e recomendações geradas por IA.</p>\n  <div class=\"hero-badges\">\n    <div class=\"hero-badge\">Rage Clicks</div><div class=\"hero-badge\">Dead Clicks</div>\n    <div class=\"hero-badge\">Quickbacks</div><div class=\"hero-badge\">Scroll Depth</div>\n    <div class=\"hero-badge\">Erros de Script</div><div class=\"hero-badge\">Score de Frustração</div>\n    <div class=\"hero-badge\">Tendências</div><div class=\"hero-badge\">IA Insights</div>\n  </div>\n  ${heroExtra}\n</div></section>\n<div class=\"wrap\">${inner}\n  <p class=\"footer-note\">Gerado automaticamente via n8n + Microsoft Clarity Data Export API · cortes vazios indicam chamadas sem dados no período</p>\n</div>\n<script>function tg(h){const b=h.nextElementSibling;b.classList.toggle('hidden');h.querySelector('.chev').textContent=b.classList.contains('hidden')?'▸':'▾'}</script>\n</body></html>`;\n}\n\n// ── Estado vazio ─────────────────────────────────────────────\nif (!row) {\n  const html = page('', `<div class=\"card\">\n    <div class=\"card-title\">Nenhum snapshot disponível ainda</div>\n    <div class=\"card-sub\">Execute o workflow de auditoria (agendado diariamente ou manualmente) para gerar o primeiro relatório. Os snapshots aparecerão aqui automaticamente, com seletor de data.</div>\n  </div>`);\n  return [{ json: { html } }];\n}\n\n// ── Dados do snapshot selecionado ────────────────────────────\nconst data = parse(row.metrics) || {};\nconst analysis = parse(row.analysis) || {};\nconst ov = data.overview || {};\nconst fr = ov.frictionRates || {};\nconst t  = data.trends || {};\nconst re = analysis.resumo_executivo || {};\n\nconst dateSelector = `<div class=\"date-pick\"><label>Snapshot</label>\n  <select onchange=\"location.href='?date='+this.value\">\n    ${dates.map(d => `<option value=\"${esc(d)}\"${d === selDate ? ' selected' : ''}>${esc(d)}</option>`).join('')}\n  </select></div>`;\n\nconst kpi = (lbl, val, trend) => `<div class=\"kpi\"><div class=\"kpi-val\">${val}</div><div class=\"kpi-lbl\">${esc(lbl)}</div>${trend || ''}</div>`;\nconst fsCls = scoreCls(ov.frustrationScore, true);\nconst fsColor = fsCls === 'hi' ? 'var(--green)' : fsCls === 'mid' ? 'var(--yellow)' : 'var(--red)';\n\nconst alertsHtml = (data.alerts || []).length ? `<div class=\"infra-alert\">\n  <div class=\"infra-alert-head\">🚨 ${data.alerts.length} página(s) acima do limite de fricção</div>\n  <ul>${data.alerts.map(a => `<li>${esc(a.url)} — score <b>${fmt(a.frictionScore)}</b> (${fmt(a.sessions)} sessões)</li>`).join('')}</ul>\n</div>` : '';\n\nconst overviewCard = `<div class=\"card\">\n  <div class=\"card-title\">📊 Visão Geral</div>\n  <div class=\"card-sub\">${esc(data.projectName)} · últimos ${esc(data.periodDays)} dia(s) · gerado em ${new Date(data.generatedAt).toLocaleString('pt-BR')}${t.comparadoCom ? ' · comparado com ' + esc(t.comparadoCom) : ''}</div>\n  <div class=\"kpi-grid\">\n    ${kpi('Sessões', fmt(ov.sessions), trendArrow(t.sessionsPct, false))}\n    ${kpi('Usuários únicos', fmt(ov.users), trendArrow(t.usersPct, false))}\n    ${kpi('Score Frustração', `<span style=\"color:${fsColor}\">${fmt(ov.frustrationScore)}</span>`, trendArrow(t.frustrationScorePct, true))}\n    ${kpi('Scroll médio', pct(ov.avgScrollDepth), trendArrow(t.scrollDepthPct, false))}\n    ${kpi('Tempo ativo/sessão', mmss(ov.avgActiveTimeSec))}\n    ${kpi('Rage clicks', pct(fr.rageClicks?.pctSessions), trendArrow(t.rageClicksPct, true))}\n    ${kpi('Dead clicks', pct(fr.deadClicks?.pctSessions), trendArrow(t.deadClicksPct, true))}\n    ${kpi('Tráfego bot', pct(ov.botPct))}\n  </div>\n  <div class=\"sev-legend\">Cortes coletados — URLs: ${data.apiStatus?.porUrl ?? 0} · Dispositivos: ${data.apiStatus?.porDispositivo ?? 0} · Origens: ${data.apiStatus?.origemTrafego ?? 0} · Navegador/SO: ${data.apiStatus?.navegadorSo ?? 0}</div>\n  ${alertsHtml}\n</div>`;\n\nconst resumoHtml = `\n  <div style=\"display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px\">\n    ${re.nota_geral !== null && re.nota_geral !== undefined ? `<div><span class=\"score-frac ${scoreCls(re.nota_geral, false)}\">${esc(re.nota_geral)}</span><span style=\"color:var(--gray-light);font-weight:700\">/100</span><div class=\"kpi-lbl\" style=\"margin-top:2px\">Nota UX (IA)</div></div>` : ''}\n    ${urgBadge(re.nivel_urgencia)}\n  </div>\n  <p style=\"font-size:14px;color:var(--dark);line-height:1.7\">${esc(re.sintese)}</p>`;\n\nconst diagHtml = (analysis.diagnostico || []).map(d => `<div class=\"audit-item ${sevItemCls(d.severidade)}\">\n  <div class=\"audit-head\">${sevTag(d.severidade)}<span class=\"audit-title\">${esc(d.area)}</span></div>\n  <div class=\"audit-finding\">${esc(d.achado)}</div>\n  <div class=\"audit-finding\">📊 ${esc(d.evidencia)}</div>\n  ${d.causa_provavel ? `<div class=\"audit-rec\">💡 Causa provável: ${esc(d.causa_provavel)}</div>` : ''}\n</div>`).join('');\n\nconst qwHtml = (analysis.quick_wins || []).map((q2, i) => `<div class=\"feat-item\">\n  <div class=\"feat-check\">${i + 1}</div>\n  <div><b>${esc(q2.acao)}</b><br><span style=\"color:var(--gray)\">${esc(q2.motivo)}</span>\n  <span style=\"color:var(--gray-light);font-size:12px\"> · ${esc(q2.pagina_alvo || '')} · ⏱ ${esc(q2.prazo || '')}</span></div>\n</div>`).join('');\n\nconst invHtml = (analysis.investigar_no_clarity || []).map(v => `<div class=\"check-block\">\n  <div class=\"check-head\"><span class=\"tool-badge\">${esc(v.ferramenta)}</span><span class=\"audit-title\">${esc(v.o_que)}</span></div>\n  <div class=\"filter-code\">🔎 ${esc(v.filtro_sugerido)}</div>\n  <div class=\"check-q\">❓ ${esc(v.pergunta_a_responder)}</div>\n</div>`).join('');\n\nconst cortesHtml =\n  frictionTable('Páginas com maior fricção', data.byUrl) +\n  frictionTable('Por dispositivo', data.byDevice) +\n  frictionTable('Por origem de tráfego (Source · Medium · Campaign)', data.bySource) +\n  frictionTable('Por navegador e sistema (erros técnicos)', data.byTech);\n\nconst inner = overviewCard +\n  section('💡', 'Resumo Executivo', resumoHtml, true) +\n  section('🔍', 'Diagnóstico de Fricção', diagHtml, true) +\n  section('⚡', 'Quick Wins', qwHtml, false) +\n  section('🎥', 'Investigar manualmente no Clarity', invHtml, false) +\n  section('📋', 'Dados por corte', cortesHtml, false);\n\nreturn [{ json: { html: page(dateSelector, inner) } }];"
       },
-      "id": "9aec217f-b329-45ea-82e3-eaf5607fd6f7",
+      "id": "86acf641-cdbf-4e00-b322-3d8002280fe9",
       "name": "Preparar Dashboard",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -533,7 +432,7 @@
           }
         }
       },
-      "id": "b2211fac-8df5-4e55-8711-1162ec3b32fa",
+      "id": "7d23d3c5-7933-47f7-8bd8-472261f11412",
       "name": "Responder Relatório",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
@@ -549,7 +448,7 @@
         "height": 260,
         "color": 5
       },
-      "id": "4ed183bf-382f-43e3-8c45-debfb4ae5482",
+      "id": "f4590390-692c-42f2-be16-34ae2734dc13",
       "name": "Sticky Note 120--40",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -560,12 +459,12 @@
     },
     {
       "parameters": {
-        "content": "## ⚙️ Setup 2 — Config\nEdite o nó **Config**:\n- `projectName`: nome do seu site\n- `numOfDays`: 1 a 3 (janela da API)\n- `alertFrustrationThreshold`: score (0–100) que dispara alerta\n- `minSessionsForAlert`: tráfego mínimo p/ alertar\n- `slackWebhookUrl`: opcional (Incoming Webhook)\n- `emailFrom` / `emailTo`: se habilitar e-mail",
+        "content": "## ⚙️ Setup 2 — Config\nEdite o nó **Config**:\n- `projectName`: Mitsubishi (nome exibido nos relatórios)\n- `numOfDays`: 1 a 3 (janela da API)\n- `alertFrustrationThreshold`: score (0–100) que marca página como crítica\n- `minSessionsForAlert`: tráfego mínimo p/ marcar como crítica",
         "width": 460,
-        "height": 280,
+        "height": 240,
         "color": 4
       },
-      "id": "bc90a647-6b83-4836-9097-3d109dd14972",
+      "id": "52dc114c-cbd6-4e68-82b5-3457e7da46c8",
       "name": "Sticky Note -400--60",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -576,12 +475,12 @@
     },
     {
       "parameters": {
-        "content": "## 🗄️ Setup 3 — Data Table\nCrie a Data Table **`clarity_snapshots`** com as colunas:\n- `snapshotDate` (string)\n- `projectName` (string)\n- `frustrationScore` (number)\n- `metrics` (string)\n- `analysis` (string)\n- `report` (string)\n\nGuarda o histórico diário → tendências e dashboard.",
+        "content": "## 🗄️ Setup 3 — Data Table\nCrie a Data Table **`clarity_snapshots`** com as colunas:\n- `snapshotDate` (string)\n- `projectName` (string)\n- `frustrationScore` (number)\n- `metrics` (string)\n- `analysis` (string)\n\nGuarda o histórico diário → tendências e dashboard.\n(A coluna `report` da versão anterior não é mais usada.)",
         "width": 400,
         "height": 300,
         "color": 6
       },
-      "id": "c006d653-2ca4-45c3-b0da-2ec9bb6f664f",
+      "id": "a46e6b4f-487b-4db9-98fc-e04bc74603bf",
       "name": "Sticky Note 1220--60",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -597,7 +496,7 @@
         "height": 160,
         "color": 7
       },
-      "id": "57ef5bf0-8ea6-47c9-a598-290e9e182e8f",
+      "id": "ca9e4beb-00c8-46b9-8748-ab522c2a0121",
       "name": "Sticky Note 1660-680",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -608,28 +507,12 @@
     },
     {
       "parameters": {
-        "content": "## 📣 Saídas\n- **Slack**: preencha `slackWebhookUrl` no Config (alerta só dispara se houver página crítica)\n- **E-mail**: habilite o nó `Enviar E-mail` e configure a credencial SMTP\n- **Snapshot**: sempre salvo na Data Table",
-        "width": 400,
-        "height": 200,
-        "color": 4
-      },
-      "id": "edb4cb23-aab4-46f7-93e5-a29a693d1e5c",
-      "name": "Sticky Note 2500-40",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        2500,
-        40
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## 📊 Dashboard on-demand\nDepois de **ativar** o workflow, acesse:\n`https://SEU_N8N/webhook/clarity-cro-report`\n\nMostra o relatório mais recente.\nUm dia específico: `?date=YYYY-MM-DD`",
+        "content": "## 📊 Dashboard\nCom o workflow **ativo**, acesse:\n`https://SEU_N8N/webhook/clarity-cro-report`\n\nPadrão visual Cadastra + **seletor de data** no topo\npara navegar entre os snapshots salvos.",
         "width": 460,
         "height": 200,
         "color": 3
       },
-      "id": "e0197dc2-cb26-4f83-8e11-095ebd90dc16",
+      "id": "5178fb9d-a701-45df-9d78-9eb692f8d307",
       "name": "Sticky Note 120-940",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -768,30 +651,8 @@
             "node": "Salvar Snapshot",
             "type": "main",
             "index": 0
-          },
-          {
-            "node": "IF – Alerta Crítico?",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Enviar E-mail",
-            "type": "main",
-            "index": 0
           }
         ]
-      ]
-    },
-    "IF – Alerta Crítico?": {
-      "main": [
-        [
-          {
-            "node": "Notificar Slack",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        []
       ]
     },
     "GET – Relatório CRO": {
