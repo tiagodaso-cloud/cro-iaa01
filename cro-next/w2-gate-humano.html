@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CRO Next — Gate Humano</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+:root{--ox:#FF5C28;--ox2:#e84e1b;--dark:#111827;--card:#1f2937;--card2:#273449;--border:#374151;--text:#f9fafb;--muted:#9ca3af;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--purple:#8b5cf6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+header{background:rgba(17,24,39,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hbrand{display:flex;align-items:center;gap:12px}
+.logo{width:30px;height:30px;background:linear-gradient(135deg,var(--ox2),var(--ox));border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff}
+.btext{font-size:15px;font-weight:700}.btext span{color:var(--ox)}
+.gate-badge{background:linear-gradient(135deg,#6d28d9,var(--purple));color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px}
+main{flex:1;display:flex;gap:0;max-width:1400px;width:100%;margin:0 auto}
+aside{width:320px;min-width:280px;border-right:1px solid var(--border);padding:20px 14px;overflow-y:auto}
+.aside-t{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:4px 6px 12px}
+.ciclo-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.ciclo-card:hover{border-color:var(--ox)}
+.ciclo-card.sel{border-color:var(--ox);box-shadow:0 0 0 1px var(--ox)}
+.cc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.cc-cliente{font-weight:700;font-size:14px}
+.cc-id{font-size:11px;color:var(--muted);margin-bottom:8px}
+.pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px}
+.pill.gate{background:rgba(139,92,246,.15);color:var(--purple)}
+.pill.rev{background:rgba(245,158,11,.15);color:var(--yellow)}
+.score{font-size:11px;font-weight:700}
+.score.ok{color:var(--green)}.score.warn{color:var(--yellow)}.score.bad{color:var(--red)}
+section{flex:1;padding:24px 28px;overflow-y:auto;min-width:0}
+.empty{color:var(--muted);text-align:center;margin-top:80px;font-size:14px}
+.empty b{color:var(--text)}
+h2.cliente-h{font-size:22px;font-weight:800;margin-bottom:2px}
+.sub{color:var(--muted);font-size:12px;margin-bottom:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.kpi .l{font-size:10px;font-weight:700;letter-spacing:.6px;color:var(--muted);text-transform:uppercase}
+.kpi .v{font-size:19px;font-weight:800;margin-top:3px}
+.kpi .d{font-size:11px;font-weight:700;margin-top:2px}
+.d.up{color:var(--green)}.d.down{color:var(--red)}.d.flat{color:var(--muted)}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+.panel h3{font-size:13px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--ox);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.panel h3 .n{background:var(--ox);color:#fff;width:20px;height:20px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.auto-head{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.auto-score{font-size:30px;font-weight:800}
+.auto-rec{font-size:12px;font-weight:700;padding:4px 10px;border-radius:10px}
+.auto-rec.ok{background:rgba(16,185,129,.15);color:var(--green)}
+.auto-rec.warn{background:rgba(245,158,11,.15);color:var(--yellow)}
+ul.problemas{margin:6px 0 0 18px;font-size:12.5px;color:var(--muted)}
+ul.problemas li{margin-bottom:4px}
+.alerta-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12.5px}
+.alerta-box b{color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.6px;padding:6px 8px;border-bottom:1px solid var(--border)}
+td{padding:8px;border-bottom:1px solid rgba(55,65,81,.5);vertical-align:top}
+.money{color:var(--green);font-weight:700;white-space:nowrap}
+.hip{border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;background:var(--card2)}
+.hip input{margin-top:4px;accent-color:var(--ox);width:16px;height:16px;cursor:pointer}
+.hip .ht{font-weight:700;font-size:14px;margin-bottom:4px}
+.hip .hm{font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.5}
+.hip .tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;background:rgba(255,92,40,.12);color:var(--ox)}
+.tag.g{background:rgba(16,185,129,.12);color:var(--green)}
+.tag.b{background:rgba(139,92,246,.12);color:var(--purple)}
+.md{font-size:13.5px;line-height:1.65;color:#d1d5db}
+.md h1,.md h2{font-size:16px;margin:14px 0 8px;color:var(--text)}
+.md h3{font-size:14px;margin:12px 0 6px;color:var(--text)}
+.md ul,.md ol{margin:6px 0 10px 20px}.md li{margin-bottom:3px}
+.md p{margin-bottom:8px}.md strong{color:var(--text)}
+.md table{margin:8px 0}
+.gate-actions{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:sticky;bottom:12px;box-shadow:0 -8px 30px rgba(0,0,0,.45)}
+.ga-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+input[type=text],textarea{background:var(--dark);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px 12px;font-family:inherit;font-size:13px;width:100%}
+textarea{resize:vertical;min-height:60px}
+.btn{border:none;border-radius:10px;padding:12px 22px;font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;transition:all .15s}
+.btn.apr{background:linear-gradient(135deg,var(--ox2),var(--ox));color:#fff}
+.btn.apr:hover{filter:brightness(1.1)}
+.btn.rej{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn.rej:hover{border-color:var(--red);color:var(--red)}
+.btn:disabled{opacity:.5;cursor:wait}
+.foot-hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}
+.onboard{font-size:11.5px;color:var(--muted);border-top:1px solid var(--border);margin-top:18px;padding:14px 6px;line-height:1.6}
+.onboard code{background:var(--card);padding:1px 6px;border-radius:6px;font-size:10.5px}
+#toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--green);color:var(--text);padding:14px 18px;border-radius:12px;font-size:13px;display:none;z-index:999}
+@media(max-width:860px){main{flex-direction:column}aside{width:100%;border-right:none;border-bottom:1px solid var(--border)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hbrand">
+    <div class="logo">C●</div>
+    <div class="btext">CRO <span>Next.</span></div>
+    <div class="gate-badge">GATE HUMANO</div>
+  </div>
+  <div style="font-size:11px;color:var(--muted)">Fábrica Multi-Agente · aprovação obrigatória antes de qualquer entrega</div>
+</header>
+<main>
+  <aside>
+    <div class="aside-t">Ciclos aguardando decisão</div>
+    <div id="lista"></div>
+    <div class="onboard">
+      <b style="color:var(--text)">Onboarding de cliente novo</b><br/>
+      1 linha na Data Table <code>cro_clientes</code>: propriedade GA4, token Clarity, projeto Jira e contexto de negócio. Nunca um workflow novo.
+    </div>
+  </aside>
+  <section id="detalhe">
+    <div class="empty">Selecione um ciclo à esquerda.<br/><br/><b>Nenhum ciclo pendente?</b> A fábrica roda na cadência quinzenal — ou execute o workflow manualmente.</div>
+  </section>
+</main>
+<div id="toast"></div>
+<script id="__data" type="application/json">__DATA_PLACEHOLDER__</script>
+<script>
+var CICLOS = [];
+try { CICLOS = JSON.parse(atob(document.getElementById('__data') ? document.getElementById('__data').textContent : '')) || []; } catch(e) { CICLOS = []; }
+var sel = null;
+function fmtBRL(v){ if(v===null||v===undefined||isNaN(v)) return '—'; return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
+function fmtN(v){ if(v===null||v===undefined||isNaN(v)) return '—'; return Math.round(v).toLocaleString('pt-BR'); }
+function deltaCls(d){ return d>1?'up':(d<-1?'down':'flat'); }
+function deltaTxt(d){ if(d===null||d===undefined||isNaN(d)) return ''; return (d>0?'▲ +':(d<0?'▼ ':'')) + d.toFixed(1) + '% vs período anterior'; }
+function scoreCls(s){ return s>=7?'ok':(s>=5?'warn':'bad'); }
+function esc(s){ var d=document.createElement('div'); d.textContent=(s===null||s===undefined)?'':String(s); return d.innerHTML; }
+function parseDados(c){ try { return typeof c.dados_json==='string'?JSON.parse(c.dados_json):(c.dados_json||{}); } catch(e){ return {}; } }
+function renderLista(){
+  var el = document.getElementById('lista');
+  if(!CICLOS.length){ el.innerHTML = '<div style="font-size:12.5px;color:var(--muted);padding:6px">Nenhum ciclo aguardando gate. ✨</div>'; return; }
+  el.innerHTML = CICLOS.map(function(c,i){
+    var st = c.status==='requer_revisao' ? '<span class="pill rev">REQUER REVISÃO</span>' : '<span class="pill gate">AGUARDA GATE</span>';
+    var sc = (c.score_autocritica!==null&&c.score_autocritica!==undefined) ? '<span class="score '+scoreCls(c.score_autocritica)+'">'+Number(c.score_autocritica).toFixed(1)+'/10</span>' : '';
+    return '<div class="ciclo-card'+(sel===i?' sel':'')+'" onclick="selecionar('+i+')"><div class="cc-top"><span class="cc-cliente">'+esc(c.cliente)+'</span>'+sc+'</div><div class="cc-id">'+esc(c.ciclo_id)+' · '+esc((c.criado_em||'').slice(0,10))+'</div>'+st+'</div>';
+  }).join('');
+}
+function selecionar(i){ sel = i; renderLista(); renderDetalhe(); window.scrollTo(0,0); }
+function renderDetalhe(){
+  var c = CICLOS[sel]; if(!c) return;
+  var d = parseDados(c);
+  var k = d.kpis || {};
+  var auto = d.autocritica || {};
+  var garg = d.gargalos || [];
+  var hips = d.hipoteses || [];
+  var anom = d.anomalias || [];
+  var html = '';
+  html += '<h2 class="cliente-h">'+esc(c.cliente)+'</h2><div class="sub">Ciclo '+esc(c.ciclo_id)+' · gerado em '+esc((c.criado_em||'').slice(0,16).replace('T',' '))+' · período '+esc(d.periodo||'últimos 28 dias')+'</div>';
+  html += '<div class="kpis">';
+  html += '<div class="kpi"><div class="l">Sessões</div><div class="v">'+fmtN(k.sessoes)+'</div><div class="d '+deltaCls(k.sessoes_delta)+'">'+deltaTxt(k.sessoes_delta)+'</div></div>';
+  html += '<div class="kpi"><div class="l">Conversões</div><div class="v">'+fmtN(k.conversoes)+'</div><div class="d '+deltaCls(k.conversoes_delta)+'">'+deltaTxt(k.conversoes_delta)+'</div></div>';
+  html += '<div class="kpi"><div class="l">Taxa de conversão</div><div class="v">'+(k.taxa_conversao!==undefined&&k.taxa_conversao!==null?Number(k.taxa_conversao).toFixed(2)+'%':'—')+'</div><div class="d '+deltaCls(k.taxa_delta)+'">'+deltaTxt(k.taxa_delta)+'</div></div>';
+  html += '<div class="kpi"><div class="l">Receita (28d)</div><div class="v">'+fmtBRL(k.receita)+'</div><div class="d '+deltaCls(k.receita_delta)+'">'+deltaTxt(k.receita_delta)+'</div></div>';
+  html += '<div class="kpi"><div class="l">Oportunidade mapeada</div><div class="v" style="color:var(--green)">'+fmtBRL(d.oportunidade_total_min)+' – '+fmtBRL(d.oportunidade_total_max)+'</div><div class="d flat">por mês, faixa conservadora</div></div>';
+  html += '</div>';
+  if(anom.length){ html += '<div class="panel"><h3>⚠ Proteção de receita — anomalias detectadas</h3>' + anom.map(function(a){ return '<div class="alerta-box"><b>'+esc(a.severidade||'alerta').toUpperCase()+'</b> · '+esc(a.mensagem||'')+'</div>'; }).join('') + '</div>'; }
+  var rec = (auto.recomendacao==='aprovar_para_gate');
+  html += '<div class="panel"><h3><span class="n">✓</span> Autocrítica (LLM revisor)</h3><div class="auto-head"><span class="auto-score '+scoreCls(auto.score||0)+'">'+(auto.score!==undefined?Number(auto.score).toFixed(1):'—')+'<span style="font-size:14px;color:var(--muted)">/10</span></span><span class="auto-rec '+(rec?'ok':'warn')+'">'+(rec?'RECOMENDA ENVIO AO GATE':'RECOMENDA REVISÃO')+'</span></div>'
+    + (auto.problemas&&auto.problemas.length ? '<ul class="problemas">'+auto.problemas.map(function(p){return '<li>'+esc(p)+'</li>';}).join('')+'</ul>' : '<div style="font-size:12.5px;color:var(--muted)">Nenhum problema relevante apontado pelo revisor.</div>') + '</div>';
+  html += '<div class="panel"><h3><span class="n">1</span> Síntese narrativa — material de reunião</h3><div class="md">' + (window.marked?marked.parse(c.sintese_md||d.sintese_md||'_Sem síntese._'):esc(c.sintese_md||'')) + '</div></div>';
+  if(garg.length){
+    html += '<div class="panel"><h3><span class="n">2</span> Diagnóstico de funil — gargalos em R$</h3><table><thead><tr><th>Etapa</th><th>Evidência</th><th>Uplift estimado</th><th>Oportunidade/mês</th></tr></thead><tbody>';
+    garg.forEach(function(g){
+      var op = g.oportunidade_reais_mes||{};
+      html += '<tr><td><b>'+esc(g.etapa)+'</b><div style="color:var(--muted);font-size:11.5px;margin-top:2px">'+esc(g.descricao||'')+'</div></td><td style="color:var(--muted)">'+esc(g.evidencia||g.evidencias||'')+'</td><td>'+esc(g.uplift_estimado_pct?(g.uplift_estimado_pct.min+'–'+g.uplift_estimado_pct.max+'%'):'—')+'</td><td class="money">'+fmtBRL(op.min)+' – '+fmtBRL(op.max)+'</td></tr>';
+    });
+    html += '</tbody></table><div class="foot-hint">Premissas e metodologia de cada estimativa estão no JSON do ciclo (auditável). Estimativas sempre em faixa conservadora.</div></div>';
+  }
+  html += '<div class="panel"><h3><span class="n">3</span> Hipóteses qualificadas — decida a aposta</h3>';
+  if(hips.length){
+    html += hips.map(function(h,idx){
+      var g = h.ganho_estimado_reais||{}; var ice = h.ice||{};
+      return '<div class="hip"><input type="checkbox" checked id="hip'+idx+'" data-hid="'+esc(h.id)+'"/><div style="flex:1"><div class="ht">'+esc(h.titulo)+'</div><div class="hm"><b>Problema:</b> '+esc(h.problema_evidenciado||'')+'<br/><b>Solução:</b> '+esc(h.solucao_proposta||'')+'<br/><b>Validação:</b> '+esc(h.criterio_validacao||'')+'</div><div class="tags"><span class="tag">ICE '+(ice.score!==undefined?Number(ice.score).toFixed(1):'—')+'</span><span class="tag g">'+fmtBRL(g.min)+' – '+fmtBRL(g.max)+'/mês</span><span class="tag b">'+esc(h.etapa_funil||'funil')+'</span></div></div></div>';
+    }).join('');
+    html += '<div class="foot-hint">Hipóteses marcadas serão escritas como cards no Jira do cliente e gravadas na memória de conversão após a aprovação.</div>';
+  } else { html += '<div style="font-size:12.5px;color:var(--muted)">Ciclo sem hipóteses (modo sentinela ou erro de pipeline).</div>'; }
+  html += '</div>';
+  html += '<div class="gate-actions"><div class="ga-row"><input type="text" id="aprovador" placeholder="Seu nome (analista responsável)" style="max-width:280px"/><textarea id="notas" placeholder="Notas do gate: edições, contexto para a entrega, o que descartar…"></textarea></div>'
+    + '<div class="ga-row"><button class="btn apr" id="btnApr" onclick="decidir(\'aprovar\')">✓ Aprovar & Entregar (Jira + memória)</button><button class="btn rej" id="btnRej" onclick="decidir(\'rejeitar\')">✕ Rejeitar ciclo</button></div>'
+    + '<div class="foot-hint">Nada chega ao cliente sem este gate. A aprovação grava os cards no Jira, alimenta a memória de conversão e notifica o analista.</div></div>';
+  document.getElementById('detalhe').innerHTML = html;
+}
+function decidir(decisao){
+  var c = CICLOS[sel]; if(!c) return;
+  var aprovador = (document.getElementById('aprovador')||{}).value || '';
+  if(decisao==='aprovar' && !aprovador.trim()){ alert('Informe seu nome — o gate registra quem decidiu a aposta.'); return; }
+  var notas = (document.getElementById('notas')||{}).value || '';
+  var ids = [].slice.call(document.querySelectorAll('.hip input:checked')).map(function(x){ return x.getAttribute('data-hid'); });
+  if(decisao==='aprovar' && !ids.length && (parseDados(c).hipoteses||[]).length){ if(!confirm('Nenhuma hipótese selecionada. Aprovar mesmo assim (sem entrega ao Jira)?')) return; }
+  document.getElementById('btnApr').disabled = true; document.getElementById('btnRej').disabled = true;
+  fetch(window.location.pathname + '/decisao', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ ciclo_id: c.ciclo_id, decisao: decisao, aprovador: aprovador, notas: notas, hipoteses_ids: ids })
+  }).then(function(r){ return r.json().catch(function(){ return {}; }); }).then(function(res){
+    var t = document.getElementById('toast');
+    t.textContent = decisao==='aprovar' ? '✓ Ciclo aprovado — entregas em processamento (Jira + memória + e-mail).' : 'Ciclo rejeitado e registrado.';
+    t.style.display='block';
+    setTimeout(function(){ window.location.reload(); }, 2200);
+  }).catch(function(e){ alert('Falha ao registrar decisão: '+e); document.getElementById('btnApr').disabled=false; document.getElementById('btnRej').disabled=false; });
+}
+renderLista();
+if(CICLOS.length){ selecionar(0); }
+</script>
+</body>
+</html>
