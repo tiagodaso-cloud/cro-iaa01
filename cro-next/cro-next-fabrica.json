@@ -1,0 +1,1545 @@
+{
+  "name": "CRO Next — Fábrica Multi-Agente (SMA)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 2,
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 7,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "cfb9216c-372f-4629-b3ce-ea1e4ba73c1d",
+      "name": "Cadência Quinzenal (Fábrica)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1120,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": [
+                4
+              ],
+              "triggerAtHour": 7,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "a0689e3c-d339-4781-9d86-d2245de2eb1f",
+      "name": "Sentinela Semanal (Proteção de Receita)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1120,
+        400
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "d2652218-dab5-48a8-b337-73668bdf2d8a",
+      "name": "Execução Manual (Teste)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "m1",
+              "name": "modo",
+              "value": "completo",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "38f8aa83-d78d-4709-adeb-52dd86ef2967",
+      "name": "Modo: Completo",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "m2",
+              "name": "modo",
+              "value": "sentinela",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "f3294e12-6e78-4181-8041-1520e07f7a21",
+      "name": "Modo: Sentinela",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "m3",
+              "name": "modo",
+              "value": "completo",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "115cc439-b2a4-4b06-a38c-7da13e4e7d7c",
+      "name": "Modo: Manual",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_clientes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": []
+        },
+        "returnAll": true
+      },
+      "id": "54cd3feb-e809-4c9e-bbc2-489bcc08e028",
+      "name": "Carregar Clientes Ativos",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -640,
+        400
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "let modo = 'completo';\ntry { const m = $('Modo: Sentinela').first().json.modo; if (m) modo = m; } catch (e) {}\ntry { const m = $('Modo: Completo').first().json.modo; if (m) modo = m; } catch (e) {}\ntry { const m = $('Modo: Manual').first().json.modo; if (m) modo = m; } catch (e) {}\nconst ativo = v => v === true || v === 'true' || v === 1 || v === '1';\nreturn $input.all()\n  .filter(i => i.json && i.json.cliente && ativo(i.json.ativo))\n  .map(i => ({ json: { ...i.json, modo } }));"
+      },
+      "id": "d41ef577-4f9c-4448-bcad-f447151addb0",
+      "name": "Montar Fila",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "bd019bf4-c16f-4692-8907-67ee8d5a9462",
+      "name": "Processar Clientes",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "rodada_finalizada_em",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "3b05cbb4-fdd8-42ce-bf6f-ad6759b48d49",
+      "name": "Rodada Concluída",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $input.first().json;\nconst hoje = new Date();\nfunction d(offsetDias) {\n  const x = new Date(hoje.getTime() - offsetDias * 86400000);\n  return x.toISOString().slice(0, 10);\n}\nconst slug = String(r.cliente || 'cliente').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');\nconst carimbo = hoje.toISOString().slice(0, 10).replace(/-/g, '');\nconst modo = r.modo || 'completo';\nreturn [{ json: {\n  cliente: r.cliente,\n  modo,\n  ciclo_id: slug + '-' + carimbo + (modo === 'sentinela' ? '-S' : ''),\n  site_url: r.site_url || '',\n  contexto_negocio: r.contexto_negocio || '',\n  vertical: r.vertical || '',\n  tier: r.tier || 'essential',\n  ga4_property_id: String(r.ga4_property_id || '').replace(/[^0-9]/g, ''),\n  clarity_api_token: r.clarity_api_token || '',\n  jira_base_url: String(r.jira_base_url || '').replace(/\\/$/, ''),\n  jira_project_key: r.jira_project_key || '',\n  jira_issue_type: r.jira_issue_type || 'Task',\n  email_analista: r.email_analista || 'tsoares@cadastra.com',\n  valor_por_conversao: Number(r.valor_por_conversao) || 0,\n  moeda: r.moeda || 'BRL',\n  periodo_inicio: d(28), periodo_fim: d(1),\n  periodo_prev_inicio: d(56), periodo_prev_fim: d(29)\n} }];"
+      },
+      "id": "80278068-ed22-4473-8c6e-a3858b5a2620",
+      "name": "Preparar Cliente",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://analyticsdata.googleapis.com/v1beta/properties/{{ $('Preparar Cliente').first().json.ga4_property_id }}:runReport",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAnalyticsOAuth2",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ dateRanges: [ { startDate: $('Preparar Cliente').first().json.periodo_inicio, endDate: $('Preparar Cliente').first().json.periodo_fim, name: 'atual' }, { startDate: $('Preparar Cliente').first().json.periodo_prev_inicio, endDate: $('Preparar Cliente').first().json.periodo_prev_fim, name: 'anterior' } ], metrics: [ { name: 'sessions' }, { name: 'totalUsers' }, { name: 'keyEvents' }, { name: 'purchaseRevenue' } ], limit: 8 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "ee0d47c3-0fb0-49c5-8b2b-47e1bde114ab",
+      "name": "GA4 – Totais do Período",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        320,
+        400
+      ],
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "__CRIAR__",
+          "name": "Google Analytics - CRO Next"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://analyticsdata.googleapis.com/v1beta/properties/{{ $('Preparar Cliente').first().json.ga4_property_id }}:runReport",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAnalyticsOAuth2",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ dateRanges: [ { startDate: $('Preparar Cliente').first().json.periodo_inicio, endDate: $('Preparar Cliente').first().json.periodo_fim, name: 'atual' }, { startDate: $('Preparar Cliente').first().json.periodo_prev_inicio, endDate: $('Preparar Cliente').first().json.periodo_prev_fim, name: 'anterior' } ], dimensions: [ { name: 'eventName' } ], metrics: [ { name: 'eventCount' }, { name: 'totalUsers' } ], dimensionFilter: { filter: { fieldName: 'eventName', inListFilter: { values: ['page_view','view_item','view_item_list','select_item','add_to_cart','view_cart','begin_checkout','add_shipping_info','add_payment_info','purchase','generate_lead','form_start','form_submit','sign_up','search'] } } }, limit: 80 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "f5c4b4a2-0d19-4caa-8c58-34a9852bb8fc",
+      "name": "GA4 – Eventos de Funil",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        560,
+        400
+      ],
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "__CRIAR__",
+          "name": "Google Analytics - CRO Next"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://analyticsdata.googleapis.com/v1beta/properties/{{ $('Preparar Cliente').first().json.ga4_property_id }}:runReport",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAnalyticsOAuth2",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ dateRanges: [ { startDate: $('Preparar Cliente').first().json.periodo_inicio, endDate: $('Preparar Cliente').first().json.periodo_fim } ], dimensions: [ { name: 'sessionDefaultChannelGroup' }, { name: 'deviceCategory' } ], metrics: [ { name: 'sessions' }, { name: 'keyEvents' }, { name: 'purchaseRevenue' } ], orderBys: [ { desc: true, metric: { metricName: 'sessions' } } ], limit: 30 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "2564a6f7-56c4-44f2-81e3-be526aa20389",
+      "name": "GA4 – Canais & Devices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        800,
+        400
+      ],
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "__CRIAR__",
+          "name": "Google Analytics - CRO Next"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.clarity.ms/export-data/api/v1/project-live-insights",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "numOfDays",
+              "value": "3"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bea' + 'rer ' + $('Preparar Cliente').first().json.clarity_api_token }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "551c3bcf-37a4-4b01-9563-f032f46ac237",
+      "name": "Clarity – Comportamento",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1040,
+        400
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Preparar Cliente').first().json.jira_base_url }}/rest/api/2/search",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "jql",
+              "value": "=project = \"{{ $('Preparar Cliente').first().json.jira_project_key }}\""
+            },
+            {
+              "name": "maxResults",
+              "value": "30"
+            },
+            {
+              "name": "fields",
+              "value": "summary,status,labels,created"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "0f44bc30-c689-4c7b-a38c-6b021e2873f9",
+      "name": "Jira – Backlog Existente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1280,
+        400
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "Ut4FQk61Gd0d81j4",
+          "name": "JIRA-GABRIELY"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "function safe(nome) { try { const j = $(nome).first().json; return j || null; } catch (e) { return null; } }\nconst ga4Tot = safe('GA4 – Totais do Período');\nconst ga4Fun = safe('GA4 – Eventos de Funil');\nconst ga4Can = safe('GA4 – Canais & Devices');\nconst clarity = safe('Clarity – Comportamento');\nconst jira = safe('Jira – Backlog Existente');\nconst num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };\nconst pct = (a, b) => (b > 0 ? ((a - b) / b) * 100 : null);\nconst round1 = v => (v === null || v === undefined ? null : Math.round(v * 10) / 10);\n\nlet kpis = { sessoes: null, usuarios: null, conversoes: null, receita: null, taxa_conversao: null, sessoes_ant: null, conversoes_ant: null, receita_ant: null, taxa_ant: null, sessoes_delta: null, conversoes_delta: null, receita_delta: null, taxa_delta: null };\nlet ga4ok = false;\nif (ga4Tot && Array.isArray(ga4Tot.rows)) {\n  ga4ok = true;\n  for (const row of ga4Tot.rows) {\n    const dims = (row.dimensionValues || []).map(x => x.value);\n    const faixa = dims[dims.length - 1] || 'atual';\n    const m = (row.metricValues || []).map(x => num(x.value));\n    if (faixa === 'atual' || faixa === 'date_range_0') { kpis.sessoes = m[0]; kpis.usuarios = m[1]; kpis.conversoes = m[2]; kpis.receita = m[3]; }\n    else { kpis.sessoes_ant = m[0]; kpis.conversoes_ant = m[2]; kpis.receita_ant = m[3]; }\n  }\n  kpis.taxa_conversao = kpis.sessoes > 0 ? round1((kpis.conversoes / kpis.sessoes) * 1000) / 10 : null;\n  kpis.taxa_ant = kpis.sessoes_ant > 0 ? round1((kpis.conversoes_ant / kpis.sessoes_ant) * 1000) / 10 : null;\n  kpis.sessoes_delta = round1(pct(kpis.sessoes, kpis.sessoes_ant));\n  kpis.conversoes_delta = round1(pct(kpis.conversoes, kpis.conversoes_ant));\n  kpis.receita_delta = round1(pct(kpis.receita, kpis.receita_ant));\n  kpis.taxa_delta = round1(pct(kpis.taxa_conversao, kpis.taxa_ant));\n}\n\nconst eventos = {};\nif (ga4Fun && Array.isArray(ga4Fun.rows)) {\n  for (const row of ga4Fun.rows) {\n    const dims = (row.dimensionValues || []).map(x => x.value);\n    const nome = dims[0];\n    const faixa = dims[dims.length - 1] || 'atual';\n    const m = (row.metricValues || []).map(x => num(x.value));\n    eventos[nome] = eventos[nome] || { atual: 0, anterior: 0, usuarios_atual: 0 };\n    if (faixa === 'atual' || faixa === 'date_range_0') { eventos[nome].atual = m[0]; eventos[nome].usuarios_atual = m[1]; }\n    else { eventos[nome].anterior = m[0]; }\n  }\n}\nconst funil_eventos = Object.entries(eventos).map(([evento, v]) => ({ evento, atual: v.atual, anterior: v.anterior, delta_pct: round1(pct(v.atual, v.anterior)), usuarios: v.usuarios_atual }));\nconst ev = n => eventos[n] ? eventos[n].atual : 0;\nconst taxas_funil = {};\nif (kpis.sessoes > 0 && ev('add_to_cart') > 0) taxas_funil.sessao_para_carrinho_pct = round1((ev('add_to_cart') / kpis.sessoes) * 100);\nif (ev('add_to_cart') > 0 && ev('begin_checkout') > 0) taxas_funil.carrinho_para_checkout_pct = round1((ev('begin_checkout') / ev('add_to_cart')) * 100);\nif (ev('begin_checkout') > 0 && ev('purchase') > 0) taxas_funil.checkout_para_compra_pct = round1((ev('purchase') / ev('begin_checkout')) * 100);\nif (kpis.sessoes > 0 && ev('generate_lead') > 0) taxas_funil.sessao_para_lead_pct = round1((ev('generate_lead') / kpis.sessoes) * 100);\nif (ev('form_start') > 0 && ev('form_submit') > 0) taxas_funil.form_conclusao_pct = round1((ev('form_submit') / ev('form_start')) * 100);\n\nlet canais = [];\nconst porDevice = {};\nif (ga4Can && Array.isArray(ga4Can.rows)) {\n  canais = ga4Can.rows.slice(0, 12).map(row => {\n    const dims = (row.dimensionValues || []).map(x => x.value);\n    const m = (row.metricValues || []).map(x => num(x.value));\n    const item = { canal: dims[0], device: dims[1], sessoes: m[0], conversoes: m[1], receita: m[2], taxa_pct: m[0] > 0 ? round1((m[1] / m[0]) * 100) : 0 };\n    porDevice[item.device] = porDevice[item.device] || { sessoes: 0, conversoes: 0 };\n    porDevice[item.device].sessoes += m[0]; porDevice[item.device].conversoes += m[1];\n    return item;\n  });\n}\nconst devices = Object.entries(porDevice).map(([device, v]) => ({ device, sessoes: v.sessoes, conversoes: v.conversoes, taxa_pct: v.sessoes > 0 ? round1((v.conversoes / v.sessoes) * 100) : 0 }));\n\nlet clarity_metricas = [];\nlet clarityok = false;\nconst clarityArr = Array.isArray(clarity) ? clarity : (clarity && Array.isArray(clarity.data) ? clarity.data : null);\nif (clarityArr) {\n  clarityok = true;\n  clarity_metricas = clarityArr.filter(m => m && m.metricName).map(m => ({ metrica: m.metricName, dados: (m.information || []).slice(0, 3) }));\n}\n\nlet backlog_jira = [];\nlet jiraok = false;\nif (jira && Array.isArray(jira.issues)) {\n  jiraok = true;\n  backlog_jira = jira.issues.map(i => ({ key: i.key, resumo: i.fields && i.fields.summary, status: i.fields && i.fields.status && i.fields.status.name }));\n}\n\nreturn [{ json: {\n  kpis, funil_eventos, taxas_funil, canais, devices, clarity_metricas, backlog_jira,\n  purchase_atual: ev('purchase'),\n  purchase_anterior: eventos['purchase'] ? eventos['purchase'].anterior : 0,\n  coleta: { ga4: ga4ok, clarity: clarityok, jira: jiraok }\n} }];"
+      },
+      "id": "36437ed7-dd5a-4e96-83c4-7d76e33b71b9",
+      "name": "Normalizar Métricas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const P = $('Preparar Cliente').first().json;\nconst M = $('Normalizar Métricas').first().json;\nconst kpis = M.kpis;\nconst round1 = v => (v === null || v === undefined ? null : Math.round(v * 10) / 10);\nconst pct = (a, b) => (b > 0 ? ((a - b) / b) * 100 : null);\n\nconst anomalias = [];\nfunction anexa(severidade, metrica, variacao, mensagem) { anomalias.push({ severidade, metrica, variacao_pct: round1(variacao), mensagem }); }\nif (M.coleta.ga4 && kpis.sessoes_ant > 100) {\n  if (kpis.sessoes_delta !== null && kpis.sessoes_delta <= -30) anexa('alta', 'sessoes', kpis.sessoes_delta, 'Queda de ' + Math.abs(kpis.sessoes_delta) + '% nas sessões vs período anterior (' + kpis.sessoes_ant + ' para ' + kpis.sessoes + ').');\n  if (kpis.conversoes_delta !== null && kpis.conversoes_delta <= -25) anexa('critica', 'conversoes', kpis.conversoes_delta, 'Queda de ' + Math.abs(kpis.conversoes_delta) + '% nas conversões vs período anterior (' + kpis.conversoes_ant + ' para ' + kpis.conversoes + ').');\n  if (kpis.receita_ant > 0 && kpis.receita_delta !== null && kpis.receita_delta <= -25) anexa('critica', 'receita', kpis.receita_delta, 'Queda de ' + Math.abs(kpis.receita_delta) + '% na receita vs período anterior.');\n  if (kpis.taxa_delta !== null && kpis.taxa_delta <= -20 && kpis.sessoes_delta !== null && kpis.sessoes_delta > -15) anexa('alta', 'taxa_conversao', kpis.taxa_delta, 'Taxa de conversão caiu ' + Math.abs(kpis.taxa_delta) + '% com tráfego estável — investigar UX/checkout.');\n  if (M.purchase_anterior > 20) {\n    const dv = pct(M.purchase_atual, M.purchase_anterior);\n    if (dv !== null && dv <= -40 && kpis.sessoes_delta !== null && kpis.sessoes_delta > -15) anexa('critica', 'purchase', dv, 'Eventos de compra caíram ' + Math.abs(Math.round(dv)) + '% com tráfego estável — possível checkout quebrado.');\n  }\n}\n\nconst sevRank = { critica: 3, alta: 2, media: 1 };\nanomalias.sort((a, b) => (sevRank[b.severidade] || 0) - (sevRank[a.severidade] || 0));\nconst pior = anomalias[0] || null;\nconst alerta_row = pior ? {\n  cliente: P.cliente, tipo: 'protecao_receita', severidade: pior.severidade, metrica: anomalias.map(a => a.metrica).join(','),\n  variacao_pct: pior.variacao_pct || 0, mensagem: anomalias.map(a => a.mensagem).join(' | '), ciclo_id: P.ciclo_id, criado_em: new Date().toISOString()\n} : null;\nconst alerta_email_html = pior ? (\n  '<div style=\"font-family:Arial,sans-serif;max-width:640px\">' +\n  '<h2 style=\"color:#ef4444\">🚨 CRO Next — Proteção de receita: ' + P.cliente + '</h2>' +\n  '<p>A ingestão detectou anomalias antes do cliente perceber. Período analisado: <b>' + P.periodo_inicio + ' a ' + P.periodo_fim + '</b> vs anterior.</p>' +\n  '<ul>' + anomalias.map(a => '<li><b>[' + a.severidade.toUpperCase() + ']</b> ' + a.mensagem + '</li>').join('') + '</ul>' +\n  '<p style=\"color:#6b7280;font-size:12px\">Verifique tagueamento, checkout e mudanças recentes no site antes de acionar o cliente. Registro gravado em cro_alertas.</p></div>'\n) : '';\n\nreturn [{ json: {\n  ciclo_id: P.ciclo_id, cliente: P.cliente, modo: P.modo,\n  periodo: P.periodo_inicio + ' a ' + P.periodo_fim,\n  registro: { site_url: P.site_url, contexto_negocio: P.contexto_negocio, vertical: P.vertical, tier: P.tier, jira_base_url: P.jira_base_url, jira_project_key: P.jira_project_key, jira_issue_type: P.jira_issue_type, email_analista: P.email_analista, valor_por_conversao: P.valor_por_conversao, moeda: P.moeda },\n  kpis: M.kpis, funil_eventos: M.funil_eventos, taxas_funil: M.taxas_funil, canais: M.canais, devices: M.devices,\n  clarity_metricas: M.clarity_metricas, backlog_jira: M.backlog_jira, anomalias,\n  tem_anomalia: anomalias.length > 0, alerta_row, alerta_email_html,\n  coleta: M.coleta\n} }];"
+      },
+      "id": "e773de40-cd7e-4768-8942-567bf99485dd",
+      "name": "Agente de Ingestão (Normalizar)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.tem_anomalia }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "36e97305-cbd5-4da4-9150-9bd0d8377f56",
+      "name": "Tem Anomalia?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2000,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_alertas"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "cliente": "={{ $json.alerta_row.cliente }}",
+            "tipo": "={{ $json.alerta_row.tipo }}",
+            "severidade": "={{ $json.alerta_row.severidade }}",
+            "metrica": "={{ $json.alerta_row.metrica }}",
+            "variacao_pct": "={{ $json.alerta_row.variacao_pct }}",
+            "mensagem": "={{ $json.alerta_row.mensagem }}",
+            "ciclo_id": "={{ $json.alerta_row.ciclo_id }}",
+            "criado_em": "={{ $json.alerta_row.criado_em }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "cliente",
+              "displayName": "cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "severidade",
+              "displayName": "severidade",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "metrica",
+              "displayName": "metrica",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "variacao_pct",
+              "displayName": "variacao_pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensagem",
+              "displayName": "mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ciclo_id",
+              "displayName": "ciclo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bb55d170-6ddb-4592-b74e-b924673ecdd7",
+      "name": "Registrar Alerta",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2240,
+        240
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('Agente de Ingestão (Normalizar)').first().json.registro.email_analista }}",
+        "subject": "=🚨 CRO Next | {{ $('Agente de Ingestão (Normalizar)').first().json.cliente }} — anomalia detectada",
+        "emailType": "html",
+        "message": "={{ $('Agente de Ingestão (Normalizar)').first().json.alerta_email_html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "CRO Next — Sentinela"
+        }
+      },
+      "id": "87d5afa0-33cd-4a41-b686-a7bc9e6846dc",
+      "name": "Email – Alerta de Receita",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2480,
+        240
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H4YY5Bldwy95Y3qW",
+          "name": "SEO-N8N"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Preparar Cliente').first().json.modo }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "completo"
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "ddc87f5b-1f23-4613-b196-35e873935f7d",
+      "name": "Modo Completo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2720,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=DOSSIÊ E DADOS DO CICLO (JSON):\n{{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json) }}",
+        "options": {
+          "systemMessage": "Você é o AGENTE HEURÍSTICO/UX da fábrica CRO Next (Cadastra). Sua função: cruzar frameworks de usabilidade com o dado quantitativo real do cliente.\n\nFRAMEWORKS DE REFERÊNCIA:\n- 10 heurísticas de Nielsen (NN/g)\n- Padrões Baymard Institute para e-commerce (checkout, PDP, carrinho, formulários)\n- WCAG 2.2 níveis A/AA (acessibilidade que afeta conversão)\n\nREGRAS INEGOCIÁVEIS:\n1. TODO achado precisa citar evidência quantitativa REAL presente nos dados fornecidos (taxas de funil, deltas, métricas Clarity como rage clicks/dead clicks/quick backs, gap mobile vs desktop). NUNCA invente números.\n2. Se um dado não existe na entrada (coleta.ga4=false, clarity vazio), diga menos achados — não especule.\n3. Priorize achados que expliquem os gargalos numéricos observados. Conecte comportamento (Clarity) com resultado (GA4).\n4. Máximo 8 achados, mínimo 3 (se os dados permitirem). severidade: 1 (cosmético) a 5 (bloqueia conversão).\n5. Escreva em pt-BR, tom consultivo e direto. framework deve ser exatamente: Nielsen, Baymard ou WCAG.\n\nResponda SOMENTE no formato JSON do schema.",
+          "maxIterations": 5
+        },
+        "hasOutputParser": true
+      },
+      "id": "d4a2a326-9d7a-447f-be1f-bf316b25ebfb",
+      "name": "Agente Heurístico UX",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2960,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.2,
+          "maxTokens": 4096
+        }
+      },
+      "id": "fa300ec9-b9c1-423c-ba50-e4bfe7148ccd",
+      "name": "LLM – Heurístico",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2960,
+        620
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{ \"achados\": [ { \"id\": \"ACH-01\", \"heuristica\": \"Visibilidade do status do sistema\", \"framework\": \"Nielsen\", \"pagina_ou_fluxo\": \"checkout\", \"evidencia_quantitativa\": \"begin_checkout -> purchase em 38% vs benchmark 55-65%; RageClickCount em 4,2% das sessoes\", \"severidade\": 4, \"descricao\": \"Descricao objetiva do problema de UX\", \"impacto_provavel\": \"abandono no checkout\" } ] }"
+      },
+      "id": "9e18177f-f8cb-4b38-a491-497405c5b462",
+      "name": "Parser – Achados",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3120,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=DOSSIÊ E DADOS DO CICLO (JSON):\n{{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json) }}\n\nACHADOS:\n{{ JSON.stringify($('Agente Heurístico UX').first().json.output) }}",
+        "options": {
+          "systemMessage": "Você é o AGENTE DE DIAGNÓSTICO DE FUNIL da fábrica CRO Next (Cadastra). Sua função: localizar gargalos, estimar uplift e traduzir em oportunidade financeira mensal (R$).\n\nMETODOLOGIA OBRIGATÓRIA (transparente e auditável):\n1. Valor por conversão: use receita/conversões do GA4 quando houver receita (> 0); senão use registro.valor_por_conversao.\n2. Oportunidade R$/mês = sessões afetadas pelo gargalo × ganho incremental de taxa (em pontos) × valor por conversão. Normalize o período de 28 dias para 30 dias (× 30/28).\n3. SEMPRE em faixa conservadora: min = cenário pessimista, max = cenário realista (nunca otimista). Uplift raramente passa de 15% por gargalo.\n4. Campo premissas: explicite TODA a aritmética (valores usados, contas feitas). O cliente audita isso.\n5. Benchmarks de referência (cite como faixa): carrinho para checkout 55-65%; checkout para compra 40-55%; abandono médio de checkout ~70% (Baymard); conclusão de formulário 50-70%.\n6. 3 a 5 gargalos, ordenados por oportunidade_reais_mes.max decrescente. confianca: alta | media | baixa conforme qualidade do dado.\n7. Se coleta.ga4=false, retorne gargalos=[] e explique no resumo_diagnostico.\n\nEscreva em pt-BR. Responda SOMENTE no formato JSON do schema.",
+          "maxIterations": 5
+        },
+        "hasOutputParser": true
+      },
+      "id": "8d3c591f-f1e5-4d89-b32c-7c466ca27ead",
+      "name": "Agente Diagnóstico de Funil",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3280,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.2,
+          "maxTokens": 4096
+        }
+      },
+      "id": "db0c9dac-4889-45e0-99a7-5a06da986d4b",
+      "name": "LLM – Diagnóstico",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        3280,
+        620
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{ \"gargalos\": [ { \"etapa\": \"carrinho -> checkout\", \"descricao\": \"Perda concentrada na transicao\", \"taxa_atual_pct\": 42.0, \"benchmark_pct\": \"55-65\", \"evidencia\": \"5200 add_to_cart vs 2180 begin_checkout; rage clicks 4,2%\", \"uplift_estimado_pct\": { \"min\": 5, \"max\": 12 }, \"oportunidade_reais_mes\": { \"min\": 8500, \"max\": 21000 }, \"premissas\": \"RPS R$5 x 48000 sessoes; faixa conservadora\", \"confianca\": \"media\" } ], \"resumo_diagnostico\": \"Sintese de 2-3 frases\" }"
+      },
+      "id": "388e0cf3-dfd7-46b2-8bb6-6b70e82acb9b",
+      "name": "Parser – Gargalos",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3440,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=DOSSIÊ E DADOS DO CICLO (JSON):\n{{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json) }}\n\nACHADOS:\n{{ JSON.stringify($('Agente Heurístico UX').first().json.output) }}\n\nDIAGNÓSTICO:\n{{ JSON.stringify($('Agente Diagnóstico de Funil').first().json.output) }}",
+        "options": {
+          "systemMessage": "Você é o AGENTE DE PRIORIZAÇÃO (ICE) da fábrica CRO Next (Cadastra). Sua função: transformar diagnóstico em HIPÓTESES QUALIFICADAS — a unidade de venda do serviço.\n\nUMA HIPÓTESE QUALIFICADA TEM OBRIGATORIAMENTE:\n1. problema_evidenciado: dado + heurística (cite números reais da entrada);\n2. solucao_proposta: específica e implementável (o quê, onde, como);\n3. ganho_estimado_reais: faixa mensal conservadora, coerente com o gargalo relacionado (nunca maior que a oportunidade do gargalo);\n4. criterio_validacao: como medir (teste A/B, métrica primária, janela, critério de sucesso).\n\nSCORE ICE: impacto, confianca e facilidade de 1 a 10; score = média aritmética com 1 casa decimal. Ordene por score decrescente.\n\nREGRAS:\n- Gere de 4 a 8 hipóteses (tier essential: 4; growth: 8; enterprise: 8). O tier está em registro.tier.\n- NÃO duplique itens do backlog_jira existente — se um tema já existe lá, proponha ângulo complementar ou pule.\n- IDs sequenciais: HIP-01, HIP-02...\n- esforco: P (dias), M (1-2 sprints), G (mais de 2 sprints).\n- Quick wins primeiro em caso de empate no score.\n\nEscreva em pt-BR. Responda SOMENTE no formato JSON do schema.",
+          "maxIterations": 5
+        },
+        "hasOutputParser": true
+      },
+      "id": "727e7104-0acd-4455-b48d-2f0b3b210498",
+      "name": "Agente Priorização ICE",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3600,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.3,
+          "maxTokens": 4096
+        }
+      },
+      "id": "e0edbbad-d914-4823-a1ed-bf413d007fb4",
+      "name": "LLM – Priorização",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        3600,
+        620
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{ \"hipoteses\": [ { \"id\": \"HIP-01\", \"titulo\": \"Simplificar frete no checkout\", \"problema_evidenciado\": \"dado + heuristica\", \"solucao_proposta\": \"o que mudar, onde e como\", \"ganho_estimado_reais\": { \"min\": 8500, \"max\": 21000 }, \"criterio_validacao\": \"A/B; metrica begin_checkout->purchase; 95%; 4 semanas\", \"ice\": { \"impacto\": 8, \"confianca\": 6, \"facilidade\": 7, \"score\": 7.0 }, \"etapa_funil\": \"checkout\", \"esforco\": \"M\", \"gargalo_relacionado\": \"carrinho -> checkout\" } ] }"
+      },
+      "id": "b83e2f33-658c-402f-bd72-89f578db5992",
+      "name": "Parser – Hipóteses",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3760,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=KPIs: {{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json.kpis) }}\nANOMALIAS: {{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json.anomalias) }}\nCONTEXTO: {{ $('Agente de Ingestão (Normalizar)').first().json.registro.contexto_negocio }}\nDIAGNÓSTICO: {{ JSON.stringify($('Agente Diagnóstico de Funil').first().json.output) }}\nHIPÓTESES: {{ JSON.stringify($('Agente Priorização ICE').first().json.output) }}",
+        "options": {
+          "systemMessage": "Você é o AGENTE DE SÍNTESE da fábrica CRO Next (Cadastra). Sua função: produzir o dashboard narrativo + material de reunião que o consultor leva ao cliente após aprovar no gate.\n\nFORMATO DA SAÍDA: markdown puro (sem cercas de código), em pt-BR, com EXATAMENTE estas seções:",
+          "maxIterations": 5
+        }
+      },
+      "id": "a234cc76-b3cb-4a65-bdca-9ff17c2b432a",
+      "name": "Agente de Síntese",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3920,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.5,
+          "maxTokens": 4096
+        }
+      },
+      "id": "296e7b8c-1a45-4c50-af5d-5c27871de38d",
+      "name": "LLM – Síntese",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        3920,
+        620
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=KPIs: {{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json.kpis) }}\nTAXAS: {{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json.taxas_funil) }}\nCOLETA: {{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json.coleta) }}\nACHADOS: {{ JSON.stringify($('Agente Heurístico UX').first().json.output) }}\nDIAGNÓSTICO: {{ JSON.stringify($('Agente Diagnóstico de Funil').first().json.output) }}\nHIPÓTESES: {{ JSON.stringify($('Agente Priorização ICE').first().json.output) }}\nSÍNTESE:\n{{ $('Agente de Síntese').first().json.output }}",
+        "options": {
+          "systemMessage": "Você é o AGENTE DE AUTOCRÍTICA da fábrica CRO Next (Cadastra) — o revisor cético que roda ANTES do gate humano. Sua função: impedir que qualidade silenciosamente ruim chegue ao analista.\n\nCHECKLIST DE REVISÃO (avalie cada item):\n1. Evidência: todo achado e gargalo cita número presente nos dados de entrada? (Compare! Números inventados = problema grave.)\n2. Aritmética: as oportunidades em R$ são consistentes com as premissas declaradas? Refaça as contas por amostragem.\n3. Faixas conservadoras: alguma estimativa parece inflada (uplift acima de 15%, ganho maior que a oportunidade do gargalo)?\n4. Hipóteses: todas têm problema evidenciado + solução + ganho em faixa + critério de validação mensurável?\n5. Anti-comoditização: o conteúdo usa o contexto específico do cliente ou parece genérico/copiável de qualquer relatório?\n6. Coerência: a síntese reflete fielmente diagnóstico e hipóteses?\n\nSCORE de 0 a 10 (1 casa decimal): 9-10 impecável; 7-8.9 bom, segue ao gate; 5-6.9 fraquezas relevantes; abaixo de 5 comprometido.\nrecomendacao: \"aprovar_para_gate\" se score >= 7; senão \"revisar\".\nproblemas: liste TODOS os problemas concretos encontrados (cite o id do item). Vazio somente se realmente não houver.\n\nSeja duro. Escreva em pt-BR. Responda SOMENTE no formato JSON do schema.",
+          "maxIterations": 5
+        },
+        "hasOutputParser": true
+      },
+      "id": "a0c1992e-10f5-4a59-b75e-491ddfecec20",
+      "name": "Agente Autocrítica (Revisor)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4240,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.1,
+          "maxTokens": 4096
+        }
+      },
+      "id": "07c528bb-ad12-4de8-b292-6cf22d9ee458",
+      "name": "LLM – Autocrítica",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        4240,
+        620
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{ \"score\": 7.5, \"recomendacao\": \"aprovar_para_gate\", \"problemas\": [ \"HIP-03 sem criterio de validacao mensuravel\" ], \"pontos_fortes\": [ \"Estimativas com premissas explicitas\" ] }"
+      },
+      "id": "cac5ae91-13f0-4c2e-ae90-07fdb7c55619",
+      "name": "Parser – Autocrítica",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        4400,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function saida(nome) { try { const j = $(nome).first().json; return j && j.output !== undefined ? j.output : null; } catch (e) { return null; } }\nconst base = $('Agente de Ingestão (Normalizar)').first().json;\nconst achadosOut = saida('Agente Heurístico UX') || {};\nconst diagOut = saida('Agente Diagnóstico de Funil') || {};\nconst iceOut = saida('Agente Priorização ICE') || {};\nconst sinteseOut = saida('Agente de Síntese');\nconst autoOut = saida('Agente Autocrítica (Revisor)') || {};\n\nconst achados = achadosOut.achados || [];\nconst gargalos = diagOut.gargalos || [];\nconst hipoteses = iceOut.hipoteses || [];\nconst sintese_md = typeof sinteseOut === 'string' ? sinteseOut : (sinteseOut ? JSON.stringify(sinteseOut) : '');\nconst autocritica = { score: Number(autoOut.score) || 0, recomendacao: autoOut.recomendacao || 'revisar', problemas: autoOut.problemas || [], pontos_fortes: autoOut.pontos_fortes || [] };\n\nconst pipelineOk = achados.length > 0 || gargalos.length > 0 || hipoteses.length > 0;\nlet status = 'erro_pipeline';\nif (pipelineOk) status = autocritica.score >= 7 ? 'aguardando_gate' : 'requer_revisao';\n\nconst soma = (arr, sel) => arr.reduce((acc, g) => acc + (Number(sel(g)) || 0), 0);\nconst oportunidade_total_min = Math.round(soma(gargalos, g => (g.oportunidade_reais_mes || {}).min));\nconst oportunidade_total_max = Math.round(soma(gargalos, g => (g.oportunidade_reais_mes || {}).max));\n\nconst dados = {\n  ciclo_id: base.ciclo_id, cliente: base.cliente, periodo: base.periodo, registro: base.registro,\n  kpis: base.kpis, taxas_funil: base.taxas_funil, funil_eventos: base.funil_eventos, canais: base.canais, devices: base.devices,\n  clarity_metricas: base.clarity_metricas, backlog_jira: base.backlog_jira, anomalias: base.anomalias, coleta: base.coleta,\n  achados, gargalos, hipoteses, autocritica, sintese_md,\n  resumo_diagnostico: diagOut.resumo_diagnostico || '',\n  oportunidade_total_min, oportunidade_total_max\n};\n\nreturn [{ json: {\n  ciclo_id: base.ciclo_id, cliente: base.cliente, status,\n  score_autocritica: autocritica.score,\n  problemas_revisor: autocritica.problemas,\n  oportunidade_total_min, oportunidade_total_max,\n  hipoteses_qtd: hipoteses.length,\n  sintese_md,\n  dados_json: JSON.stringify(dados),\n  criado_em: new Date().toISOString()\n} }];"
+      },
+      "id": "de362d49-712c-4ee4-ab57-eeee42aa4c4b",
+      "name": "Montar Pacote do Ciclo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4560,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $input.first().json;\nconst base = $('Agente de Ingestão (Normalizar)').first().json;\nconst brl = v => 'R$ ' + Math.round(v || 0).toLocaleString('pt-BR');\nconst gateUrl = 'https://n8n-prod.cadastra.com/webhook/cro-next-gate';\nconst cor = p.status === 'aguardando_gate' ? '#10b981' : (p.status === 'requer_revisao' ? '#f59e0b' : '#ef4444');\nconst rotulo = p.status === 'aguardando_gate' ? 'AGUARDANDO SEU GATE' : (p.status === 'requer_revisao' ? 'REQUER REVISÃO (autocrítica < 7)' : 'ERRO NO PIPELINE');\nconst problemas = p.problemas_revisor || [];\nconst email_html =\n  '<div style=\"font-family:Arial,sans-serif;max-width:660px\">' +\n  '<h2>🏭 CRO Next — Ciclo pronto: ' + p.cliente + '</h2>' +\n  '<p><span style=\"background:' + cor + ';color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:bold\">' + rotulo + '</span></p>' +\n  '<table style=\"border-collapse:collapse;font-size:13px\">' +\n  '<tr><td style=\"padding:4px 12px 4px 0;color:#6b7280\">Ciclo</td><td><b>' + p.ciclo_id + '</b></td></tr>' +\n  '<tr><td style=\"padding:4px 12px 4px 0;color:#6b7280\">Período</td><td>' + base.periodo + '</td></tr>' +\n  '<tr><td style=\"padding:4px 12px 4px 0;color:#6b7280\">Autocrítica</td><td><b>' + Number(p.score_autocritica).toFixed(1) + '/10</b></td></tr>' +\n  '<tr><td style=\"padding:4px 12px 4px 0;color:#6b7280\">Oportunidade mapeada</td><td><b>' + brl(p.oportunidade_total_min) + ' – ' + brl(p.oportunidade_total_max) + '/mês</b></td></tr>' +\n  '<tr><td style=\"padding:4px 12px 4px 0;color:#6b7280\">Hipóteses qualificadas</td><td>' + p.hipoteses_qtd + '</td></tr>' +\n  '</table>' +\n  (problemas.length ? '<p style=\"font-size:13px\"><b>Problemas apontados pelo revisor:</b></p><ul style=\"font-size:13px\">' + problemas.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '') +\n  '<p style=\"margin-top:16px\"><' + 'a hr' + 'ef=\"' + gateUrl + '\" style=\"background:#FF5C28;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold\">Abrir Gate Humano →</a></p>' +\n  '<p style=\"color:#6b7280;font-size:12px\">Você aprova, edita e decide a aposta. Nada chega ao cliente sem o seu gate.</p></div>';\n\nreturn [{ json: {\n  ...p,\n  email_destino: (base.registro || {}).email_analista || 'tsoares@cadastra.com',\n  email_assunto: (p.status === 'aguardando_gate' ? '🏭 CRO Next | ' : '⚠️ CRO Next | ') + p.cliente + ' — ciclo ' + p.ciclo_id + ' (' + rotulo.toLowerCase() + ')',\n  email_html\n} }];"
+      },
+      "id": "c424f303-a0b9-402a-899b-d69382d40a67",
+      "name": "Montar Email do Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4800,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_ciclos"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ciclo_id": "={{ $json.ciclo_id }}",
+            "cliente": "={{ $json.cliente }}",
+            "status": "={{ $json.status }}",
+            "score_autocritica": "={{ $json.score_autocritica }}",
+            "sintese_md": "={{ $json.sintese_md }}",
+            "dados_json": "={{ $json.dados_json }}",
+            "notas_gate": "",
+            "decidido_por": "",
+            "criado_em": "={{ $json.criado_em }}",
+            "decidido_em": ""
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ciclo_id",
+              "displayName": "ciclo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente",
+              "displayName": "cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score_autocritica",
+              "displayName": "score_autocritica",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sintese_md",
+              "displayName": "sintese_md",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dados_json",
+              "displayName": "dados_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notas_gate",
+              "displayName": "notas_gate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "decidido_por",
+              "displayName": "decidido_por",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "decidido_em",
+              "displayName": "decidido_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "222a2e2a-667b-4d40-8181-e2b3f3e1a8a2",
+      "name": "Salvar Ciclo",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        5040,
+        400
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('Montar Email do Gate').first().json.email_destino }}",
+        "subject": "={{ $('Montar Email do Gate').first().json.email_assunto }}",
+        "emailType": "html",
+        "message": "={{ $('Montar Email do Gate').first().json.email_html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "CRO Next — Fábrica"
+        }
+      },
+      "id": "f8bbda36-5fd9-4306-b9a1-0f2b544df137",
+      "name": "Email – Convocar Gate",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        5280,
+        400
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H4YY5Bldwy95Y3qW",
+          "name": "SEO-N8N"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Cadência Quinzenal (Fábrica)": {
+      "main": [
+        [
+          {
+            "node": "Modo: Completo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modo: Completo": {
+      "main": [
+        [
+          {
+            "node": "Carregar Clientes Ativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentinela Semanal (Proteção de Receita)": {
+      "main": [
+        [
+          {
+            "node": "Modo: Sentinela",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modo: Sentinela": {
+      "main": [
+        [
+          {
+            "node": "Carregar Clientes Ativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execução Manual (Teste)": {
+      "main": [
+        [
+          {
+            "node": "Modo: Manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modo: Manual": {
+      "main": [
+        [
+          {
+            "node": "Carregar Clientes Ativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Carregar Clientes Ativos": {
+      "main": [
+        [
+          {
+            "node": "Montar Fila",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Fila": {
+      "main": [
+        [
+          {
+            "node": "Processar Clientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Clientes": {
+      "main": [
+        [
+          {
+            "node": "Rodada Concluída",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Preparar Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Cliente": {
+      "main": [
+        [
+          {
+            "node": "GA4 – Totais do Período",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GA4 – Totais do Período": {
+      "main": [
+        [
+          {
+            "node": "GA4 – Eventos de Funil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GA4 – Eventos de Funil": {
+      "main": [
+        [
+          {
+            "node": "GA4 – Canais & Devices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GA4 – Canais & Devices": {
+      "main": [
+        [
+          {
+            "node": "Clarity – Comportamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clarity – Comportamento": {
+      "main": [
+        [
+          {
+            "node": "Jira – Backlog Existente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jira – Backlog Existente": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Métricas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Métricas": {
+      "main": [
+        [
+          {
+            "node": "Agente de Ingestão (Normalizar)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de Ingestão (Normalizar)": {
+      "main": [
+        [
+          {
+            "node": "Tem Anomalia?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Anomalia?": {
+      "main": [
+        [
+          {
+            "node": "Registrar Alerta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Modo Completo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar Alerta": {
+      "main": [
+        [
+          {
+            "node": "Email – Alerta de Receita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email – Alerta de Receita": {
+      "main": [
+        [
+          {
+            "node": "Modo Completo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modo Completo?": {
+      "main": [
+        [
+          {
+            "node": "Agente Heurístico UX",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Processar Clientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Heurístico UX": {
+      "main": [
+        [
+          {
+            "node": "Agente Diagnóstico de Funil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Diagnóstico de Funil": {
+      "main": [
+        [
+          {
+            "node": "Agente Priorização ICE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Priorização ICE": {
+      "main": [
+        [
+          {
+            "node": "Agente de Síntese",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de Síntese": {
+      "main": [
+        [
+          {
+            "node": "Agente Autocrítica (Revisor)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Autocrítica (Revisor)": {
+      "main": [
+        [
+          {
+            "node": "Montar Pacote do Ciclo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Pacote do Ciclo": {
+      "main": [
+        [
+          {
+            "node": "Montar Email do Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Email do Gate": {
+      "main": [
+        [
+          {
+            "node": "Salvar Ciclo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Ciclo": {
+      "main": [
+        [
+          {
+            "node": "Email – Convocar Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email – Convocar Gate": {
+      "main": [
+        [
+          {
+            "node": "Processar Clientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM – Heurístico": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Heurístico UX",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM – Diagnóstico": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Diagnóstico de Funil",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM – Priorização": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Priorização ICE",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM – Síntese": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente de Síntese",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM – Autocrítica": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Autocrítica (Revisor)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser – Achados": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agente Heurístico UX",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser – Gargalos": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agente Diagnóstico de Funil",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser – Hipóteses": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agente Priorização ICE",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser – Autocrítica": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agente Autocrítica (Revisor)",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

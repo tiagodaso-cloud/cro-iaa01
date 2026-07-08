@@ -1,0 +1,813 @@
+{
+  "name": "CRO Next — Gate Humano & Entregas",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "cro-next-gate",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "857bc3c3-0b6b-4b61-9c9d-25dee41e9e9d",
+      "name": "GET – Gate",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        -40
+      ],
+      "webhookId": "ebd6cddb-5985-4e1e-9eeb-743201af428e"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_ciclos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": []
+        },
+        "returnAll": true
+      },
+      "id": "4eac57ef-dc23-46ec-9d3d-0672411c976f",
+      "name": "Ler Ciclos Pendentes",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -360,
+        -40
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const TEMPLATE = \"<!DOCTYPE html>\\n<html lang=\\\"pt-BR\\\">\\n<head>\\n<meta charset=\\\"UTF-8\\\"/>\\n<meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1.0\\\"/>\\n<title>CRO Next \\u2014 Gate Humano</title>\\n<link href=\\\"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap\\\" rel=\\\"stylesheet\\\"/>\\n<script src=\\\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\\\"></script>\\n<style>\\n:root{--ox:#FF5C28;--ox2:#e84e1b;--dark:#111827;--card:#1f2937;--card2:#273449;--border:#374151;--text:#f9fafb;--muted:#9ca3af;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--purple:#8b5cf6}\\n*{box-sizing:border-box;margin:0;padding:0}\\nbody{font-family:'Plus Jakarta Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;flex-direction:column}\\nheader{background:rgba(17,24,39,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}\\n.hbrand{display:flex;align-items:center;gap:12px}\\n.logo{width:30px;height:30px;background:linear-gradient(135deg,var(--ox2),var(--ox));border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff}\\n.btext{font-size:15px;font-weight:700}.btext span{color:var(--ox)}\\n.gate-badge{background:linear-gradient(135deg,#6d28d9,var(--purple));color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px}\\nmain{flex:1;display:flex;gap:0;max-width:1400px;width:100%;margin:0 auto}\\naside{width:320px;min-width:280px;border-right:1px solid var(--border);padding:20px 14px;overflow-y:auto}\\n.aside-t{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:4px 6px 12px}\\n.ciclo-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .15s}\\n.ciclo-card:hover{border-color:var(--ox)}\\n.ciclo-card.sel{border-color:var(--ox);box-shadow:0 0 0 1px var(--ox)}\\n.cc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}\\n.cc-cliente{font-weight:700;font-size:14px}\\n.cc-id{font-size:11px;color:var(--muted);margin-bottom:8px}\\n.pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px}\\n.pill.gate{background:rgba(139,92,246,.15);color:var(--purple)}\\n.pill.rev{background:rgba(245,158,11,.15);color:var(--yellow)}\\n.score{font-size:11px;font-weight:700}\\n.score.ok{color:var(--green)}.score.warn{color:var(--yellow)}.score.bad{color:var(--red)}\\nsection{flex:1;padding:24px 28px;overflow-y:auto;min-width:0}\\n.empty{color:var(--muted);text-align:center;margin-top:80px;font-size:14px}\\n.empty b{color:var(--text)}\\nh2.cliente-h{font-size:22px;font-weight:800;margin-bottom:2px}\\n.sub{color:var(--muted);font-size:12px;margin-bottom:18px}\\n.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}\\n.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px}\\n.kpi .l{font-size:10px;font-weight:700;letter-spacing:.6px;color:var(--muted);text-transform:uppercase}\\n.kpi .v{font-size:19px;font-weight:800;margin-top:3px}\\n.kpi .d{font-size:11px;font-weight:700;margin-top:2px}\\n.d.up{color:var(--green)}.d.down{color:var(--red)}.d.flat{color:var(--muted)}\\n.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}\\n.panel h3{font-size:13px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--ox);margin-bottom:12px;display:flex;align-items:center;gap:8px}\\n.panel h3 .n{background:var(--ox);color:#fff;width:20px;height:20px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:11px}\\n.auto-head{display:flex;align-items:center;gap:14px;margin-bottom:8px}\\n.auto-score{font-size:30px;font-weight:800}\\n.auto-rec{font-size:12px;font-weight:700;padding:4px 10px;border-radius:10px}\\n.auto-rec.ok{background:rgba(16,185,129,.15);color:var(--green)}\\n.auto-rec.warn{background:rgba(245,158,11,.15);color:var(--yellow)}\\nul.problemas{margin:6px 0 0 18px;font-size:12.5px;color:var(--muted)}\\nul.problemas li{margin-bottom:4px}\\n.alerta-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12.5px}\\n.alerta-box b{color:var(--red)}\\ntable{width:100%;border-collapse:collapse;font-size:12.5px}\\nth{text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.6px;padding:6px 8px;border-bottom:1px solid var(--border)}\\ntd{padding:8px;border-bottom:1px solid rgba(55,65,81,.5);vertical-align:top}\\n.money{color:var(--green);font-weight:700;white-space:nowrap}\\n.hip{border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;background:var(--card2)}\\n.hip input{margin-top:4px;accent-color:var(--ox);width:16px;height:16px;cursor:pointer}\\n.hip .ht{font-weight:700;font-size:14px;margin-bottom:4px}\\n.hip .hm{font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.5}\\n.hip .tags{display:flex;flex-wrap:wrap;gap:6px}\\n.tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;background:rgba(255,92,40,.12);color:var(--ox)}\\n.tag.g{background:rgba(16,185,129,.12);color:var(--green)}\\n.tag.b{background:rgba(139,92,246,.12);color:var(--purple)}\\n.md{font-size:13.5px;line-height:1.65;color:#d1d5db}\\n.md h1,.md h2{font-size:16px;margin:14px 0 8px;color:var(--text)}\\n.md h3{font-size:14px;margin:12px 0 6px;color:var(--text)}\\n.md ul,.md ol{margin:6px 0 10px 20px}.md li{margin-bottom:3px}\\n.md p{margin-bottom:8px}.md strong{color:var(--text)}\\n.md table{margin:8px 0}\\n.gate-actions{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:sticky;bottom:12px;box-shadow:0 -8px 30px rgba(0,0,0,.45)}\\n.ga-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}\\ninput[type=text],textarea{background:var(--dark);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px 12px;font-family:inherit;font-size:13px;width:100%}\\ntextarea{resize:vertical;min-height:60px}\\n.btn{border:none;border-radius:10px;padding:12px 22px;font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;transition:all .15s}\\n.btn.apr{background:linear-gradient(135deg,var(--ox2),var(--ox));color:#fff}\\n.btn.apr:hover{filter:brightness(1.1)}\\n.btn.rej{background:transparent;border:1px solid var(--border);color:var(--muted)}\\n.btn.rej:hover{border-color:var(--red);color:var(--red)}\\n.btn:disabled{opacity:.5;cursor:wait}\\n.foot-hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}\\n.onboard{font-size:11.5px;color:var(--muted);border-top:1px solid var(--border);margin-top:18px;padding:14px 6px;line-height:1.6}\\n.onboard code{background:var(--card);padding:1px 6px;border-radius:6px;font-size:10.5px}\\n#toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--green);color:var(--text);padding:14px 18px;border-radius:12px;font-size:13px;display:none;z-index:999}\\n@media(max-width:860px){main{flex-direction:column}aside{width:100%;border-right:none;border-bottom:1px solid var(--border)}}\\n</style>\\n</head>\\n<body>\\n<header>\\n  <div class=\\\"hbrand\\\">\\n    <div class=\\\"logo\\\">C\\u25cf</div>\\n    <div class=\\\"btext\\\">CRO <span>Next.</span></div>\\n    <div class=\\\"gate-badge\\\">GATE HUMANO</div>\\n  </div>\\n  <div style=\\\"font-size:11px;color:var(--muted)\\\">F\\u00e1brica Multi-Agente \\u00b7 aprova\\u00e7\\u00e3o obrigat\\u00f3ria antes de qualquer entrega</div>\\n</header>\\n<main>\\n  <aside>\\n    <div class=\\\"aside-t\\\">Ciclos aguardando decis\\u00e3o</div>\\n    <div id=\\\"lista\\\"></div>\\n    <div class=\\\"onboard\\\">\\n      <b style=\\\"color:var(--text)\\\">Onboarding de cliente novo</b><br/>\\n      1 linha na Data Table <code>cro_clientes</code>: propriedade GA4, token Clarity, projeto Jira e contexto de neg\\u00f3cio. Nunca um workflow novo.\\n    </div>\\n  </aside>\\n  <section id=\\\"detalhe\\\">\\n    <div class=\\\"empty\\\">Selecione um ciclo \\u00e0 esquerda.<br/><br/><b>Nenhum ciclo pendente?</b> A f\\u00e1brica roda na cad\\u00eancia quinzenal \\u2014 ou execute o workflow manualmente.</div>\\n  </section>\\n</main>\\n<div id=\\\"toast\\\"></div>\\n<script id=\\\"__data\\\" type=\\\"application/json\\\">__DATA_PLACEHOLDER__</script>\\n<script>\\nvar CICLOS = [];\\ntry { CICLOS = JSON.parse(atob(document.getElementById('__data') ? document.getElementById('__data').textContent : '')) || []; } catch(e) { CICLOS = []; }\\nvar sel = null;\\nfunction fmtBRL(v){ if(v===null||v===undefined||isNaN(v)) return '\\u2014'; return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }\\nfunction fmtN(v){ if(v===null||v===undefined||isNaN(v)) return '\\u2014'; return Math.round(v).toLocaleString('pt-BR'); }\\nfunction deltaCls(d){ return d>1?'up':(d<-1?'down':'flat'); }\\nfunction deltaTxt(d){ if(d===null||d===undefined||isNaN(d)) return ''; return (d>0?'\\u25b2 +':(d<0?'\\u25bc ':'')) + d.toFixed(1) + '% vs per\\u00edodo anterior'; }\\nfunction scoreCls(s){ return s>=7?'ok':(s>=5?'warn':'bad'); }\\nfunction esc(s){ var d=document.createElement('div'); d.textContent=(s===null||s===undefined)?'':String(s); return d.innerHTML; }\\nfunction parseDados(c){ try { return typeof c.dados_json==='string'?JSON.parse(c.dados_json):(c.dados_json||{}); } catch(e){ return {}; } }\\nfunction renderLista(){\\n  var el = document.getElementById('lista');\\n  if(!CICLOS.length){ el.innerHTML = '<div style=\\\"font-size:12.5px;color:var(--muted);padding:6px\\\">Nenhum ciclo aguardando gate. \\u2728</div>'; return; }\\n  el.innerHTML = CICLOS.map(function(c,i){\\n    var st = c.status==='requer_revisao' ? '<span class=\\\"pill rev\\\">REQUER REVIS\\u00c3O</span>' : '<span class=\\\"pill gate\\\">AGUARDA GATE</span>';\\n    var sc = (c.score_autocritica!==null&&c.score_autocritica!==undefined) ? '<span class=\\\"score '+scoreCls(c.score_autocritica)+'\\\">'+Number(c.score_autocritica).toFixed(1)+'/10</span>' : '';\\n    return '<div class=\\\"ciclo-card'+(sel===i?' sel':'')+'\\\" onclick=\\\"selecionar('+i+')\\\"><div class=\\\"cc-top\\\"><span class=\\\"cc-cliente\\\">'+esc(c.cliente)+'</span>'+sc+'</div><div class=\\\"cc-id\\\">'+esc(c.ciclo_id)+' \\u00b7 '+esc((c.criado_em||'').slice(0,10))+'</div>'+st+'</div>';\\n  }).join('');\\n}\\nfunction selecionar(i){ sel = i; renderLista(); renderDetalhe(); window.scrollTo(0,0); }\\nfunction renderDetalhe(){\\n  var c = CICLOS[sel]; if(!c) return;\\n  var d = parseDados(c);\\n  var k = d.kpis || {};\\n  var auto = d.autocritica || {};\\n  var garg = d.gargalos || [];\\n  var hips = d.hipoteses || [];\\n  var anom = d.anomalias || [];\\n  var html = '';\\n  html += '<h2 class=\\\"cliente-h\\\">'+esc(c.cliente)+'</h2><div class=\\\"sub\\\">Ciclo '+esc(c.ciclo_id)+' \\u00b7 gerado em '+esc((c.criado_em||'').slice(0,16).replace('T',' '))+' \\u00b7 per\\u00edodo '+esc(d.periodo||'\\u00faltimos 28 dias')+'</div>';\\n  html += '<div class=\\\"kpis\\\">';\\n  html += '<div class=\\\"kpi\\\"><div class=\\\"l\\\">Sess\\u00f5es</div><div class=\\\"v\\\">'+fmtN(k.sessoes)+'</div><div class=\\\"d '+deltaCls(k.sessoes_delta)+'\\\">'+deltaTxt(k.sessoes_delta)+'</div></div>';\\n  html += '<div class=\\\"kpi\\\"><div class=\\\"l\\\">Convers\\u00f5es</div><div class=\\\"v\\\">'+fmtN(k.conversoes)+'</div><div class=\\\"d '+deltaCls(k.conversoes_delta)+'\\\">'+deltaTxt(k.conversoes_delta)+'</div></div>';\\n  html += '<div class=\\\"kpi\\\"><div class=\\\"l\\\">Taxa de convers\\u00e3o</div><div class=\\\"v\\\">'+(k.taxa_conversao!==undefined&&k.taxa_conversao!==null?Number(k.taxa_conversao).toFixed(2)+'%':'\\u2014')+'</div><div class=\\\"d '+deltaCls(k.taxa_delta)+'\\\">'+deltaTxt(k.taxa_delta)+'</div></div>';\\n  html += '<div class=\\\"kpi\\\"><div class=\\\"l\\\">Receita (28d)</div><div class=\\\"v\\\">'+fmtBRL(k.receita)+'</div><div class=\\\"d '+deltaCls(k.receita_delta)+'\\\">'+deltaTxt(k.receita_delta)+'</div></div>';\\n  html += '<div class=\\\"kpi\\\"><div class=\\\"l\\\">Oportunidade mapeada</div><div class=\\\"v\\\" style=\\\"color:var(--green)\\\">'+fmtBRL(d.oportunidade_total_min)+' \\u2013 '+fmtBRL(d.oportunidade_total_max)+'</div><div class=\\\"d flat\\\">por m\\u00eas, faixa conservadora</div></div>';\\n  html += '</div>';\\n  if(anom.length){ html += '<div class=\\\"panel\\\"><h3>\\u26a0 Prote\\u00e7\\u00e3o de receita \\u2014 anomalias detectadas</h3>' + anom.map(function(a){ return '<div class=\\\"alerta-box\\\"><b>'+esc(a.severidade||'alerta').toUpperCase()+'</b> \\u00b7 '+esc(a.mensagem||'')+'</div>'; }).join('') + '</div>'; }\\n  var rec = (auto.recomendacao==='aprovar_para_gate');\\n  html += '<div class=\\\"panel\\\"><h3><span class=\\\"n\\\">\\u2713</span> Autocr\\u00edtica (LLM revisor)</h3><div class=\\\"auto-head\\\"><span class=\\\"auto-score '+scoreCls(auto.score||0)+'\\\">'+(auto.score!==undefined?Number(auto.score).toFixed(1):'\\u2014')+'<span style=\\\"font-size:14px;color:var(--muted)\\\">/10</span></span><span class=\\\"auto-rec '+(rec?'ok':'warn')+'\\\">'+(rec?'RECOMENDA ENVIO AO GATE':'RECOMENDA REVIS\\u00c3O')+'</span></div>'\\n    + (auto.problemas&&auto.problemas.length ? '<ul class=\\\"problemas\\\">'+auto.problemas.map(function(p){return '<li>'+esc(p)+'</li>';}).join('')+'</ul>' : '<div style=\\\"font-size:12.5px;color:var(--muted)\\\">Nenhum problema relevante apontado pelo revisor.</div>') + '</div>';\\n  html += '<div class=\\\"panel\\\"><h3><span class=\\\"n\\\">1</span> S\\u00edntese narrativa \\u2014 material de reuni\\u00e3o</h3><div class=\\\"md\\\">' + (window.marked?marked.parse(c.sintese_md||d.sintese_md||'_Sem s\\u00edntese._'):esc(c.sintese_md||'')) + '</div></div>';\\n  if(garg.length){\\n    html += '<div class=\\\"panel\\\"><h3><span class=\\\"n\\\">2</span> Diagn\\u00f3stico de funil \\u2014 gargalos em R$</h3><table><thead><tr><th>Etapa</th><th>Evid\\u00eancia</th><th>Uplift estimado</th><th>Oportunidade/m\\u00eas</th></tr></thead><tbody>';\\n    garg.forEach(function(g){\\n      var op = g.oportunidade_reais_mes||{};\\n      html += '<tr><td><b>'+esc(g.etapa)+'</b><div style=\\\"color:var(--muted);font-size:11.5px;margin-top:2px\\\">'+esc(g.descricao||'')+'</div></td><td style=\\\"color:var(--muted)\\\">'+esc(g.evidencia||g.evidencias||'')+'</td><td>'+esc(g.uplift_estimado_pct?(g.uplift_estimado_pct.min+'\\u2013'+g.uplift_estimado_pct.max+'%'):'\\u2014')+'</td><td class=\\\"money\\\">'+fmtBRL(op.min)+' \\u2013 '+fmtBRL(op.max)+'</td></tr>';\\n    });\\n    html += '</tbody></table><div class=\\\"foot-hint\\\">Premissas e metodologia de cada estimativa est\\u00e3o no JSON do ciclo (audit\\u00e1vel). Estimativas sempre em faixa conservadora.</div></div>';\\n  }\\n  html += '<div class=\\\"panel\\\"><h3><span class=\\\"n\\\">3</span> Hip\\u00f3teses qualificadas \\u2014 decida a aposta</h3>';\\n  if(hips.length){\\n    html += hips.map(function(h,idx){\\n      var g = h.ganho_estimado_reais||{}; var ice = h.ice||{};\\n      return '<div class=\\\"hip\\\"><input type=\\\"checkbox\\\" checked id=\\\"hip'+idx+'\\\" data-hid=\\\"'+esc(h.id)+'\\\"/><div style=\\\"flex:1\\\"><div class=\\\"ht\\\">'+esc(h.titulo)+'</div><div class=\\\"hm\\\"><b>Problema:</b> '+esc(h.problema_evidenciado||'')+'<br/><b>Solu\\u00e7\\u00e3o:</b> '+esc(h.solucao_proposta||'')+'<br/><b>Valida\\u00e7\\u00e3o:</b> '+esc(h.criterio_validacao||'')+'</div><div class=\\\"tags\\\"><span class=\\\"tag\\\">ICE '+(ice.score!==undefined?Number(ice.score).toFixed(1):'\\u2014')+'</span><span class=\\\"tag g\\\">'+fmtBRL(g.min)+' \\u2013 '+fmtBRL(g.max)+'/m\\u00eas</span><span class=\\\"tag b\\\">'+esc(h.etapa_funil||'funil')+'</span></div></div></div>';\\n    }).join('');\\n    html += '<div class=\\\"foot-hint\\\">Hip\\u00f3teses marcadas ser\\u00e3o escritas como cards no Jira do cliente e gravadas na mem\\u00f3ria de convers\\u00e3o ap\\u00f3s a aprova\\u00e7\\u00e3o.</div>';\\n  } else { html += '<div style=\\\"font-size:12.5px;color:var(--muted)\\\">Ciclo sem hip\\u00f3teses (modo sentinela ou erro de pipeline).</div>'; }\\n  html += '</div>';\\n  html += '<div class=\\\"gate-actions\\\"><div class=\\\"ga-row\\\"><input type=\\\"text\\\" id=\\\"aprovador\\\" placeholder=\\\"Seu nome (analista respons\\u00e1vel)\\\" style=\\\"max-width:280px\\\"/><textarea id=\\\"notas\\\" placeholder=\\\"Notas do gate: edi\\u00e7\\u00f5es, contexto para a entrega, o que descartar\\u2026\\\"></textarea></div>'\\n    + '<div class=\\\"ga-row\\\"><button class=\\\"btn apr\\\" id=\\\"btnApr\\\" onclick=\\\"decidir(\\\\'aprovar\\\\')\\\">\\u2713 Aprovar & Entregar (Jira + mem\\u00f3ria)</button><button class=\\\"btn rej\\\" id=\\\"btnRej\\\" onclick=\\\"decidir(\\\\'rejeitar\\\\')\\\">\\u2715 Rejeitar ciclo</button></div>'\\n    + '<div class=\\\"foot-hint\\\">Nada chega ao cliente sem este gate. A aprova\\u00e7\\u00e3o grava os cards no Jira, alimenta a mem\\u00f3ria de convers\\u00e3o e notifica o analista.</div></div>';\\n  document.getElementById('detalhe').innerHTML = html;\\n}\\nfunction decidir(decisao){\\n  var c = CICLOS[sel]; if(!c) return;\\n  var aprovador = (document.getElementById('aprovador')||{}).value || '';\\n  if(decisao==='aprovar' && !aprovador.trim()){ alert('Informe seu nome \\u2014 o gate registra quem decidiu a aposta.'); return; }\\n  var notas = (document.getElementById('notas')||{}).value || '';\\n  var ids = [].slice.call(document.querySelectorAll('.hip input:checked')).map(function(x){ return x.getAttribute('data-hid'); });\\n  if(decisao==='aprovar' && !ids.length && (parseDados(c).hipoteses||[]).length){ if(!confirm('Nenhuma hip\\u00f3tese selecionada. Aprovar mesmo assim (sem entrega ao Jira)?')) return; }\\n  document.getElementById('btnApr').disabled = true; document.getElementById('btnRej').disabled = true;\\n  fetch(window.location.pathname + '/decisao', {\\n    method:'POST', headers:{'Content-Type':'application/json'},\\n    body: JSON.stringify({ ciclo_id: c.ciclo_id, decisao: decisao, aprovador: aprovador, notas: notas, hipoteses_ids: ids })\\n  }).then(function(r){ return r.json().catch(function(){ return {}; }); }).then(function(res){\\n    var t = document.getElementById('toast');\\n    t.textContent = decisao==='aprovar' ? '\\u2713 Ciclo aprovado \\u2014 entregas em processamento (Jira + mem\\u00f3ria + e-mail).' : 'Ciclo rejeitado e registrado.';\\n    t.style.display='block';\\n    setTimeout(function(){ window.location.reload(); }, 2200);\\n  }).catch(function(e){ alert('Falha ao registrar decis\\u00e3o: '+e); document.getElementById('btnApr').disabled=false; document.getElementById('btnRej').disabled=false; });\\n}\\nrenderLista();\\nif(CICLOS.length){ selecionar(0); }\\n</script>\\n</body>\\n</html>\\n\";\nconst rows = $input.all().map(i => i.json).filter(r => r && (r.status === 'aguardando_gate' || r.status === 'requer_revisao'));\nrows.sort((a,b) => String(b.criado_em||'').localeCompare(String(a.criado_em||'')));\nconst dados = Buffer.from(JSON.stringify(rows), 'utf8').toString('base64');\nconst html = TEMPLATE.replace('__DATA_PLACEHOLDER__', dados);\nreturn [{ json: { html } }];"
+      },
+      "id": "4d91f8ef-9ecd-42cb-a14a-1a43efcd4d91",
+      "name": "Montar HTML do Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -120,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.html }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "22d3484e-0c9d-40be-bb04-27e96f4aa89f",
+      "name": "Responder HTML",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        120,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cro-next-gate/decisao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "94a6b0ba-d53e-4d5c-851b-a9300e24246c",
+      "name": "POST – Decisão",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        360
+      ],
+      "webhookId": "0fc43fe9-9d5b-42db-81fb-ea72edc99992"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_ciclos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ciclo_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.body.ciclo_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "bcc43b09-7695-4512-b135-7f2c4f21e19a",
+      "name": "Ler Ciclo",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -360,
+        360
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = ($('POST – Decisão').first().json.body) || {};\nconst ciclo = $('Ler Ciclo').first().json || {};\nlet dados = {};\ntry { dados = typeof ciclo.dados_json === 'string' ? JSON.parse(ciclo.dados_json) : (ciclo.dados_json || {}); } catch (e) {}\nconst hips = dados.hipoteses || [];\nconst reg = dados.registro || {};\nconst ids = body.hipoteses_ids || [];\nconst sel = hips.filter(h => ids.indexOf(h.id) !== -1);\nconst aprovar = body.decisao === 'aprovar';\nconst brl = v => 'R$ ' + Math.round(v || 0).toLocaleString('pt-BR');\nconst linhas = h => {\n  const g = h.ganho_estimado_reais || {}; const ice = h.ice || {};\n  return 'h3. ' + (h.titulo || 'Hipótese') + '\\n\\n'\n    + '*Problema evidenciado:* ' + (h.problema_evidenciado || '-') + '\\n'\n    + '*Solução proposta:* ' + (h.solucao_proposta || '-') + '\\n'\n    + '*Critério de validação:* ' + (h.criterio_validacao || '-') + '\\n'\n    + '*Ganho estimado:* ' + brl(g.min) + ' – ' + brl(g.max) + '/mês\\n'\n    + '*ICE:* ' + (ice.score !== undefined ? ice.score : '-') + ' (I' + (ice.impacto||'-') + '/C' + (ice.confianca||'-') + '/F' + (ice.facilidade||'-') + ')\\n'\n    + '*Etapa do funil:* ' + (h.etapa_funil || '-') + '\\n'\n    + '\\n_Origem: CRO Next — ciclo ' + ciclo.ciclo_id + ' · aprovado por ' + (body.aprovador||'-') + '_';\n};\nconst entregas = sel.map(h => ({\n  hipotese_id: h.id, titulo: h.titulo || 'Hipótese',\n  summary: '[CRO] ' + (h.titulo || 'Hipótese qualificada'),\n  description: linhas(h), hipotese_json: JSON.stringify(h),\n  jira_base_url: String(reg.jira_base_url||'').replace(/\\/$/,''), jira_project_key: reg.jira_project_key||'', jira_issue_type: reg.jira_issue_type||'Task',\n  cliente: ciclo.cliente, ciclo_id: ciclo.ciclo_id, email_analista: reg.email_analista||'tsoares@cadastra.com'\n}));\nconst cor = aprovar ? '#10b981' : '#ef4444';\nconst rot = aprovar ? 'APROVADO' : 'REJEITADO';\nconst email_html = '<div style=\"font-family:Arial,sans-serif;max-width:640px\">' +\n  '<h2>🚪 CRO Next — Gate decidido: ' + (ciclo.cliente||'') + '</h2>' +\n  '<p><span style=\"background:'+cor+';color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:bold\">'+rot+'</span> por <b>'+(body.aprovador||'-')+'</b></p>' +\n  '<p>Ciclo <b>'+ciclo.ciclo_id+'</b>. ' + (aprovar ? (entregas.length + ' hipótese(s) enviada(s) ao Jira e gravada(s) na memória de conversão.') : 'Ciclo rejeitado; nada foi entregue ao cliente.') + '</p>' +\n  (body.notas ? '<p><b>Notas do gate:</b><br/>'+String(body.notas).replace(/</g,'&lt;')+'</p>' : '') +\n  (entregas.length ? '<ul>'+entregas.map(e=>'<li>'+e.titulo+'</li>').join('')+'</ul>' : '') +\n  '</div>';\nreturn [{ json: {\n  decisao: body.decisao, aprovar, ciclo_id: ciclo.ciclo_id, cliente: ciclo.cliente,\n  aprovador: body.aprovador||'', notas: body.notas||'', status_novo: aprovar ? 'aprovado' : 'rejeitado',\n  decidido_em: new Date().toISOString(), email_destino: reg.email_analista||'tsoares@cadastra.com', email_html,\n  entregas, tem_entrega: aprovar && entregas.length > 0\n} }];"
+      },
+      "id": "dd6cd35f-04d7-444a-984f-c8f83260fb77",
+      "name": "Preparar Decisão",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -120,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.tem_entrega }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "a96500af-3616-44f9-9cdb-e111177910ef",
+      "name": "Aprovado com entregas?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        120,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return ($('Preparar Decisão').first().json.entregas || []).map(e => ({ json: e }));"
+      },
+      "id": "b01cfb1f-fcd0-4738-b7bb-41116cb930d3",
+      "name": "Separar Entregas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "e6da36e3-3650-43fc-a8f7-61fc4a721c56",
+      "name": "Loop Entregas",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        600,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.jira_base_url }}/rest/api/2/issue",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ fields: { project: { key: $json.jira_project_key }, summary: $json.summary, description: $json.description, issuetype: { name: $json.jira_issue_type } } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "14f3cb12-361e-4e93-84d3-fc7fe2a31148",
+      "name": "Jira – Criar Issue",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        840,
+        160
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "Ut4FQk61Gd0d81j4",
+          "name": "JIRA-GABRIELY"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_memoria"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "cliente": "={{ $('Separar Entregas').item.json.cliente }}",
+            "ciclo_id": "={{ $('Separar Entregas').item.json.ciclo_id }}",
+            "hipotese_id": "={{ $('Separar Entregas').item.json.hipotese_id }}",
+            "titulo": "={{ $('Separar Entregas').item.json.titulo }}",
+            "hipotese_json": "={{ $('Separar Entregas').item.json.hipotese_json }}",
+            "status_implementacao": "aprovada",
+            "jira_issue_key": "={{ $json.key || '' }}",
+            "jira_base_url": "={{ $('Separar Entregas').item.json.jira_base_url }}",
+            "email_analista": "={{ $('Separar Entregas').item.json.email_analista }}",
+            "resultado": "",
+            "criado_em": "={{ $now.toISO() }}",
+            "atualizado_em": "={{ $now.toISO() }}"
+          },
+          "schema": [
+            {
+              "id": "cliente",
+              "displayName": "cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ciclo_id",
+              "displayName": "ciclo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hipotese_id",
+              "displayName": "hipotese_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "titulo",
+              "displayName": "titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hipotese_json",
+              "displayName": "hipotese_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status_implementacao",
+              "displayName": "status_implementacao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jira_issue_key",
+              "displayName": "jira_issue_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jira_base_url",
+              "displayName": "jira_base_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_analista",
+              "displayName": "email_analista",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resultado",
+              "displayName": "resultado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "atualizado_em",
+              "displayName": "atualizado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "38e5f804-9d24-4e42-acb8-e1b9fe242207",
+      "name": "Gravar Memória",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        840,
+        320
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_ciclos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ciclo_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Preparar Decisão').first().json.ciclo_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "ciclo_id"
+          ],
+          "value": {
+            "ciclo_id": "={{ $('Preparar Decisão').first().json.ciclo_id }}",
+            "status": "={{ $('Preparar Decisão').first().json.status_novo }}",
+            "notas_gate": "={{ $('Preparar Decisão').first().json.notas }}",
+            "decidido_por": "={{ $('Preparar Decisão').first().json.aprovador }}",
+            "decidido_em": "={{ $('Preparar Decisão').first().json.decidido_em }}"
+          },
+          "schema": [
+            {
+              "id": "ciclo_id",
+              "displayName": "ciclo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "notas_gate",
+              "displayName": "notas_gate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "decidido_por",
+              "displayName": "decidido_por",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "decidido_em",
+              "displayName": "decidido_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "588ed85e-2a6d-4002-afb7-c294145ce1ae",
+      "name": "Atualizar Ciclo (aprovado)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1080,
+        240
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('Preparar Decisão').first().json.email_destino }}",
+        "subject": "=🚪 CRO Next | {{ $('Preparar Decisão').first().json.cliente }} — gate {{ $('Preparar Decisão').first().json.status_novo }}",
+        "emailType": "html",
+        "message": "={{ $('Preparar Decisão').first().json.email_html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "CRO Next — Gate"
+        }
+      },
+      "id": "3c3d6e59-1734-4288-89ed-c0d766d5b034",
+      "name": "Email – Entrega",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1320,
+        240
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H4YY5Bldwy95Y3qW",
+          "name": "SEO-N8N"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, status: $('Preparar Decisão').first().json.status_novo }) }}",
+        "options": {}
+      },
+      "id": "29cfade9-911f-4a47-b07e-324d6491ea56",
+      "name": "Responder OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1560,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_ciclos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ciclo_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Preparar Decisão').first().json.ciclo_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "ciclo_id"
+          ],
+          "value": {
+            "ciclo_id": "={{ $('Preparar Decisão').first().json.ciclo_id }}",
+            "status": "={{ $('Preparar Decisão').first().json.status_novo }}",
+            "notas_gate": "={{ $('Preparar Decisão').first().json.notas }}",
+            "decidido_por": "={{ $('Preparar Decisão').first().json.aprovador }}",
+            "decidido_em": "={{ $('Preparar Decisão').first().json.decidido_em }}"
+          },
+          "schema": [
+            {
+              "id": "ciclo_id",
+              "displayName": "ciclo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "notas_gate",
+              "displayName": "notas_gate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "decidido_por",
+              "displayName": "decidido_por",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "decidido_em",
+              "displayName": "decidido_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bd2c8499-34cd-4b30-8d03-452b11dfd12d",
+      "name": "Atualizar Ciclo (rejeitado)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        360,
+        480
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, status: $('Preparar Decisão').first().json.status_novo }) }}",
+        "options": {}
+      },
+      "id": "c51d5405-35bd-43bc-87fb-467a176275a8",
+      "name": "Responder OK (rejeitado)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        600,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🚪 Gate Humano & Entregas\nGET /cro-next-gate serve o painel (dados de cro_ciclos em base64). POST /cro-next-gate/decisao registra a decisão: cria issues no Jira do cliente, grava cro_memoria, atualiza cro_ciclos e notifica o analista.\n\n**Nada chega ao cliente sem este gate.**",
+        "height": 220,
+        "width": 420,
+        "color": 6
+      },
+      "id": "f991ee64-edbb-4fa0-8ec2-fad9609b3393",
+      "name": "Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        -320
+      ]
+    }
+  ],
+  "connections": {
+    "GET – Gate": {
+      "main": [
+        [
+          {
+            "node": "Ler Ciclos Pendentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Ciclos Pendentes": {
+      "main": [
+        [
+          {
+            "node": "Montar HTML do Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar HTML do Gate": {
+      "main": [
+        [
+          {
+            "node": "Responder HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST – Decisão": {
+      "main": [
+        [
+          {
+            "node": "Ler Ciclo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Ciclo": {
+      "main": [
+        [
+          {
+            "node": "Preparar Decisão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Decisão": {
+      "main": [
+        [
+          {
+            "node": "Aprovado com entregas?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aprovado com entregas?": {
+      "main": [
+        [
+          {
+            "node": "Separar Entregas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Atualizar Ciclo (rejeitado)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separar Entregas": {
+      "main": [
+        [
+          {
+            "node": "Loop Entregas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Entregas": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Ciclo (aprovado)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Jira – Criar Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jira – Criar Issue": {
+      "main": [
+        [
+          {
+            "node": "Gravar Memória",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gravar Memória": {
+      "main": [
+        [
+          {
+            "node": "Loop Entregas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Ciclo (aprovado)": {
+      "main": [
+        [
+          {
+            "node": "Email – Entrega",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email – Entrega": {
+      "main": [
+        [
+          {
+            "node": "Responder OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Ciclo (rejeitado)": {
+      "main": [
+        [
+          {
+            "node": "Responder OK (rejeitado)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
