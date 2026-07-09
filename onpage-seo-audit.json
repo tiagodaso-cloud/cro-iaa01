@@ -1,0 +1,1087 @@
+{
+  "name": "On-Page SEO Audit",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "seo-onpage-audit",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "f278ba5e-d097-4ed4-a437-86eae1a4e339",
+      "name": "🌐 GET - Formulário Web",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        2560
+      ],
+      "webhookId": "seo-audit-form"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "seo-onpage-audit",
+        "responseMode": "onReceived",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "43509d48-a4d6-44b5-b87b-064bda896c95",
+      "name": "📥 POST - Análise",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        2768
+      ],
+      "webhookId": "seo-audit-post"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n  <title>SEO On-Page Audit | Cadastra</title>\n  <link href=\"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap\" rel=\"stylesheet\">\n  <link rel=\"icon\" type=\"image/png\" href=\"https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png\">\n  <style>\n    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }\n    :root {\n      --ox: #FF5C28; --ox-light: #fff3ee; --ox-border: #ffd0bc;\n      --dark: #111827; --gray: #6b7280; --gray-light: #9ca3af;\n      --bg: #f4f4f2; --white: #ffffff; --line: #e5e7eb; --line-soft: #f3f4f6;\n      --green: #059669; --green-bg: #ecfdf5; --green-border: #a7f3d0;\n      --blue: #2563eb; --blue-bg: #eff6ff; --blue-border: #bfdbfe;\n      --red: #dc2626; --red-bg: #fef2f2; --red-border: #fecaca;\n      --sans: 'Plus Jakarta Sans', sans-serif;\n      --mono: 'JetBrains Mono', monospace;\n      --r: 12px; --r-lg: 16px;\n      --shadow-sm: 0 1px 3px rgba(0,0,0,0.07);\n      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);\n      --shadow-lg: 0 4px 24px rgba(0,0,0,0.08), 0 12px 48px rgba(0,0,0,0.06);\n    }\n    body { font-family: var(--sans); background: var(--bg); color: var(--dark); line-height: 1.6; min-height: 100vh; }\n    .header { background: var(--white); padding: 0 40px; height: 56px; display: flex; align-items: center; box-shadow: 0 1px 0 var(--line); position: sticky; top: 0; z-index: 200; }\n    .header-inner { max-width: 1300px; margin: 0 auto; width: 100%; display: flex; align-items: center; gap: 12px; }\n    .logo { height: 26px; }\n    .product-name { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; color: var(--dark); }\n    .product-name span { color: var(--ox); }\n    .version-badge { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; padding: 3px 10px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }\n    .hero { background: linear-gradient(140deg, #e84e1b 0%, #ff6b3d 100%); padding: 40px 40px 88px; position: relative; overflow: hidden; }\n    .hero::before { content: ''; position: absolute; inset: 0; background: url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\"); }\n    .hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 72px; background: linear-gradient(to bottom, transparent, var(--bg)); }\n    .hero-inner { max-width: 1300px; margin: 0 auto; position: relative; z-index: 1; color: #fff; }\n    .hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; margin-bottom: 10px; }\n    .hero h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 12px; }\n    .hero-desc { font-size: 16px; max-width: 580px; opacity: 0.9; line-height: 1.6; margin-bottom: 24px; }\n    .wrap { max-width: 1300px; margin: -48px auto 60px; padding: 0 40px; position: relative; z-index: 10; }\n    .card { background: var(--white); border-radius: var(--r-lg); box-shadow: var(--shadow-lg); padding: 40px 44px; margin-bottom: 24px; }\n    .card-title { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }\n    .card-sub { color: var(--gray); margin-bottom: 28px; font-size: 14px; line-height: 1.6; }\n    .form-label { font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray); margin-bottom: 10px; display: block; }\n    .input-row { display: flex; gap: 10px; margin-bottom: 28px; align-items: stretch; }\n    .q-input { flex: 1; padding: 16px 20px; border: 2px solid var(--line); border-radius: var(--r); font-size: 16px; font-family: var(--sans); color: var(--dark); outline: none; background: var(--white); box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: border-color .2s, box-shadow .2s; }\n    .q-input::placeholder { color: var(--gray-light); font-size: 15px; }\n    .q-input:focus { border-color: var(--ox); box-shadow: 0 0 0 4px rgba(255,92,40,0.1); }\n    .run-btn { background: linear-gradient(145deg, #ff6535, var(--ox)); color: #fff; border: none; padding: 16px 32px; border-radius: var(--r); font-size: 15px; font-weight: 800; font-family: var(--sans); cursor: pointer; white-space: nowrap; box-shadow: 0 4px 16px rgba(255,92,40,0.4); transition: transform .15s, box-shadow .15s; letter-spacing: -0.01em; }\n    .run-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,92,40,0.45); }\n    .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }\n    .loading { display: none; background: var(--white); border-radius: var(--r-lg); box-shadow: var(--shadow); padding: 40px 36px; margin-bottom: 28px; text-align: center; }\n    .loading.on { display: block; }\n    .spinner { width: 40px; height: 40px; margin: 0 auto 18px; border: 3px solid rgba(255,92,40,0.12); border-top-color: var(--ox); border-radius: 50%; animation: spin .8s linear infinite; }\n    @keyframes spin { to { transform: rotate(360deg); } }\n    .loading-title { font-weight: 700; font-size: 15px; color: var(--dark); margin-bottom: 4px; }\n    .loading-sub { font-size: 13px; color: var(--gray); margin-bottom: 20px; }\n    .progress-bar { width: 100%; max-width: 320px; height: 4px; background: var(--line); border-radius: 999px; margin: 0 auto; overflow: hidden; }\n    .progress-fill { height: 100%; background: var(--ox); border-radius: 999px; animation: progress 180s linear forwards; }\n    @keyframes progress { from { width: 0% } to { width: 95% } }\n    .err-box { display: none; background: var(--red-bg); border: 2px solid var(--red-border); border-radius: var(--r); padding: 20px 24px; margin-bottom: 16px; }\n    .err-box.on { display: block; }\n    .err-box h4 { color: var(--red); font-weight: 800; margin-bottom: 6px; }\n    .err-box p { color: #7f1d1d; font-size: 14px; }\n    .results { display: none; }\n    .results.on { display: block; }\n    .section { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-lg); margin: 0 0 16px; overflow: hidden; box-shadow: var(--shadow-sm); }\n    .section-head { padding: 18px 24px; border-bottom: 1px solid var(--line); background: var(--line-soft); }\n    .section-title { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: -0.01em; }\n    .section-body { padding: 24px; }\n    .audit-content { line-height: 1.8; color: var(--dark); }\n    .audit-content h1, .audit-content h2, .audit-content h3 { margin-top: 24px; margin-bottom: 12px; font-weight: 800; }\n    .audit-content h1 { font-size: 24px; color: var(--ox); border-bottom: 2px solid var(--ox-border); padding-bottom: 8px; }\n    .audit-content h2 { font-size: 20px; color: var(--dark); }\n    .audit-content h3 { font-size: 16px; color: var(--gray); }\n    .audit-content ul, .audit-content ol { margin-left: 24px; margin-top: 8px; margin-bottom: 16px; }\n    .audit-content li { margin-bottom: 6px; }\n    .audit-content p { margin-bottom: 12px; }\n    .audit-content code { background: var(--line-soft); padding: 2px 6px; border-radius: 4px; font-family: var(--mono); font-size: 13px; word-break: break-all; }\n    .audit-content strong { font-weight: 700; color: var(--dark); }\n    .audit-content table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }\n    .audit-content th { background: var(--line-soft); padding: 10px 14px; text-align: left; font-weight: 700; border: 1px solid var(--line); }\n    .audit-content td { padding: 9px 14px; border: 1px solid var(--line); vertical-align: top; word-break: break-all; }\n    .audit-content tr:nth-child(even) td { background: #fafafa; }\n    @media (max-width: 768px) {\n      .header { padding: 0 20px; }\n      .hero { padding: 32px 20px 80px; }\n      .wrap { padding: 0 20px; margin-top: -40px; }\n      .card { padding: 28px 22px; }\n      .input-row { flex-direction: column; }\n      .run-btn { width: 100%; }\n    }\n  </style>\n</head>\n<body>\n  <header class=\"header\">\n    <div class=\"header-inner\">\n      <img src=\"https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png\" class=\"logo\" alt=\"Cadastra\">\n      <div class=\"product-name\">SEO <span>On-Page Audit</span></div>\n      <span class=\"version-badge\">AI POWERED</span>\n    </div>\n  </header>\n  <section class=\"hero\">\n    <div class=\"hero-inner\">\n      <div class=\"hero-eyebrow\">SEO Técnico e de Conteúdo · Cadastra</div>\n      <h1>Auditoria On-Page Completa</h1>\n      <p class=\"hero-desc\">Análise técnica e de conteúdo da sua página com IA. Receba insights acionáveis sobre meta tags, estrutura, headings, schema e copywriting.</p>\n    </div>\n  </section>\n  <div class=\"wrap\">\n    <div class=\"card\">\n      <div class=\"card-title\">🔍 Análise de Página</div>\n      <div class=\"card-sub\">Insira a URL da página que deseja auditar. A análise será feita com o user-agent do Googlebot.</div>\n      <form id=\"form\">\n        <label class=\"form-label\" for=\"url\">🌐 URL da Página</label>\n        <div class=\"input-row\">\n          <input class=\"q-input\" type=\"url\" id=\"url\" placeholder=\"https://exemplo.com.br/produto\" required autocomplete=\"off\">\n          <button class=\"run-btn\" type=\"submit\" id=\"btn\">🚀 Auditar Página</button>\n        </div>\n      </form>\n      <div class=\"loading\" id=\"loading\">\n        <div class=\"spinner\"></div>\n        <p class=\"loading-title\">Analisando página — isso pode levar de 1 a 3 minutos</p>\n        <p class=\"loading-sub\" id=\"loadingStep\">Extraindo dados com Googlebot…</p>\n        <div class=\"progress-bar\"><div class=\"progress-fill\" id=\"progressFill\"></div></div>\n      </div>\n      <div class=\"err-box\" id=\"errBox\">\n        <h4>❌ Erro</h4>\n        <p id=\"errMsg\"></p>\n      </div>\n    </div>\n    <div class=\"results\" id=\"results\"></div>\n  </div>\n  <script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script>\n  <script>\n  const steps = [\n    'Extraindo dados com Googlebot…',\n    'Analisando elementos on-page…',\n    'Verificando status HTTP dos links…',\n    'Agentes de IA processando…',\n    'Auditoria técnica em andamento…',\n    'Auditoria de conteúdo em andamento…',\n    'Consolidando resultados…'\n  ];\n  let stepTimer;\n  function startStepMessages() {\n    let i = 0;\n    stepTimer = setInterval(() => {\n      if (i < steps.length) {\n        document.getElementById('loadingStep').textContent = steps[i];\n        i++;\n      } else clearInterval(stepTimer);\n    }, 20000);\n  }\n\n  function showResults(data) {\n    const technical = data.technical || '';\n    const content   = data.content   || '';\n    const html = `\n      <div class=\"section\">\n        <div class=\"section-head\"><div class=\"section-title\">⚙️ Auditoria Técnica</div></div>\n        <div class=\"section-body\"><div class=\"audit-content\">${marked.parse(technical)}</div></div>\n      </div>\n      <div class=\"section\">\n        <div class=\"section-head\"><div class=\"section-title\">✍️ Auditoria de Conteúdo</div></div>\n        <div class=\"section-body\"><div class=\"audit-content\">${marked.parse(content)}</div></div>\n      </div>`;\n    const el = document.getElementById('results');\n    el.innerHTML = html;\n    el.classList.add('on');\n    el.scrollIntoView({behavior:'smooth', block:'start'});\n  }\n\n  function pollResult(jobId) {\n    const base = window.location.origin + window.location.pathname.replace(/\\/+$/, '');\n    const pollUrl = base + '-poll?jobId=' + encodeURIComponent(jobId);\n    return new Promise((resolve, reject) => {\n      let attempts = 0;\n      const MAX = 100; // ~5 minutos (poll a cada 3s)\n      const iv = setInterval(async () => {\n        if (++attempts > MAX) {\n          clearInterval(iv);\n          reject(new Error('Tempo limite excedido — a análise demorou mais que o esperado. Tente novamente.'));\n          return;\n        }\n        try {\n          const r = await fetch(pollUrl, { headers: { 'Accept': 'application/json' } });\n          if (!r.ok) return;\n          const d = await r.json();\n          if (d.status === 'done') { clearInterval(iv); resolve(d.result); }\n          else if (d.status === 'error') { clearInterval(iv); reject(new Error(d.message || 'Erro na análise.')); }\n        } catch (e) { /* falha momentânea de rede — tenta de novo no próximo ciclo */ }\n      }, 3000);\n    });\n  }\n\n  document.getElementById('form').addEventListener('submit', async e => {\n    e.preventDefault();\n    const url = document.getElementById('url').value.trim();\n    if (!url) return;\n    const btn     = document.getElementById('btn');\n    const loading = document.getElementById('loading');\n    const errBox  = document.getElementById('errBox');\n    const results = document.getElementById('results');\n    results.classList.remove('on');\n    errBox.classList.remove('on');\n    loading.classList.add('on');\n    btn.disabled = true;\n    btn.textContent = '⏳ Analisando...';\n    const pf = document.getElementById('progressFill');\n    if (pf) { pf.style.animation = 'none'; void pf.offsetWidth; pf.style.animation = 'progress 180s linear forwards'; }\n    startStepMessages();\n    try {\n      const jobId = 'seo_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);\n      const res = await fetch(window.location.href, {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },\n        body: JSON.stringify({ url: url, jobId: jobId })\n      });\n      if (!res.ok) throw new Error('HTTP ' + res.status + ': ' + res.statusText);\n      const data = await pollResult(jobId);\n      if (data && data.error) throw new Error(data.message || data.technical || 'Erro na análise.');\n      clearInterval(stepTimer);\n      loading.classList.remove('on');\n      showResults(data);\n    } catch(err) {\n      clearInterval(stepTimer);\n      loading.classList.remove('on');\n      document.getElementById('errMsg').textContent = err.message || 'Erro desconhecido.';\n      errBox.classList.add('on');\n    } finally {\n      btn.disabled = false;\n      btn.textContent = '🚀 Auditar Página';\n    }\n  });\n  </script>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "6b0aa306-f718-4bef-8fbe-52e6d16011d1",
+      "name": "📄 Renderizar Interface",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        2560
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36\",\n  \"Accept-Language\": \"pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7\",\n  \"Accept\": \"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "maxRedirects": 5
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "fcd133d7-8edc-4b4a-a095-a6da38799eca",
+      "name": "Scrape Website - Googlebot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1984,
+        2768
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "title",
+              "cssSelector": "title"
+            },
+            {
+              "key": "metaDesc",
+              "cssSelector": "meta[name=\"description\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "metaRobots",
+              "cssSelector": "meta[name=\"robots\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "metaViewport",
+              "cssSelector": "meta[name=\"viewport\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "metaCharset",
+              "cssSelector": "meta[charset]",
+              "returnValue": "attribute",
+              "attribute": "charset"
+            },
+            {
+              "key": "canonicalUrl",
+              "cssSelector": "link[rel=\"canonical\"]",
+              "returnValue": "attribute",
+              "attribute": "href"
+            },
+            {
+              "key": "ogTitle",
+              "cssSelector": "meta[property=\"og:title\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "ogDescription",
+              "cssSelector": "meta[property=\"og:description\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "ogImage",
+              "cssSelector": "meta[property=\"og:image\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "ogType",
+              "cssSelector": "meta[property=\"og:type\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "ogUrl",
+              "cssSelector": "meta[property=\"og:url\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "twitterCard",
+              "cssSelector": "meta[name=\"twitter:card\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "twitterTitle",
+              "cssSelector": "meta[name=\"twitter:title\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "twitterDesc",
+              "cssSelector": "meta[name=\"twitter:description\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "h1Tags",
+              "cssSelector": "h1",
+              "returnArray": true
+            },
+            {
+              "key": "h2Tags",
+              "cssSelector": "h2",
+              "returnArray": true
+            },
+            {
+              "key": "h3Tags",
+              "cssSelector": "h3",
+              "returnArray": true
+            },
+            {
+              "key": "h4Tags",
+              "cssSelector": "h4",
+              "returnArray": true
+            },
+            {
+              "key": "imgAlts",
+              "cssSelector": "img",
+              "returnValue": "attribute",
+              "attribute": "alt",
+              "returnArray": true
+            },
+            {
+              "key": "imgSrcs",
+              "cssSelector": "img",
+              "returnValue": "attribute",
+              "attribute": "src",
+              "returnArray": true
+            },
+            {
+              "key": "imgLoading",
+              "cssSelector": "img",
+              "returnValue": "attribute",
+              "attribute": "loading",
+              "returnArray": true
+            },
+            {
+              "key": "mainText",
+              "cssSelector": "main, article, [role=\"main\"]",
+              "skipSelectors": "nav, footer, header, aside, script, style, noscript"
+            },
+            {
+              "key": "paragraphs",
+              "cssSelector": "main p, article p, [role=\"main\"] p",
+              "returnArray": true
+            },
+            {
+              "key": "allLinks",
+              "cssSelector": "a[href]",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            },
+            {
+              "key": "nofollowLinks",
+              "cssSelector": "a[rel~=\"nofollow\"]",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            },
+            {
+              "key": "ldJson",
+              "cssSelector": "script[type=\"application/ld+json\"]",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "11f188ae-3a9b-4b86-9d2f-920bcc1f332c",
+      "name": "Elementos On-page",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        2224,
+        2768
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "enrich-url",
+              "name": "auditedUrl",
+              "value": "={{ $('Validar Entrada').item.json.url }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-title",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-titleLen",
+              "name": "titleLength",
+              "value": "={{ ($json.title || '').length }}",
+              "type": "number"
+            },
+            {
+              "id": "enrich-metaDesc",
+              "name": "metaDesc",
+              "value": "={{ $json.metaDesc }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-descLen",
+              "name": "metaDescLength",
+              "value": "={{ ($json.metaDesc || '').length }}",
+              "type": "number"
+            },
+            {
+              "id": "enrich-robots",
+              "name": "metaRobots",
+              "value": "={{ $json.metaRobots }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-viewport",
+              "name": "metaViewport",
+              "value": "={{ $json.metaViewport }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-charset",
+              "name": "metaCharset",
+              "value": "={{ $json.metaCharset }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-canonical",
+              "name": "canonicalUrl",
+              "value": "={{ $json.canonicalUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-ogTitle",
+              "name": "ogTitle",
+              "value": "={{ $json.ogTitle }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-ogDesc",
+              "name": "ogDescription",
+              "value": "={{ $json.ogDescription }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-ogImage",
+              "name": "ogImage",
+              "value": "={{ $json.ogImage }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-ogType",
+              "name": "ogType",
+              "value": "={{ $json.ogType }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-ogUrl",
+              "name": "ogUrl",
+              "value": "={{ $json.ogUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-twCard",
+              "name": "twitterCard",
+              "value": "={{ $json.twitterCard }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-twTitle",
+              "name": "twitterTitle",
+              "value": "={{ $json.twitterTitle }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-twDesc",
+              "name": "twitterDesc",
+              "value": "={{ $json.twitterDesc }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-h1",
+              "name": "h1Tags",
+              "value": "={{ $json.h1Tags }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-h1count",
+              "name": "h1Count",
+              "value": "={{ ($json.h1Tags || []).length }}",
+              "type": "number"
+            },
+            {
+              "id": "enrich-h2",
+              "name": "h2Tags",
+              "value": "={{ $json.h2Tags }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-h3",
+              "name": "h3Tags",
+              "value": "={{ $json.h3Tags }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-h4",
+              "name": "h4Tags",
+              "value": "={{ $json.h4Tags }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-imgSrcs",
+              "name": "imgSrcs",
+              "value": "={{ $json.imgSrcs }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-imgAlts",
+              "name": "imgAlts",
+              "value": "={{ $json.imgAlts }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-imgCount",
+              "name": "imgCount",
+              "value": "={{ ($json.imgSrcs || []).length }}",
+              "type": "number"
+            },
+            {
+              "id": "enrich-imgMissingAlt",
+              "name": "imgMissingAltCount",
+              "value": "={{ ($json.imgAlts || []).filter(a => !a || a.trim() === '').length }}",
+              "type": "number"
+            },
+            {
+              "id": "enrich-imgMissingSrcs",
+              "name": "imgMissingAltSrcs",
+              "value": "={{ (() => { const alts = $json.imgAlts || []; const srcs = $json.imgSrcs || []; return srcs.filter((src, i) => !alts[i] || alts[i].trim() === '').slice(0, 50); })() }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-imgLoading",
+              "name": "imgLoading",
+              "value": "={{ $json.imgLoading }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-imgLazyAboveFold",
+              "name": "imgLazyAboveFoldSrcs",
+              "value": "={{ (() => { const loading = $json.imgLoading || []; const srcs = $json.imgSrcs || []; const result = []; for (let i = 0; i < Math.min(srcs.length, 10); i++) { if (loading[i] === 'lazy') { result.push({ position: i + 1, src: srcs[i] }); } } return result; })() }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-mainText",
+              "name": "mainText",
+              "value": "={{ ($json.mainText || '').substring(0, 8000) }}",
+              "type": "string"
+            },
+            {
+              "id": "enrich-wordCount",
+              "name": "wordCount",
+              "value": "={{ ($json.mainText || '').trim().split(/\\s+/).filter(w => w.length > 0).length }}",
+              "type": "number"
+            },
+            {
+              "id": "enrich-paragraphs",
+              "name": "paragraphs",
+              "value": "={{ ($json.paragraphs || []).slice(0, 30) }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-allLinks",
+              "name": "allLinks",
+              "value": "={{ ($json.allLinks || []).slice(0, 150) }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-linkCount",
+              "name": "totalLinkCount",
+              "value": "={{ ($json.allLinks || []).length }}",
+              "type": "number"
+            },
+            {
+              "id": "enrich-nofollow",
+              "name": "nofollowLinks",
+              "value": "={{ $json.nofollowLinks }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-ldJson",
+              "name": "ldJson",
+              "value": "={{ $json.ldJson }}",
+              "type": "array"
+            },
+            {
+              "id": "enrich-jsWarning",
+              "name": "possibleJsRendering",
+              "value": "={{ ($json.mainText || '').length < 200 && ($json.h1Tags || []).length === 0 }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e98e844b-8f43-4fa5-bf5f-240e89f8ea78",
+      "name": "Enriquecer Dados SEO",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        2464,
+        2768
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─────────────────────────────────────────────────────────────\n// Verificador de Status HTTP dos Links\n// Faz requisições HEAD em paralelo (lotes de 10)\n// Coleta links com status problemático: 301, 302, 4xx, 5xx\n// ─────────────────────────────────────────────────────────────\n\nconst item = $input.first().json;\nconst pageUrl = item.auditedUrl || '';\nconst rawLinks = item.allLinks || [];\n\nfunction resolveUrl(href, base) {\n  if (!href) return null;\n  href = String(href).trim();\n  if (href.startsWith('#') || /^(mailto:|tel:|javascript:)/i.test(href)) return null;\n  if (/^https?:\\/\\//i.test(href)) return href;\n  if (href.startsWith('//')) return 'https:' + href;\n  const m = String(base).match(/^(https?:\\/\\/[^\\/?#]+)([^?#]*)?/i);\n  if (!m) return null;\n  const origin = m[1];\n  if (href.startsWith('/')) return origin + href;\n  let basePath = (m[2] || '/').replace(/[^\\/]*$/, '');\n  if (!basePath.startsWith('/')) basePath = '/' + basePath;\n  return origin + basePath + href;\n}\n\nfunction problemLabel(status) {\n  if (status === 301) return 'Redirecionamento permanente — atualize o href para a URL final';\n  if (status === 302) return 'Redirecionamento temporário — verifique se deveria ser permanente';\n  if (status === 404) return 'Página não encontrada — remova ou corrija o link';\n  if (status === 410) return 'Recurso removido permanentemente — remova o link';\n  if (status >= 400 && status < 500) return `Erro do cliente (${status}) — verifique e corrija o link`;\n  if (status >= 500) return `Erro de servidor (${status}) — monitore e corrija`;\n  return `Status inesperado (${status})`;\n}\n\nconst seen = new Set();\nconst toCheck = [];\nfor (const href of rawLinks) {\n  const abs = resolveUrl(href, pageUrl);\n  if (!abs || seen.has(abs)) continue;\n  seen.add(abs);\n  toCheck.push(abs);\n  if (toCheck.length >= 30) break;\n}\n\nconst BATCH = 10;\nconst TIMEOUT_MS = 5000;\nconst issues = [];\n\nasync function checkUrl(url) {\n  try {\n    const ctrl = new AbortController();\n    const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);\n    const resp = await fetch(url, {\n      method: 'HEAD',\n      redirect: 'manual',\n      signal: ctrl.signal,\n      headers: {\n        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'\n      }\n    });\n    clearTimeout(timer);\n    const status = resp.status;\n    if (status === 301 || status === 302 || status >= 400) {\n      return { url, status, problem: problemLabel(status) };\n    }\n    return null;\n  } catch (err) {\n    if (err.name === 'AbortError') {\n      return { url, status: 'TIMEOUT', problem: 'Requisição expirou — servidor lento ou URL inacessível' };\n    }\n    return null;\n  }\n}\n\nfor (let i = 0; i < toCheck.length; i += BATCH) {\n  const batch = toCheck.slice(i, i + BATCH);\n  const results = await Promise.all(batch.map(checkUrl));\n  for (const r of results) {\n    if (r) issues.push(r);\n  }\n}\n\nreturn [{\n  json: {\n    ...item,\n    linkStatusIssues: issues,\n    linkStatusChecked: toCheck.length,\n    linkStatusIssueCount: issues.length\n  }\n}];\n"
+      },
+      "id": "8650b8c4-74ab-4e97-ae28-9f93c73a2d79",
+      "name": "🔗 Verificar Status dos Links",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2704,
+        2768
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "ba335d93-78b5-4202-a060-49aad14d37f9",
+      "name": "🔀 Merge Agentes",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3216,
+        2768
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "tech-output",
+              "name": "technical",
+              "value": "={{ $('Agente Técnico').first().json.output || '⚠️ A auditoria técnica não pôde ser concluída. Tente novamente em instantes.' }}",
+              "type": "string"
+            },
+            {
+              "id": "content-output",
+              "name": "content",
+              "value": "={{ $('Agente de Conteúdo').first().json.output || '⚠️ A auditoria de conteúdo não pôde ser concluída. Tente novamente em instantes.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a3bae7c5-378d-44cc-b24f-9754061fe5bc",
+      "name": "Preparar Resposta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        3424,
+        2768
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é um especialista técnico em SEO e auditoria de páginas web.\n\nReceberá dados extraídos de uma única página da web em formato JSON, com campos pré-calculados (contagens, flags, textos truncados).\n\nSeu papel é **analisar tecnicamente apenas esta página**, com base exclusiva nas informações fornecidas.\n\n---\n### 📦 Dados da Página\n```json\n{{ JSON.stringify($json, null, 2) }}\n```\n\n---\n### 🔍 Instruções\n\n1. **Não faça suposições** sobre outras páginas do site. Analise apenas os dados recebidos.\n2. Use os campos pré-calculados (`h1Count`, `imgMissingAltCount`, `possibleJsRendering`) para embasar suas análises com números concretos.\n3. Se `possibleJsRendering` for `true`, sinalize como **aviso crítico**.\n4. **Não avalie** tamanho de title, tamanho de meta description, qualidade textual de headings nem sugestões de reescrita — esses itens são responsabilidade do Agente de Conteúdo.\n5. Analise exclusivamente os seguintes aspectos **técnicos on-page**:\n\n   - **Indexabilidade**\n     — `metaRobots`: há diretivas `noindex` ou `nofollow`? Se ausente, registre como ✅ OK (comportamento padrão do Google é indexar).\n     — `canonicalUrl`: presente? Aponta para a própria URL da página ou para outra URL diferente? Se apontar para uma URL diferente, sinalize como ⚠️ Atenção e mostre as duas URLs lado a lado para comparação.\n\n   - **Meta Tags Técnicas**\n     — `metaViewport`: presente e configurado para mobile?\n     — `metaCharset`: declarado (preferencialmente UTF-8)?\n     — `title` e `metaDesc`: apenas confirme **presença ou ausência** — sem avaliar tamanho ou qualidade, isso é responsabilidade do Agente de Conteúdo.\n\n   - **Open Graph**\n     — `ogTitle`, `ogDescription`, `ogImage`, `ogType`: todos presentes?\n     — `ogUrl`: verifique se o valor de `ogUrl` é igual à URL da página (`auditedUrl`) ou à `canonicalUrl`.\n       — Se for igual → ✅ OK.\n       — Se for diferente → ⚠️ Atenção. Explique em linguagem simples: \"A tag og:url está apontando para [ogUrl], mas a URL desta página é [auditedUrl]. Isso pode causar inconsistências quando a página for compartilhada em redes sociais. O ideal é que og:url aponte para a própria URL da página.\"\n       — Não use termos técnicos como \"cross-domain\" ou \"consistência canônica\" — escreva como se estivesse explicando para um profissional de marketing.\n     — `twitterCard`, `twitterTitle`, `twitterDesc`: registre como 💡 Opcional — não impactam ranking nem indexação e **não entram no Top 5**.\n\n   - **Headings — apenas estrutura técnica**\n     — `h1Count`: deve ser exatamente 1. Se 0 ou >1, ❌ Crítico.\n     — Hierarquia: há saltos de nível (ex: H1 → H3 sem H2)?\n     — **Não avalie qualidade textual, keywords ou sugestões de reescrita** — isso é do Agente de Conteúdo.\n\n   - **Links On-page**\n     — Informe o total de links encontrados (`totalLinkCount`) apenas como dado informativo — quantidade de links por si só não é um problema de SEO.\n     — `nofollowLinks`: liste quais links têm `rel=\"nofollow\"` e avalie se o uso faz sentido estrategicamente.\n     — **Links com problemas de status HTTP**: use `linkStatusIssues` (array `{ url, status, problem }`).\n       — Informe: links verificados (`linkStatusChecked`) e com problema (`linkStatusIssueCount`).\n       — Se houver itens, apresente tabela Markdown com colunas: `URL` | `Status` | `Problema`.\n       — 301/302 → o link está redirecionando para outra URL — atualize o href diretamente para o destino final para evitar perda de performance.\n       — 4xx → link quebrado, a página de destino não existe — remova ou corrija.\n       — 5xx → erro no servidor de destino — monitore e corrija quando possível.\n       — TIMEOUT → não foi possível verificar — faça uma checagem manual.\n       — Se vazio → ✅ OK — nenhum link com problema encontrado.\n\n   - **Schema / JSON-LD**\n     — `ldJson`: presente? Quais tipos (`@type`) foram implementados?\n     — Os schemas cobrem o tipo de página (Product, Article, BreadcrumbList, FAQPage)?\n     — Há campos obrigatórios ausentes?\n\n   - **Imagens — aspectos técnicos**\n     — `imgCount`: total de imagens.\n     — `imgMissingAltCount`: quantidade sem texto alternativo (`alt`).\n       — Se > 0, liste **todos os URLs** do array `imgMissingAltSrcs` assim:\n         ```\n         - https://...\n         - https://...\n         ```\n       — Ação: adicionar um texto alternativo descritivo a cada uma dessas imagens.\n     — `imgLazyAboveFoldSrcs`: array de objetos `{ position, src }` representando imagens que aparecem no início do código HTML da página (primeiras posições do DOM) e que possuem `loading=\"lazy\"`.\n       — Se o array **não estiver vazio**, para cada item exiba obrigatoriamente:\n         - A posição no DOM (ex: \"Posição 3\")\n         - A URL completa da imagem (campo `src` do objeto)\n         - Explicação: imagens que aparecem logo no topo da página não devem ter `loading=\"lazy\"`, pois isso atrasa o carregamento da imagem principal e prejudica a experiência do usuário.\n         - Ação: remover o atributo `loading=\"lazy\"` dessas imagens específicas.\n       — **Nunca omita a URL (`src`) — ela é obrigatória no relatório.**\n       — Se o array estiver vazio → ✅ OK.\n\n   - **Renderização JavaScript**\n     — Se `possibleJsRendering` for `true`: ❌ Crítico — parte do conteúdo da página pode não estar visível para o Google. Recomende verificar a página pelo Google Search Console (ferramenta de inspeção de URL).\n\n6. Para cada item:\n   - ✅ OK / ⚠️ Atenção / ❌ Crítico / 💡 Opcional\n   - **Impacto SEO**: leve / moderado / crítico / informativo\n   - **Ação sugerida**: escrita em linguagem clara, sem jargões técnicos desnecessários\n\n7. Resposta em **Markdown** com estas seções:\n\n   ## Resumo Técnico Geral\n   *(parágrafo curto + bullet list dos pontos críticos)*\n\n   ## Meta Tags Técnicas\n   ## Open Graph & Social Cards\n   ## Headings — Estrutura Técnica\n   ## Links On-page\n   ## Dados Estruturados (Schema / JSON-LD)\n   ## Imagens\n   ## Renderização JavaScript\n   ## Conclusão — Top 5 Prioridades Técnicas\n   *(ordenado por impacto — Twitter Cards e volume de links excluídos desta lista)*",
+        "options": {}
+      },
+      "id": "2ce98e04-48c9-431f-98ee-c7c6a5b4d032",
+      "name": "Agente Técnico",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2944,
+        2672
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é um especialista em SEO e copywriting para e-commerce.\nAnalise o conteúdo textual de uma única página web com base nos dados abaixo.\n\n---\n### 📦 Dados da Página\n```json\n{{ JSON.stringify($json, null, 2) }}\n```\n\n---\n### ⚙️ Regras importantes\n1. Analise **apenas os dados visíveis no JSON acima**. Nunca invente valores.\n2. Se um campo estiver vazio ou ausente, diga \"não encontrado\" e sinalize como problema.\n3. Use os campos pré-calculados: `wordCount` (ideal >300 para produto, >800 para editorial), `titleLength`, `metaDescLength`.\n\n4. Analise e comente sobre:\n\n   - **Title SEO**\n     — Presente? (`title`)\n     — Tamanho: ideal entre 50–60 caracteres (`titleLength`). Abaixo de 50 → muito curto. Acima de 60 → será truncado no Google.\n     — Inclui a palavra-chave principal? Tem apelo de clique (CTR)?\n     — Se inadequado, **proponha uma versão reescrita** do title.\n\n   - **Meta Description**\n     — Presente? (`metaDesc`)\n     — Tamanho: ideal entre 120–158 caracteres (`metaDescLength`).\n     — Tem CTA? Reforça a proposta de valor da página?\n     — Se inadequada, **proponha uma versão reescrita** da meta description.\n\n   - **H1**\n     — Único e presente? (estrutura técnica é do Agente Técnico — aqui avalie apenas a **qualidade do texto**).\n     — Inclui a keyword principal? É claro e descritivo? Está alinhado com o title?\n     — Se inadequado, **proponha uma versão reescrita** do H1.\n\n   - **H2 / H3 — Qualidade e Semântica**\n     — Os textos dos headings estruturam bem o conteúdo?\n     — Há uso de variações semânticas e LSI keywords?\n     — Se houver headings genéricos ou fracos, aponte e **sugira versões melhoradas**.\n\n   - **Conteúdo Principal** (`mainText`, `paragraphs`, `wordCount`)\n     — Extensão suficiente para o tipo de página?\n     — Cobre a intenção de busca? Linguagem clara? Há thin content?\n\n   - **Tom de Voz**\n     — Formal/informal? Persuasivo? Adequado para e-commerce?\n\n   - **Uso de Palavras-chave**\n     — Keyword stuffing? Densidade natural? Variações semânticas presentes?\n\n   - **CTAs e Conversão**\n     — Há chamadas para ação claras no conteúdo visível?\n\n   - **Open Graph & Consistência Social**\n     — `ogTitle` e `ogDescription` estão consistentes com o title e conteúdo da página?\n     — Se inadequados, **proponha versões reescritas**.\n\n5. Para cada item indique:\n   - ✅ OK / ⚠️ Atenção / ❌ Crítico\n   - **Impacto SEO/Conversão**: leve / moderado / crítico\n   - **Ação sugerida** com reescrita quando aplicável\n\n6. Resposta em **Markdown**:\n\n   ## Resumo de Conteúdo\n   ## Title e Meta Description\n   *(inclua versões reescritas quando necessário)*\n   ## Headings — Qualidade e Semântica\n   *(inclua sugestões de reescrita quando necessário)*\n   ## Conteúdo Principal e Thin Content\n   ## Uso de Palavras-chave e SEO Semântico\n   ## Tom de Voz e Persuasão\n   ## CTAs e Conversão\n   ## Open Graph & Consistência Social\n   ## Oportunidades de Melhoria — Top 5\n   *(ordenado por impacto SEO/conversão)*",
+        "options": {}
+      },
+      "id": "e7653989-f983-453c-8644-3e5cecde93e4",
+      "name": "Agente de Conteúdo",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2944,
+        2864
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.2,
+          "maxTokens": 4000,
+          "timeout": 90000
+        }
+      },
+      "id": "17300285-18b2-4496-a3d9-5f3f07453671",
+      "name": "OpenRouter Chat Model Technical",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2768,
+        2560
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.4,
+          "maxTokens": 4000,
+          "timeout": 90000
+        }
+      },
+      "id": "ea99ee74-ef6f-4357-9864-b5b06471a6ed",
+      "name": "OpenRouter Chat Model Content",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2768,
+        2960
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validacao por regex — a classe URL nao esta disponivel no sandbox do task runner\nconst body = $input.first().json.body || {};\nlet url = String(body.url || '').trim();\nif (url && !/^https?:\\/\\//i.test(url)) url = 'https://' + url;\nconst valid = /^https?:\\/\\/[a-z0-9][a-z0-9.-]*\\.[a-z]{2,}([\\/:?#]|$)/i.test(url);\nconst jobId = String(body.jobId || '').trim() || ('seo_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8));\nreturn [{ json: {\n  valid,\n  errors: valid ? [] : ['URL invalida ou ausente. Envie um JSON no formato {\"url\": \"https://exemplo.com.br/pagina\"}'],\n  url,\n  jobId\n} }];"
+      },
+      "id": "0a000001-0000-4000-8000-00000000on01",
+      "name": "Validar Entrada",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        2768
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "22222222-2222-4222-8222-222222222222",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0a000002-0000-4000-8000-00000000on02",
+      "name": "Entrada Válida?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2096,
+        2768
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "seo_jobs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "jobId",
+              "keyValue": "={{ $('Validar Entrada').first().json.jobId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "jobId": "={{ $('Validar Entrada').first().json.jobId }}",
+            "result": "={{ JSON.stringify($input.first().json) }}"
+          },
+          "matchingColumns": [
+            "jobId"
+          ]
+        },
+        "options": {}
+      },
+      "id": "5b7a9c01-1a2b-4c3d-8e4f-a1b2c3d4e501",
+      "name": "💾 Salvar Resultado",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3664,
+        2768
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "seo_jobs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "jobId",
+              "keyValue": "={{ $('Validar Entrada').first().json.jobId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "jobId": "={{ $('Validar Entrada').first().json.jobId }}",
+            "result": "={{ JSON.stringify({ error: true, message: 'Não foi possível acessar a URL. O site pode estar bloqueando robôs ou o endereço está incorreto. Verifique e tente novamente.', technical: '⚠️ Não foi possível acessar a URL informada. O site pode estar bloqueando acessos automatizados (WAF/CDN) ou o endereço está incorreto. Verifique a URL e tente novamente.', content: '' }) }}"
+          },
+          "matchingColumns": [
+            "jobId"
+          ]
+        },
+        "options": {}
+      },
+      "id": "5b7a9c02-1a2b-4c3d-8e4f-a1b2c3d4e502",
+      "name": "💾 Salvar Erro Scrape",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2240,
+        3056
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "seo_jobs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "jobId",
+              "keyValue": "={{ $json.jobId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "jobId": "={{ $json.jobId }}",
+            "result": "={{ JSON.stringify({ error: true, message: $json.errors.join(' '), technical: $json.errors.join(' '), content: '' }) }}"
+          },
+          "matchingColumns": [
+            "jobId"
+          ]
+        },
+        "options": {}
+      },
+      "id": "5b7a9c03-1a2b-4c3d-8e4f-a1b2c3d4e503",
+      "name": "💾 Salvar Erro Validação",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2096,
+        2976
+      ]
+    },
+    {
+      "parameters": {
+        "path": "seo-onpage-audit-poll",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "5b7a9c04-1a2b-4c3d-8e4f-a1b2c3d4e504",
+      "name": "🔎 GET - Poll Resultado",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        3184
+      ],
+      "webhookId": "seo-audit-poll"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "seo_jobs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "jobId",
+              "keyValue": "={{ $json.query.jobId }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "5b7a9c05-1a2b-4c3d-8e4f-a1b2c3d4e505",
+      "name": "Ler Resultado",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1984,
+        3184
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const query = $('🔎 GET - Poll Resultado').first()?.json?.query ?? {};\nconst jobId = (query.jobId ?? '').trim();\nif (!jobId) return [{ json: { status: 'error', message: 'jobId obrigatório' } }];\nconst row = $input.first()?.json ?? {};\nif (!row.result) return [{ json: { status: 'processing' } }];\nconst r = row.result;\nconst parsed = typeof r === 'string' ? JSON.parse(r) : r;\nreturn [{ json: { status: 'done', result: parsed } }];"
+      },
+      "id": "5b7a9c06-1a2b-4c3d-8e4f-a1b2c3d4e506",
+      "name": "Formatar Poll",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2224,
+        3184
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "5b7a9c07-1a2b-4c3d-8e4f-a1b2c3d4e507",
+      "name": "Responder Poll",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2464,
+        3184
+      ]
+    }
+  ],
+  "connections": {
+    "🌐 GET - Formulário Web": {
+      "main": [
+        [
+          {
+            "node": "📄 Renderizar Interface",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 POST - Análise": {
+      "main": [
+        [
+          {
+            "node": "Validar Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Website - Googlebot": {
+      "main": [
+        [
+          {
+            "node": "Elementos On-page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "💾 Salvar Erro Scrape",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Elementos On-page": {
+      "main": [
+        [
+          {
+            "node": "Enriquecer Dados SEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enriquecer Dados SEO": {
+      "main": [
+        [
+          {
+            "node": "🔗 Verificar Status dos Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔗 Verificar Status dos Links": {
+      "main": [
+        [
+          {
+            "node": "Agente Técnico",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Agente de Conteúdo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Técnico": {
+      "main": [
+        [
+          {
+            "node": "🔀 Merge Agentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de Conteúdo": {
+      "main": [
+        [
+          {
+            "node": "🔀 Merge Agentes",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "🔀 Merge Agentes": {
+      "main": [
+        [
+          {
+            "node": "Preparar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Resposta": {
+      "main": [
+        [
+          {
+            "node": "💾 Salvar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model Technical": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Técnico",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model Content": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente de Conteúdo",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Entrada": {
+      "main": [
+        [
+          {
+            "node": "Entrada Válida?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entrada Válida?": {
+      "main": [
+        [
+          {
+            "node": "Scrape Website - Googlebot",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "💾 Salvar Erro Validação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔎 GET - Poll Resultado": {
+      "main": [
+        [
+          {
+            "node": "Ler Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Resultado": {
+      "main": [
+        [
+          {
+            "node": "Formatar Poll",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Poll": {
+      "main": [
+        [
+          {
+            "node": "Responder Poll",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "errorWorkflow": "KJUEZjqsMuCz0qoZ"
+  },
+  "pinData": {}
+}
