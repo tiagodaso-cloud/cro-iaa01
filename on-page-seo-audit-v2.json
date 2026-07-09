@@ -742,7 +742,13 @@
             "index": 0
           }
         ],
-        []
+        [
+          {
+            "node": "📤 Responder Erro Scrape",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Elementos On-page": {
