@@ -684,7 +684,8 @@
           "mappingMode": "defineBelow",
           "value": {
             "jobId": "={{ $('Validar Entrada').first().json.jobId }}",
-            "result": "={{ JSON.stringify($input.first().json) }}"
+            "payload": "={{ JSON.stringify($input.first().json) }}",
+            "criado_em": "={{ $now.toISO() }}"
           },
           "matchingColumns": [
             "jobId"
@@ -723,7 +724,8 @@
           "mappingMode": "defineBelow",
           "value": {
             "jobId": "={{ $('Validar Entrada').first().json.jobId }}",
-            "result": "={{ JSON.stringify({ error: true, message: 'Não foi possível acessar a URL. O site pode estar bloqueando robôs ou o endereço está incorreto. Verifique e tente novamente.', technical: '⚠️ Não foi possível acessar a URL informada. O site pode estar bloqueando acessos automatizados (WAF/CDN) ou o endereço está incorreto. Verifique a URL e tente novamente.', content: '' }) }}"
+            "payload": "={{ JSON.stringify({ error: true, message: 'Não foi possível acessar a URL. O site pode estar bloqueando robôs ou o endereço está incorreto. Verifique e tente novamente.', technical: '⚠️ Não foi possível acessar a URL informada. O site pode estar bloqueando acessos automatizados (WAF/CDN) ou o endereço está incorreto. Verifique a URL e tente novamente.', content: '' }) }}",
+            "criado_em": "={{ $now.toISO() }}"
           },
           "matchingColumns": [
             "jobId"
@@ -762,7 +764,8 @@
           "mappingMode": "defineBelow",
           "value": {
             "jobId": "={{ $json.jobId }}",
-            "result": "={{ JSON.stringify({ error: true, message: $json.errors.join(' '), technical: $json.errors.join(' '), content: '' }) }}"
+            "payload": "={{ JSON.stringify({ error: true, message: $json.errors.join(' '), technical: $json.errors.join(' '), content: '' }) }}",
+            "criado_em": "={{ $now.toISO() }}"
           },
           "matchingColumns": [
             "jobId"
@@ -829,7 +832,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const query = $('🔎 GET - Poll Resultado').first()?.json?.query ?? {};\nconst jobId = (query.jobId ?? '').trim();\nif (!jobId) return [{ json: { status: 'error', message: 'jobId obrigatório' } }];\nconst row = $input.first()?.json ?? {};\nif (!row.result) return [{ json: { status: 'processing' } }];\nconst r = row.result;\nconst parsed = typeof r === 'string' ? JSON.parse(r) : r;\nreturn [{ json: { status: 'done', result: parsed } }];"
+        "jsCode": "const query = $('🔎 GET - Poll Resultado').first()?.json?.query ?? {};\nconst jobId = (query.jobId ?? '').trim();\nif (!jobId) return [{ json: { status: 'error', message: 'jobId obrigatório' } }];\nconst row = $input.first()?.json ?? {};\nif (!row.payload) return [{ json: { status: 'processing' } }];\nconst r = row.payload;\nconst parsed = typeof r === 'string' ? JSON.parse(r) : r;\nreturn [{ json: { status: 'done', result: parsed } }];"
       },
       "id": "5b7a9c06-1a2b-4c3d-8e4f-a1b2c3d4e506",
       "name": "Formatar Poll",
