@@ -1,0 +1,1714 @@
+{
+  "name": "CXO Next — Fábrica Multi-Agente (SMA)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 2,
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 7,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "857049fb-1aad-408c-b083-370162f657d1",
+      "name": "Cadência Quinzenal (Fábrica)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1120,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": [
+                4
+              ],
+              "triggerAtHour": 7,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "559d2163-36e5-4871-9779-1993377f4492",
+      "name": "Sentinela Semanal (Proteção de Receita)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1120,
+        400
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "8c46fbe8-08fa-4b54-bfeb-162824d41410",
+      "name": "Execução Manual (Teste)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "m1",
+              "name": "modo",
+              "value": "completo",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "dcf9ddcc-eded-4214-97ac-9d0a383f4d7c",
+      "name": "Modo: Completo",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "m2",
+              "name": "modo",
+              "value": "sentinela",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "58c626ee-53cf-482a-9cfb-56b7d324125a",
+      "name": "Modo: Sentinela",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "m3",
+              "name": "modo",
+              "value": "completo",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "af58f3f3-d6dd-48da-886d-3e376705de5d",
+      "name": "Modo: Manual",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_clientes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": []
+        },
+        "returnAll": true
+      },
+      "id": "69cb01c9-7418-4cfd-a3da-e0d3d51f00b2",
+      "name": "Carregar Clientes Ativos",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -640,
+        400
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "let modo = 'completo';\ntry { const m = $('Modo: Sentinela').first().json.modo; if (m) modo = m; } catch (e) {}\ntry { const m = $('Modo: Completo').first().json.modo; if (m) modo = m; } catch (e) {}\ntry { const m = $('Modo: Manual').first().json.modo; if (m) modo = m; } catch (e) {}\nconst ativo = v => v === true || v === 'true' || v === 1 || v === '1';\nreturn $input.all()\n  .filter(i => i.json && i.json.cliente && ativo(i.json.ativo))\n  .map(i => ({ json: { ...i.json, modo } }));"
+      },
+      "id": "126b6bd9-5a84-4c7d-b143-62cd79c16c46",
+      "name": "Montar Fila",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "4fa7b96e-7860-48bf-a1ca-01eaf18ec026",
+      "name": "Processar Clientes",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "rodada_finalizada_em",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "bc230778-f785-44e1-9b49-917d6ff28a6f",
+      "name": "Rodada Concluída",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $input.first().json;\nconst hoje = new Date();\nfunction d(offsetDias) {\n  const x = new Date(hoje.getTime() - offsetDias * 86400000);\n  return x.toISOString().slice(0, 10);\n}\nconst slug = String(r.cliente || 'cliente').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');\nconst carimbo = hoje.toISOString().slice(0, 10).replace(/-/g, '');\nconst modo = r.modo || 'completo';\nreturn [{ json: {\n  cliente: r.cliente,\n  modo,\n  ciclo_id: slug + '-' + carimbo + (modo === 'sentinela' ? '-S' : ''),\n  site_url: r.site_url || '',\n  contexto_negocio: r.contexto_negocio || '',\n  vertical: r.vertical || '',\n  tier: r.tier || 'essential',\n  ga4_property_id: String(r.ga4_property_id || '').replace(/[^0-9]/g, ''),\n  clarity_api_token: r.clarity_api_token || '',\n  jira_base_url: String(r.jira_base_url || '').replace(/\\/$/, ''),\n  jira_project_key: r.jira_project_key || '',\n  jira_issue_type: r.jira_issue_type || 'Task',\n  email_analista: r.email_analista || 'tsoares@cadastra.com',\n  valor_por_conversao: Number(r.valor_por_conversao) || 0,\n  moeda: r.moeda || 'BRL',\n  periodo_inicio: d(28), periodo_fim: d(1),\n  periodo_prev_inicio: d(56), periodo_prev_fim: d(29)\n} }];"
+      },
+      "id": "33c6fbee-343c-412d-ab78-eb96c6e7037a",
+      "name": "Preparar Cliente",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://analyticsdata.googleapis.com/v1beta/properties/{{ $('Preparar Cliente').first().json.ga4_property_id }}:runReport",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAnalyticsOAuth2",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ dateRanges: [ { startDate: $('Preparar Cliente').first().json.periodo_inicio, endDate: $('Preparar Cliente').first().json.periodo_fim, name: 'atual' }, { startDate: $('Preparar Cliente').first().json.periodo_prev_inicio, endDate: $('Preparar Cliente').first().json.periodo_prev_fim, name: 'anterior' } ], metrics: [ { name: 'sessions' }, { name: 'totalUsers' }, { name: 'keyEvents' }, { name: 'purchaseRevenue' } ], limit: 8 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "3b4babe4-60eb-4a9d-87a2-cf039c7856f5",
+      "name": "GA4 – Totais do Período",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        320,
+        400
+      ],
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "__CRIAR__",
+          "name": "Google Analytics - CRO Next"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://analyticsdata.googleapis.com/v1beta/properties/{{ $('Preparar Cliente').first().json.ga4_property_id }}:runReport",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAnalyticsOAuth2",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ dateRanges: [ { startDate: $('Preparar Cliente').first().json.periodo_inicio, endDate: $('Preparar Cliente').first().json.periodo_fim, name: 'atual' }, { startDate: $('Preparar Cliente').first().json.periodo_prev_inicio, endDate: $('Preparar Cliente').first().json.periodo_prev_fim, name: 'anterior' } ], dimensions: [ { name: 'eventName' } ], metrics: [ { name: 'eventCount' }, { name: 'totalUsers' } ], dimensionFilter: { filter: { fieldName: 'eventName', inListFilter: { values: ['page_view','view_item','view_item_list','select_item','add_to_cart','view_cart','begin_checkout','add_shipping_info','add_payment_info','purchase','generate_lead','form_start','form_submit','sign_up','search'] } } }, limit: 80 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "f43423c2-d63a-4f01-ad9a-b6d3868513d7",
+      "name": "GA4 – Eventos de Funil",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        560,
+        400
+      ],
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "__CRIAR__",
+          "name": "Google Analytics - CRO Next"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://analyticsdata.googleapis.com/v1beta/properties/{{ $('Preparar Cliente').first().json.ga4_property_id }}:runReport",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleAnalyticsOAuth2",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ dateRanges: [ { startDate: $('Preparar Cliente').first().json.periodo_inicio, endDate: $('Preparar Cliente').first().json.periodo_fim } ], dimensions: [ { name: 'sessionDefaultChannelGroup' }, { name: 'deviceCategory' } ], metrics: [ { name: 'sessions' }, { name: 'keyEvents' }, { name: 'purchaseRevenue' } ], orderBys: [ { desc: true, metric: { metricName: 'sessions' } } ], limit: 30 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "d179d89f-a891-478b-8f11-5bf801a83dd9",
+      "name": "GA4 – Canais & Devices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        800,
+        400
+      ],
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "__CRIAR__",
+          "name": "Google Analytics - CRO Next"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.clarity.ms/export-data/api/v1/project-live-insights",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "numOfDays",
+              "value": "3"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bea' + 'rer ' + $('Preparar Cliente').first().json.clarity_api_token }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "66b6ca61-7b96-4936-8c5e-db20c6c89242",
+      "name": "Clarity – Comportamento",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1040,
+        400
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Preparar Cliente').first().json.jira_base_url }}/rest/api/2/search",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "jql",
+              "value": "=project = \"{{ $('Preparar Cliente').first().json.jira_project_key }}\""
+            },
+            {
+              "name": "maxResults",
+              "value": "30"
+            },
+            {
+              "name": "fields",
+              "value": "summary,status,labels,created"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "eaed4989-93b3-4f40-95fa-1eb6ea7a13dd",
+      "name": "Jira – Backlog Existente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1280,
+        400
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "Ut4FQk61Gd0d81j4",
+          "name": "JIRA-GABRIELY"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "function safe(nome) { try { const j = $(nome).first().json; return j || null; } catch (e) { return null; } }\nconst ga4Tot = safe('GA4 – Totais do Período');\nconst ga4Fun = safe('GA4 – Eventos de Funil');\nconst ga4Can = safe('GA4 – Canais & Devices');\nconst clarity = safe('Clarity – Comportamento');\nconst jira = safe('Jira – Backlog Existente');\nconst num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };\nconst pct = (a, b) => (b > 0 ? ((a - b) / b) * 100 : null);\nconst round1 = v => (v === null || v === undefined ? null : Math.round(v * 10) / 10);\n\nlet kpis = { sessoes: null, usuarios: null, conversoes: null, receita: null, taxa_conversao: null, sessoes_ant: null, conversoes_ant: null, receita_ant: null, taxa_ant: null, sessoes_delta: null, conversoes_delta: null, receita_delta: null, taxa_delta: null };\nlet ga4ok = false;\nif (ga4Tot && Array.isArray(ga4Tot.rows)) {\n  ga4ok = true;\n  for (const row of ga4Tot.rows) {\n    const dims = (row.dimensionValues || []).map(x => x.value);\n    const faixa = dims[dims.length - 1] || 'atual';\n    const m = (row.metricValues || []).map(x => num(x.value));\n    if (faixa === 'atual' || faixa === 'date_range_0') { kpis.sessoes = m[0]; kpis.usuarios = m[1]; kpis.conversoes = m[2]; kpis.receita = m[3]; }\n    else { kpis.sessoes_ant = m[0]; kpis.conversoes_ant = m[2]; kpis.receita_ant = m[3]; }\n  }\n  kpis.taxa_conversao = kpis.sessoes > 0 ? round1((kpis.conversoes / kpis.sessoes) * 1000) / 10 : null;\n  kpis.taxa_ant = kpis.sessoes_ant > 0 ? round1((kpis.conversoes_ant / kpis.sessoes_ant) * 1000) / 10 : null;\n  kpis.sessoes_delta = round1(pct(kpis.sessoes, kpis.sessoes_ant));\n  kpis.conversoes_delta = round1(pct(kpis.conversoes, kpis.conversoes_ant));\n  kpis.receita_delta = round1(pct(kpis.receita, kpis.receita_ant));\n  kpis.taxa_delta = round1(pct(kpis.taxa_conversao, kpis.taxa_ant));\n}\n\nconst eventos = {};\nif (ga4Fun && Array.isArray(ga4Fun.rows)) {\n  for (const row of ga4Fun.rows) {\n    const dims = (row.dimensionValues || []).map(x => x.value);\n    const nome = dims[0];\n    const faixa = dims[dims.length - 1] || 'atual';\n    const m = (row.metricValues || []).map(x => num(x.value));\n    eventos[nome] = eventos[nome] || { atual: 0, anterior: 0, usuarios_atual: 0 };\n    if (faixa === 'atual' || faixa === 'date_range_0') { eventos[nome].atual = m[0]; eventos[nome].usuarios_atual = m[1]; }\n    else { eventos[nome].anterior = m[0]; }\n  }\n}\nconst funil_eventos = Object.entries(eventos).map(([evento, v]) => ({ evento, atual: v.atual, anterior: v.anterior, delta_pct: round1(pct(v.atual, v.anterior)), usuarios: v.usuarios_atual }));\nconst ev = n => eventos[n] ? eventos[n].atual : 0;\nconst taxas_funil = {};\nif (kpis.sessoes > 0 && ev('add_to_cart') > 0) taxas_funil.sessao_para_carrinho_pct = round1((ev('add_to_cart') / kpis.sessoes) * 100);\nif (ev('add_to_cart') > 0 && ev('begin_checkout') > 0) taxas_funil.carrinho_para_checkout_pct = round1((ev('begin_checkout') / ev('add_to_cart')) * 100);\nif (ev('begin_checkout') > 0 && ev('purchase') > 0) taxas_funil.checkout_para_compra_pct = round1((ev('purchase') / ev('begin_checkout')) * 100);\nif (kpis.sessoes > 0 && ev('generate_lead') > 0) taxas_funil.sessao_para_lead_pct = round1((ev('generate_lead') / kpis.sessoes) * 100);\nif (ev('form_start') > 0 && ev('form_submit') > 0) taxas_funil.form_conclusao_pct = round1((ev('form_submit') / ev('form_start')) * 100);\n\nlet canais = [];\nconst porDevice = {};\nif (ga4Can && Array.isArray(ga4Can.rows)) {\n  canais = ga4Can.rows.slice(0, 12).map(row => {\n    const dims = (row.dimensionValues || []).map(x => x.value);\n    const m = (row.metricValues || []).map(x => num(x.value));\n    const item = { canal: dims[0], device: dims[1], sessoes: m[0], conversoes: m[1], receita: m[2], taxa_pct: m[0] > 0 ? round1((m[1] / m[0]) * 100) : 0 };\n    porDevice[item.device] = porDevice[item.device] || { sessoes: 0, conversoes: 0 };\n    porDevice[item.device].sessoes += m[0]; porDevice[item.device].conversoes += m[1];\n    return item;\n  });\n}\nconst devices = Object.entries(porDevice).map(([device, v]) => ({ device, sessoes: v.sessoes, conversoes: v.conversoes, taxa_pct: v.sessoes > 0 ? round1((v.conversoes / v.sessoes) * 100) : 0 }));\n\nlet clarity_metricas = [];\nlet clarityok = false;\nconst clarityArr = Array.isArray(clarity) ? clarity : (clarity && Array.isArray(clarity.data) ? clarity.data : null);\nif (clarityArr) {\n  clarityok = true;\n  clarity_metricas = clarityArr.filter(m => m && m.metricName).map(m => ({ metrica: m.metricName, dados: (m.information || []).slice(0, 3) }));\n}\n\nlet backlog_jira = [];\nlet jiraok = false;\nif (jira && Array.isArray(jira.issues)) {\n  jiraok = true;\n  backlog_jira = jira.issues.map(i => ({ key: i.key, resumo: i.fields && i.fields.summary, status: i.fields && i.fields.status && i.fields.status.name }));\n}\n\nreturn [{ json: {\n  kpis, funil_eventos, taxas_funil, canais, devices, clarity_metricas, backlog_jira,\n  purchase_atual: ev('purchase'),\n  purchase_anterior: eventos['purchase'] ? eventos['purchase'].anterior : 0,\n  coleta: { ga4: ga4ok, clarity: clarityok, jira: jiraok }\n} }];"
+      },
+      "id": "465fb774-814d-43a6-9109-1ae77b9f4e77",
+      "name": "Normalizar Métricas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const P = $('Preparar Cliente').first().json;\nconst M = $('Normalizar Métricas').first().json;\nconst kpis = M.kpis;\nconst round1 = v => (v === null || v === undefined ? null : Math.round(v * 10) / 10);\nconst pct = (a, b) => (b > 0 ? ((a - b) / b) * 100 : null);\n\nconst anomalias = [];\nfunction anexa(severidade, metrica, variacao, mensagem) { anomalias.push({ severidade, metrica, variacao_pct: round1(variacao), mensagem }); }\nif (M.coleta.ga4 && kpis.sessoes_ant > 100) {\n  if (kpis.sessoes_delta !== null && kpis.sessoes_delta <= -30) anexa('alta', 'sessoes', kpis.sessoes_delta, 'Queda de ' + Math.abs(kpis.sessoes_delta) + '% nas sessões vs período anterior (' + kpis.sessoes_ant + ' para ' + kpis.sessoes + ').');\n  if (kpis.conversoes_delta !== null && kpis.conversoes_delta <= -25) anexa('critica', 'conversoes', kpis.conversoes_delta, 'Queda de ' + Math.abs(kpis.conversoes_delta) + '% nas conversões vs período anterior (' + kpis.conversoes_ant + ' para ' + kpis.conversoes + ').');\n  if (kpis.receita_ant > 0 && kpis.receita_delta !== null && kpis.receita_delta <= -25) anexa('critica', 'receita', kpis.receita_delta, 'Queda de ' + Math.abs(kpis.receita_delta) + '% na receita vs período anterior.');\n  if (kpis.taxa_delta !== null && kpis.taxa_delta <= -20 && kpis.sessoes_delta !== null && kpis.sessoes_delta > -15) anexa('alta', 'taxa_conversao', kpis.taxa_delta, 'Taxa de conversão caiu ' + Math.abs(kpis.taxa_delta) + '% com tráfego estável — investigar UX/checkout.');\n  if (M.purchase_anterior > 20) {\n    const dv = pct(M.purchase_atual, M.purchase_anterior);\n    if (dv !== null && dv <= -40 && kpis.sessoes_delta !== null && kpis.sessoes_delta > -15) anexa('critica', 'purchase', dv, 'Eventos de compra caíram ' + Math.abs(Math.round(dv)) + '% com tráfego estável — possível checkout quebrado.');\n  }\n}\n\nconst sevRank = { critica: 3, alta: 2, media: 1 };\nanomalias.sort((a, b) => (sevRank[b.severidade] || 0) - (sevRank[a.severidade] || 0));\nconst pior = anomalias[0] || null;\nconst alerta_row = pior ? {\n  cliente: P.cliente, tipo: 'protecao_receita', severidade: pior.severidade, metrica: anomalias.map(a => a.metrica).join(','),\n  variacao_pct: pior.variacao_pct || 0, mensagem: anomalias.map(a => a.mensagem).join(' | '), ciclo_id: P.ciclo_id, criado_em: new Date().toISOString()\n} : null;\nconst alerta_email_html = pior ? (\n  '<div style=\"font-family:Arial,sans-serif;max-width:640px\">' +\n  '<h2 style=\"color:#ef4444\">🚨 CXO Next — Proteção de receita: ' + P.cliente + '</h2>' +\n  '<p>A ingestão detectou anomalias antes do cliente perceber. Período analisado: <b>' + P.periodo_inicio + ' a ' + P.periodo_fim + '</b> vs anterior.</p>' +\n  '<ul>' + anomalias.map(a => '<li><b>[' + a.severidade.toUpperCase() + ']</b> ' + a.mensagem + '</li>').join('') + '</ul>' +\n  '<p style=\"color:#6b7280;font-size:12px\">Verifique tagueamento, checkout e mudanças recentes no site antes de acionar o cliente. Registro gravado em cro_alertas.</p></div>'\n) : '';\n\nreturn [{ json: {\n  ciclo_id: P.ciclo_id, cliente: P.cliente, modo: P.modo,\n  periodo: P.periodo_inicio + ' a ' + P.periodo_fim,\n  registro: { site_url: P.site_url, contexto_negocio: P.contexto_negocio, vertical: P.vertical, tier: P.tier, jira_base_url: P.jira_base_url, jira_project_key: P.jira_project_key, jira_issue_type: P.jira_issue_type, email_analista: P.email_analista, valor_por_conversao: P.valor_por_conversao, moeda: P.moeda },\n  kpis: M.kpis, funil_eventos: M.funil_eventos, taxas_funil: M.taxas_funil, canais: M.canais, devices: M.devices,\n  clarity_metricas: M.clarity_metricas, backlog_jira: M.backlog_jira, anomalias,\n  tem_anomalia: anomalias.length > 0, alerta_row, alerta_email_html,\n  coleta: M.coleta\n} }];"
+      },
+      "id": "cc7ed57c-389a-434b-8428-235681f004ce",
+      "name": "Agente de Ingestão (Normalizar)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cxo_conhecimento"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": []
+        },
+        "returnAll": true
+      },
+      "id": "8554b510-14f4-4c7f-9656-28b5f9d281dc",
+      "name": "RAG – Carregar Conhecimento",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2000,
+        400
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Agente Bibliotecário (RAG): seleciona conhecimento relevante para o ciclo e registra a trilha.\nconst ING = $('Agente de Ingestão (Normalizar)').first().json;\nconst rows = $input.all().map(i => i.json).filter(r => r && r.conteudo);\nconst ativos = rows.filter(r => r.ativo === true || r.ativo === 'true' || r.ativo === 1 || r.ativo === undefined);\n\nconst reg = ING.registro || {};\nconst taxas = ING.taxas_funil || {};\nconst termos = [];\nconst push = t => { if (t) termos.push(String(t).toLowerCase()); };\npush(reg.vertical); push(ING.modo);\n(ING.anomalias || []).forEach(a => push(a.metrica));\nif (taxas.carrinho_para_checkout_pct !== undefined && taxas.carrinho_para_checkout_pct < 55) { push('checkout'); push('carrinho'); }\nif (taxas.checkout_para_compra_pct !== undefined && taxas.checkout_para_compra_pct < 40) { push('checkout'); push('abandono'); }\nif (taxas.sessao_para_carrinho_pct !== undefined) push('e-commerce');\nif (taxas.form_conclusao_pct !== undefined) { push('formularios'); push('lead'); }\n(ING.clarity_metricas || []).forEach(m => { if (/rage/i.test(m.metrica || '')) push('rage-clicks'); });\n\n// núcleo PSM sempre presente (metodologia base da fábrica)\nconst NUCLEO = ['Fórmula de hipótese', 'KPI principal, secundários e NEGATIVOS', 'relevância estatística', 'Calculadora de potencial', 'Priorização de hipóteses', 'QA de métricas'];\nconst ehNucleo = r => NUCLEO.some(n => (r.titulo || '').toLowerCase().includes(n.toLowerCase()));\n\nfunction score(r) {\n  let s = 0;\n  const hay = ((r.titulo || '') + ' ' + (r.tags || '') + ' ' + (r.etapa_funil || '') + ' ' + (r.vertical || '')).toLowerCase();\n  termos.forEach(t => { if (t && hay.includes(t)) s += 1; });\n  if ((r.vertical || 'todas') !== 'todas' && reg.vertical && (r.vertical || '').toLowerCase() === String(reg.vertical).toLowerCase()) s += 2;\n  if (r.origem === 'aprendizado_ciclo' || r.origem === 'resultado_teste') {\n    s += 1;\n    if ((r.tags || '').toLowerCase().includes(String(ING.cliente || '').toLowerCase())) s += 4; // aprendizado do próprio cliente\n  }\n  return s;\n}\n\nconst nucleo = ativos.filter(ehNucleo);\nconst resto = ativos.filter(r => !ehNucleo(r)).map(r => ({ r, s: score(r) })).sort((a, b) => b.s - a.s);\nconst escolhidos = nucleo.concat(resto.slice(0, 6).map(x => x.r)).slice(0, 12);\n\nconst corta = (t, n) => { t = String(t || ''); return t.length > n ? t.slice(0, n) + '…' : t; };\nconst conhecimento_texto = escolhidos.map((r, i) =>\n  '[C' + (i + 1) + '] (' + (r.origem || 'ref') + ') ' + r.titulo + '\\n' + corta(r.conteudo, 700)\n).join('\\n\\n');\n\nconst trilha_conhecimento = escolhidos.map((r, i) => ({ ref: 'C' + (i + 1), id: r.id !== undefined ? r.id : null, titulo: r.titulo, origem: r.origem || '' }));\n\nreturn [{ json: {\n  conhecimento_texto: conhecimento_texto || 'Base de conhecimento vazia — rode o seed do workflow CXO Next — Conhecimento & Feedback.',\n  trilha_conhecimento,\n  conhecimento_qtd: escolhidos.length,\n  tem_anomalia: ING.tem_anomalia\n} }];\n"
+      },
+      "id": "73f7b052-d605-416a-aca6-4876c44aeedc",
+      "name": "Agente Bibliotecário (RAG)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_memoria"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": []
+        },
+        "returnAll": true
+      },
+      "id": "08f6b01c-8c58-45f3-a464-8e865b7c3dfb",
+      "name": "Memória – Ciclos Anteriores",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2480,
+        400
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Agente de Memória (loop de feedback): o que já foi aprovado/testado para este cliente.\nconst ING = $('Agente de Ingestão (Normalizar)').first().json;\nconst rows = $input.all().map(i => i.json).filter(r => r && r.cliente === ING.cliente);\n\nconst comResultado = rows.filter(r => r.resultado && String(r.resultado).trim() !== '');\nconst pendentes = rows.filter(r => !r.resultado || String(r.resultado).trim() === '');\n\nconst linha = r => '- ' + (r.hipotese_id || '?') + ' · ' + (r.titulo || 'sem título')\n  + (r.jira_issue_key ? ' (' + r.jira_issue_key + ')' : '')\n  + (r.resultado ? ' → RESULTADO: ' + r.resultado : ' → status: ' + (r.status_implementacao || 'aprovada') + ' (sem resultado ainda)');\n\nlet memoria_resumo = '';\nif (!rows.length) {\n  memoria_resumo = 'Primeiro ciclo com memória para este cliente — nenhuma hipótese anterior registrada.';\n} else {\n  memoria_resumo = 'HIPÓTESES JÁ APROVADAS PARA ESTE CLIENTE (' + rows.length + '):\\n'\n    + rows.slice(0, 15).map(linha).join('\\n')\n    + '\\n\\nREGRAS: (1) NÃO repetir hipóteses já aprovadas — propor ângulos complementares ou novas frentes. '\n    + '(2) Resultados POSITIVOS indicam padrões que funcionam com este público — considere estendê-los a outras etapas. '\n    + '(3) Resultados NEGATIVOS/INCONCLUSIVOS são aprendizado — não insistir na mesma tese sem nova evidência.';\n}\n\nconst memoria_itens = rows.slice(0, 15).map(r => ({\n  hipotese_id: r.hipotese_id || '', titulo: r.titulo || '', jira_issue_key: r.jira_issue_key || '',\n  status: r.status_implementacao || '', resultado: r.resultado || ''\n}));\n\nreturn [{ json: {\n  memoria_resumo,\n  memoria_itens,\n  memoria_qtd: rows.length,\n  memoria_com_resultado: comResultado.length,\n  memoria_pendentes: pendentes.length,\n  tem_anomalia: ING.tem_anomalia\n} }];\n"
+      },
+      "id": "5f5d73c2-5914-4abc-b9b1-2169afc771f6",
+      "name": "Agente de Memória (Feedback)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2720,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.tem_anomalia }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "cda96c0a-90dd-41e8-b966-431c5d99dd89",
+      "name": "Tem Anomalia?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2960,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_alertas"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "cliente": "={{ $('Agente de Ingestão (Normalizar)').first().json.alerta_row.cliente }}",
+            "tipo": "={{ $('Agente de Ingestão (Normalizar)').first().json.alerta_row.tipo }}",
+            "severidade": "={{ $('Agente de Ingestão (Normalizar)').first().json.alerta_row.severidade }}",
+            "metrica": "={{ $('Agente de Ingestão (Normalizar)').first().json.alerta_row.metrica }}",
+            "variacao_pct": "={{ $('Agente de Ingestão (Normalizar)').first().json.alerta_row.variacao_pct }}",
+            "mensagem": "={{ $('Agente de Ingestão (Normalizar)').first().json.alerta_row.mensagem }}",
+            "ciclo_id": "={{ $('Agente de Ingestão (Normalizar)').first().json.alerta_row.ciclo_id }}",
+            "criado_em": "={{ $('Agente de Ingestão (Normalizar)').first().json.alerta_row.criado_em }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "cliente",
+              "displayName": "cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "severidade",
+              "displayName": "severidade",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "metrica",
+              "displayName": "metrica",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "variacao_pct",
+              "displayName": "variacao_pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensagem",
+              "displayName": "mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ciclo_id",
+              "displayName": "ciclo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8012d680-59d1-4df9-8665-6e81eac83fc8",
+      "name": "Registrar Alerta",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3200,
+        240
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('Agente de Ingestão (Normalizar)').first().json.registro.email_analista }}",
+        "subject": "=🚨 CXO Next | {{ $('Agente de Ingestão (Normalizar)').first().json.cliente }} — anomalia detectada",
+        "emailType": "html",
+        "message": "={{ $('Agente de Ingestão (Normalizar)').first().json.alerta_email_html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "CXO Next — Sentinela"
+        }
+      },
+      "id": "e112ebf7-d535-4fee-b2a5-0a4511978a9a",
+      "name": "Email – Alerta de Receita",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3440,
+        240
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H4YY5Bldwy95Y3qW",
+          "name": "SEO-N8N"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Preparar Cliente').first().json.modo }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "completo"
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "e822f005-1e84-4b8b-9060-614d6be280e0",
+      "name": "Modo Completo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3680,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=DOSSIÊ E DADOS DO CICLO (JSON):\n{{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json) }}\n\nCONHECIMENTO (metodologia PSM, referências e aprendizados — cite [C..] quando usar):\n{{ $('Agente Bibliotecário (RAG)').first().json.conhecimento_texto }}",
+        "options": {
+          "systemMessage": "Você é o AGENTE HEURÍSTICO/UX da fábrica CXO Next (Cadastra). Sua função: cruzar frameworks de usabilidade com o dado quantitativo real do cliente para registrar PROBLEMAS VÁLIDOS no padrão PSM.\n\nFRAMEWORKS DE REFERÊNCIA:\n- 10 heurísticas de Nielsen (NN/g)\n- Padrões Baymard Institute para e-commerce (checkout, PDP, carrinho, formulários)\n- WCAG 2.2 níveis A/AA (acessibilidade que afeta conversão)\n- O CONHECIMENTO fornecido na entrada (chunks [C1..Cn] — metodologia PSM da Livelo, referências e aprendizados de ciclos anteriores)\n\nREGRAS INEGOCIÁVEIS:\n1. TODO achado precisa citar evidência quantitativa REAL presente nos dados fornecidos (taxas de funil, deltas, métricas Clarity como rage/dead clicks, gap mobile vs desktop). NUNCA invente números. Padrão PSM: problema sem evidência não é problema válido.\n2. Quando usar um chunk de conhecimento, cite a referência no campo conhecimento_usado (ex.: \"C3, C7\").\n3. Se um dado não existe na entrada (coleta.ga4=false, clarity vazio), diga menos achados — não especule.\n4. Priorize achados que expliquem os gargalos numéricos observados. Conecte comportamento (Clarity) com resultado (GA4) — ex.: rage clicks > 3-4% das sessões + queda de passagem na mesma página = problema válido forte.\n5. Máximo 8 achados, mínimo 3 (se os dados permitirem). severidade: 1 (cosmético) a 5 (bloqueia conversão).\n6. Escreva em pt-BR, tom consultivo e direto. framework deve ser exatamente: Nielsen, Baymard, WCAG ou PSM.\n\nResponda SOMENTE no formato JSON do schema.",
+          "maxIterations": 5
+        },
+        "hasOutputParser": true
+      },
+      "id": "2882617d-7efd-4bc1-afe0-49c15edfffa7",
+      "name": "Agente Heurístico UX",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3920,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.2,
+          "maxTokens": 4096
+        }
+      },
+      "id": "b502e193-c1d8-4cb4-8278-dac80a9b35f9",
+      "name": "LLM – Heurístico",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        3920,
+        620
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{ \"achados\": [ { \"id\": \"ACH-01\", \"heuristica\": \"Visibilidade do status do sistema\", \"framework\": \"Nielsen\", \"pagina_ou_fluxo\": \"checkout\", \"evidencia_quantitativa\": \"begin_checkout -> purchase em 38% vs benchmark 55-65%; RageClickCount em 4,2% das sessoes\", \"conhecimento_usado\": \"C3, C7\", \"severidade\": 4, \"descricao\": \"Descricao objetiva do problema de UX\", \"impacto_provavel\": \"abandono no checkout\" } ] }"
+      },
+      "id": "e8abd337-bf5f-4186-86c6-c30ae46c864e",
+      "name": "Parser – Achados",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        4080,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=DOSSIÊ E DADOS DO CICLO (JSON):\n{{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json) }}\n\nACHADOS:\n{{ JSON.stringify($('Agente Heurístico UX').first().json.output) }}\n\nCONHECIMENTO (metodologia PSM, referências e aprendizados — cite [C..] quando usar):\n{{ $('Agente Bibliotecário (RAG)').first().json.conhecimento_texto }}\n\nMEMÓRIA DO CLIENTE (loop de feedback):\n{{ $('Agente de Memória (Feedback)').first().json.memoria_resumo }}",
+        "options": {
+          "systemMessage": "Você é o AGENTE DE DIAGNÓSTICO DE FUNIL da fábrica CXO Next (Cadastra). Sua função: localizar gargalos, estimar uplift e traduzir em oportunidade financeira mensal (R$) usando a CALCULADORA DE POTENCIAL do padrão PSM (Livelo).\n\nMETODOLOGIA OBRIGATÓRIA (calculadora de potencial — transparente e auditável):\n1. Modele o funil etapa a etapa com as taxas de passagem reais da entrada (sessões e % de passagem por etapa).\n2. Valor por conversão: use receita/conversões do GA4 quando houver receita (> 0); senão use registro.valor_por_conversao.\n3. Oportunidade R$/mês = sessões da etapa afetada × ganho incremental de passagem (em pontos percentuais) propagado até a conversão final × valor por conversão. Normalize 28 dias para 30 (× 30/28).\n4. SEMPRE em faixa conservadora: min = cenário pessimista, max = realista (nunca otimista). Uplift raramente passa de 15% por gargalo.\n5. Campo premissas: explicite TODA a aritmética (valores usados, contas feitas), como na calculadora de potencial PSM. O cliente audita isso.\n6. Benchmarks (cite como faixa; use o CONHECIMENTO [C..] quando aplicável): carrinho→checkout 55-65%; checkout→compra 40-55%; abandono de checkout ~70% (Baymard); conclusão de formulário 50-70%.\n7. 3 a 5 gargalos, ordenados por oportunidade_reais_mes.max decrescente. confianca: alta | media | baixa conforme qualidade do dado.\n8. Considere a MEMÓRIA do cliente: gargalo já atacado com resultado positivo tende a ter menos headroom restante.\n9. Se coleta.ga4=false, retorne gargalos=[] e explique no resumo_diagnostico.\n\nEscreva em pt-BR. Responda SOMENTE no formato JSON do schema.",
+          "maxIterations": 5
+        },
+        "hasOutputParser": true
+      },
+      "id": "14a2c2f0-0a46-43d3-8555-b3a65af5c8dd",
+      "name": "Agente Diagnóstico de Funil",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4240,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.2,
+          "maxTokens": 4096
+        }
+      },
+      "id": "ef4b3eaa-dd48-4875-974c-608e87095bf6",
+      "name": "LLM – Diagnóstico",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        4240,
+        620
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{ \"gargalos\": [ { \"etapa\": \"carrinho -> checkout\", \"descricao\": \"Perda concentrada na transicao\", \"taxa_atual_pct\": 42.0, \"benchmark_pct\": \"55-65\", \"evidencia\": \"5200 add_to_cart vs 2180 begin_checkout; rage clicks 4,2%\", \"uplift_estimado_pct\": { \"min\": 5, \"max\": 12 }, \"oportunidade_reais_mes\": { \"min\": 8500, \"max\": 21000 }, \"premissas\": \"calculadora de potencial: 5200 sessoes na etapa x +3 a +7 p.p. de passagem x 38% ate compra x R$ 280 x 30/28\", \"confianca\": \"media\" } ], \"resumo_diagnostico\": \"Sintese de 2-3 frases\" }"
+      },
+      "id": "76f050cf-b214-4e73-9cd9-9aba2e84889c",
+      "name": "Parser – Gargalos",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        4400,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=DOSSIÊ E DADOS DO CICLO (JSON):\n{{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json) }}\n\nACHADOS:\n{{ JSON.stringify($('Agente Heurístico UX').first().json.output) }}\n\nDIAGNÓSTICO:\n{{ JSON.stringify($('Agente Diagnóstico de Funil').first().json.output) }}\n\nCONHECIMENTO (metodologia PSM, referências e aprendizados — cite [C..] quando usar):\n{{ $('Agente Bibliotecário (RAG)').first().json.conhecimento_texto }}\n\nMEMÓRIA DO CLIENTE (loop de feedback):\n{{ $('Agente de Memória (Feedback)').first().json.memoria_resumo }}",
+        "options": {
+          "systemMessage": "Você é o AGENTE DE PRIORIZAÇÃO da fábrica CXO Next (Cadastra). Sua função: transformar diagnóstico em HIPÓTESES QUALIFICADAS no padrão PSM (Livelo) — a unidade de venda do serviço.\n\nUMA HIPÓTESE QUALIFICADA TEM OBRIGATORIAMENTE:\n1. nome_experimento no padrão PSM: [ação + elemento + página/categoria + canal];\n2. hipotese_psm no formato: \"Ao fazer [alteração na variante], esperamos entender se [comportamento esperado], dado que [problema com evidência em dados]\" — a evidência precisa ser número real da entrada;\n3. solucao_proposta: específica e implementável (o quê, onde, como);\n4. kpi_principal (UMA métrica que decide o teste), kpis_secundarias e kpis_negativas (guardrails — o que NÃO pode piorar);\n5. ganho_estimado_reais: faixa mensal conservadora, coerente com o gargalo relacionado (nunca maior que a oportunidade do gargalo);\n6. criterio_validacao: teste A/B com significância 95% (declarar vencedor só com p-valor < 0,05), janela mínima e amostra.\n\nDUPLO SCORE:\n- ICE: impacto, confianca e facilidade de 1 a 10; score = média com 1 casa decimal.\n- PSM: esforco (Alto=0|Médio=5|Baixo=10 — esforço baixo pontua mais), veracidade (10|5|-5), implementacao (10|5|-5), impacto_negocio (20|10|3), alinhamento (10|5|-5); psm_score = soma (máx 60).\nOrdene por score ICE decrescente; use o PSM como desempate e sanidade.\n\nREGRAS:\n- Gere de 4 a 8 hipóteses (tier essential: 4; growth: 8; enterprise: 8). O tier está em registro.tier.\n- RESPEITE A MEMÓRIA: não duplique hipóteses já aprovadas (lista na entrada) nem itens do backlog_jira — proponha ângulo complementar ou pule. Aprendizados com resultado negativo não voltam sem nova evidência.\n- IDs sequenciais: HIP-01, HIP-02... esforco: P (dias), M (1-2 sprints), G (mais de 2 sprints).\n- Quick wins primeiro em caso de empate.\n\nEscreva em pt-BR. Responda SOMENTE no formato JSON do schema.",
+          "maxIterations": 5
+        },
+        "hasOutputParser": true
+      },
+      "id": "2b50208c-2aad-4d37-ba44-2fe4ebdd7d89",
+      "name": "Agente Priorização ICE",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4560,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.3,
+          "maxTokens": 4096
+        }
+      },
+      "id": "8ae94292-2e36-4829-9831-ca140e05f2db",
+      "name": "LLM – Priorização",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        4560,
+        620
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{ \"hipoteses\": [ { \"id\": \"HIP-01\", \"titulo\": \"Simplificar frete no checkout\", \"nome_experimento\": \"Antecipar calculo de frete na pagina de carrinho do site\", \"hipotese_psm\": \"Ao fazer a antecipacao do calculo de frete para o carrinho, esperamos entender se o custo revelado tarde causa o abandono, dado que carrinho->checkout esta em 42% vs benchmark 55-65%\", \"problema_evidenciado\": \"dado + heuristica\", \"solucao_proposta\": \"o que mudar, onde e como\", \"kpi_principal\": \"taxa begin_checkout -> purchase\", \"kpis_secundarias\": [\"receita por sessao\"], \"kpis_negativas\": [\"ticket medio\", \"tempo de pagina\"], \"ganho_estimado_reais\": { \"min\": 8500, \"max\": 21000 }, \"criterio_validacao\": \"A/B 50/50; significancia 95% (p < 0,05); minimo 4 semanas ou amostra suficiente\", \"ice\": { \"impacto\": 8, \"confianca\": 6, \"facilidade\": 7, \"score\": 7.0 }, \"psm\": { \"esforco\": 10, \"veracidade\": 10, \"implementacao\": 5, \"impacto_negocio\": 20, \"alinhamento\": 10, \"psm_score\": 55 }, \"etapa_funil\": \"checkout\", \"esforco\": \"M\", \"gargalo_relacionado\": \"carrinho -> checkout\" } ] }"
+      },
+      "id": "de9e0e4a-e81b-463a-93e0-c4990df64462",
+      "name": "Parser – Hipóteses",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        4720,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=KPIs: {{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json.kpis) }}\nANOMALIAS: {{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json.anomalias) }}\nCONTEXTO: {{ $('Agente de Ingestão (Normalizar)').first().json.registro.contexto_negocio }}\nDIAGNÓSTICO: {{ JSON.stringify($('Agente Diagnóstico de Funil').first().json.output) }}\nHIPÓTESES: {{ JSON.stringify($('Agente Priorização ICE').first().json.output) }}\n\nMEMÓRIA DO CLIENTE (loop de feedback):\n{{ $('Agente de Memória (Feedback)').first().json.memoria_resumo }}",
+        "options": {
+          "systemMessage": "Você é o AGENTE DE SÍNTESE da fábrica CXO Next (Cadastra). Sua função: produzir o dashboard narrativo + material de reunião que o consultor leva ao cliente após aprovar no gate.\n\nFORMATO DA SAÍDA: markdown puro (sem cercas de código), em pt-BR, com EXATAMENTE estas seções:\n\n## Resumo executivo\n3 bullets: estado do funil, maior risco, maior oportunidade (com R$).\n\n## Números do ciclo\nTabela compacta: sessões, conversões, taxa, receita — com variação vs período anterior.\n\n## Top apostas\nAs 3 melhores hipóteses: 1 parágrafo cada, com nome do experimento (padrão PSM), ganho estimado em R$ e por que agora.\n\n## Aprendizados do programa\n1-2 bullets sobre o que os ciclos/testes anteriores ensinaram (use a MEMÓRIA da entrada; se for o primeiro ciclo, diga que o programa está iniciando a trilha de aprendizado).\n\n## Pauta de reunião (15 min)\n4-5 itens de pauta acionáveis, com decisão esperada em cada item.\n\n## Riscos e observações\n2-3 bullets: anomalias, limitações do dado, guardrails (KPIs negativas) a monitorar.\n\nREGRAS: linguagem de negócio (o leitor é o cliente, não um analista de dados); todo valor em R$ formatado (R$ 12.400); nunca jargão técnico sem tradução; cite sempre faixas conservadoras; não invente números fora da entrada.",
+          "maxIterations": 5
+        }
+      },
+      "id": "a72f97a0-e328-4a83-a5bb-e6aeffa288c7",
+      "name": "Agente de Síntese",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4880,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.5,
+          "maxTokens": 4096
+        }
+      },
+      "id": "9e6c583f-096d-4228-8067-4a6648b71823",
+      "name": "LLM – Síntese",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        4880,
+        620
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=KPIs: {{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json.kpis) }}\nTAXAS: {{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json.taxas_funil) }}\nCOLETA: {{ JSON.stringify($('Agente de Ingestão (Normalizar)').first().json.coleta) }}\nACHADOS: {{ JSON.stringify($('Agente Heurístico UX').first().json.output) }}\nDIAGNÓSTICO: {{ JSON.stringify($('Agente Diagnóstico de Funil').first().json.output) }}\nHIPÓTESES: {{ JSON.stringify($('Agente Priorização ICE').first().json.output) }}\n\nMEMÓRIA DO CLIENTE (loop de feedback):\n{{ $('Agente de Memória (Feedback)').first().json.memoria_resumo }}\n\nSÍNTESE:\n{{ $('Agente de Síntese').first().json.output }}",
+        "options": {
+          "systemMessage": "Você é o AGENTE DE AUTOCRÍTICA da fábrica CXO Next (Cadastra) — o revisor cético que roda ANTES do gate humano. Sua função: impedir que qualidade silenciosamente ruim chegue ao analista.\n\nCHECKLIST DE REVISÃO (avalie cada item):\n1. Evidência: todo achado e gargalo cita número presente nos dados de entrada? (Compare! Números inventados = problema grave.)\n2. Aritmética: as oportunidades em R$ são consistentes com as premissas declaradas (calculadora de potencial)? Refaça as contas por amostragem.\n3. Faixas conservadoras: alguma estimativa parece inflada (uplift acima de 15%, ganho maior que a oportunidade do gargalo)?\n4. Conformidade PSM: toda hipótese tem nome_experimento no padrão, fórmula \"Ao fazer / esperamos entender se / dado que\", kpi_principal único, kpis_negativas (guardrails) e criterio_validacao com significância 95% / p-valor < 0,05?\n5. Memória respeitada: alguma hipótese repete item já aprovado/testado (lista na entrada) sem ângulo novo?\n6. Anti-comoditização: o conteúdo usa o contexto específico do cliente ou parece genérico/copiável de qualquer relatório?\n7. Coerência: a síntese reflete fielmente diagnóstico e hipóteses?\n\nSCORE de 0 a 10 (1 casa decimal): 9-10 impecável; 7-8.9 bom, segue ao gate; 5-6.9 fraquezas relevantes; abaixo de 5 comprometido.\nrecomendacao: \"aprovar_para_gate\" se score >= 7; senão \"revisar\".\nproblemas: liste TODOS os problemas concretos encontrados (cite o id do item). Vazio somente se realmente não houver.\n\nSeja duro. Escreva em pt-BR. Responda SOMENTE no formato JSON do schema.",
+          "maxIterations": 5
+        },
+        "hasOutputParser": true
+      },
+      "id": "634e04f0-42b5-4925-890b-3320892681eb",
+      "name": "Agente Autocrítica (Revisor)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        5200,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "temperature": 0.1,
+          "maxTokens": 4096
+        }
+      },
+      "id": "b0d97955-90de-43f6-a840-271de2944f8c",
+      "name": "LLM – Autocrítica",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        5200,
+        620
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{ \"score\": 7.5, \"recomendacao\": \"aprovar_para_gate\", \"problemas\": [ \"HIP-03 sem kpis_negativas definidas\" ], \"pontos_fortes\": [ \"Estimativas com premissas explicitas\" ] }"
+      },
+      "id": "fb6ccd0c-36c1-4e86-8431-d383034158bd",
+      "name": "Parser – Autocrítica",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        5360,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function saida(nome) { try { const j = $(nome).first().json; return j && j.output !== undefined ? j.output : null; } catch (e) { return null; } }\nconst base = $('Agente de Ingestão (Normalizar)').first().json;\nconst achadosOut = saida('Agente Heurístico UX') || {};\nconst diagOut = saida('Agente Diagnóstico de Funil') || {};\nconst iceOut = saida('Agente Priorização ICE') || {};\nconst sinteseOut = saida('Agente de Síntese');\nconst autoOut = saida('Agente Autocrítica (Revisor)') || {};\n\nconst achados = achadosOut.achados || [];\nconst gargalos = diagOut.gargalos || [];\nconst hipoteses = iceOut.hipoteses || [];\nconst sintese_md = typeof sinteseOut === 'string' ? sinteseOut : (sinteseOut ? JSON.stringify(sinteseOut) : '');\nconst autocritica = { score: Number(autoOut.score) || 0, recomendacao: autoOut.recomendacao || 'revisar', problemas: autoOut.problemas || [], pontos_fortes: autoOut.pontos_fortes || [] };\n\nconst pipelineOk = achados.length > 0 || gargalos.length > 0 || hipoteses.length > 0;\nlet status = 'erro_pipeline';\nif (pipelineOk) status = autocritica.score >= 7 ? 'aguardando_gate' : 'requer_revisao';\n\nconst soma = (arr, sel) => arr.reduce((acc, g) => acc + (Number(sel(g)) || 0), 0);\nconst oportunidade_total_min = Math.round(soma(gargalos, g => (g.oportunidade_reais_mes || {}).min));\nconst oportunidade_total_max = Math.round(soma(gargalos, g => (g.oportunidade_reais_mes || {}).max));\n\nconst dados = {\n  ciclo_id: base.ciclo_id, cliente: base.cliente, periodo: base.periodo, registro: base.registro,\n  kpis: base.kpis, taxas_funil: base.taxas_funil, funil_eventos: base.funil_eventos, canais: base.canais, devices: base.devices,\n  clarity_metricas: base.clarity_metricas, backlog_jira: base.backlog_jira, anomalias: base.anomalias, coleta: base.coleta,\n  achados, gargalos, hipoteses, autocritica, sintese_md,\n  resumo_diagnostico: diagOut.resumo_diagnostico || '',\n  trilha_conhecimento: (function(){ try { return $('Agente Bibliotecário (RAG)').first().json.trilha_conhecimento || []; } catch (e) { return []; } })(),\n  memoria_considerada: (function(){ try { return $('Agente de Memória (Feedback)').first().json.memoria_itens || []; } catch (e) { return []; } })(),\n  oportunidade_total_min, oportunidade_total_max\n};\n\nreturn [{ json: {\n  ciclo_id: base.ciclo_id, cliente: base.cliente, status,\n  score_autocritica: autocritica.score,\n  problemas_revisor: autocritica.problemas,\n  oportunidade_total_min, oportunidade_total_max,\n  hipoteses_qtd: hipoteses.length,\n  sintese_md,\n  dados_json: JSON.stringify(dados),\n  criado_em: new Date().toISOString()\n} }];"
+      },
+      "id": "90e90e45-c51e-41d2-9cb5-50c3211d8de3",
+      "name": "Montar Pacote do Ciclo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5520,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $input.first().json;\nconst base = $('Agente de Ingestão (Normalizar)').first().json;\nconst brl = v => 'R$ ' + Math.round(v || 0).toLocaleString('pt-BR');\nconst gateUrl = 'https://n8n-prod.cadastra.com/webhook/cxo-next-gate';\nconst cor = p.status === 'aguardando_gate' ? '#10b981' : (p.status === 'requer_revisao' ? '#f59e0b' : '#ef4444');\nconst rotulo = p.status === 'aguardando_gate' ? 'AGUARDANDO SEU GATE' : (p.status === 'requer_revisao' ? 'REQUER REVISÃO (autocrítica < 7)' : 'ERRO NO PIPELINE');\nconst problemas = p.problemas_revisor || [];\nconst email_html =\n  '<div style=\"font-family:Arial,sans-serif;max-width:660px\">' +\n  '<h2>🏭 CXO Next — Ciclo pronto: ' + p.cliente + '</h2>' +\n  '<p><span style=\"background:' + cor + ';color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:bold\">' + rotulo + '</span></p>' +\n  '<table style=\"border-collapse:collapse;font-size:13px\">' +\n  '<tr><td style=\"padding:4px 12px 4px 0;color:#6b7280\">Ciclo</td><td><b>' + p.ciclo_id + '</b></td></tr>' +\n  '<tr><td style=\"padding:4px 12px 4px 0;color:#6b7280\">Período</td><td>' + base.periodo + '</td></tr>' +\n  '<tr><td style=\"padding:4px 12px 4px 0;color:#6b7280\">Autocrítica</td><td><b>' + Number(p.score_autocritica).toFixed(1) + '/10</b></td></tr>' +\n  '<tr><td style=\"padding:4px 12px 4px 0;color:#6b7280\">Oportunidade mapeada</td><td><b>' + brl(p.oportunidade_total_min) + ' – ' + brl(p.oportunidade_total_max) + '/mês</b></td></tr>' +\n  '<tr><td style=\"padding:4px 12px 4px 0;color:#6b7280\">Hipóteses qualificadas</td><td>' + p.hipoteses_qtd + '</td></tr>' +\n  '</table>' +\n  (problemas.length ? '<p style=\"font-size:13px\"><b>Problemas apontados pelo revisor:</b></p><ul style=\"font-size:13px\">' + problemas.map(x => '<li>' + x + '</li>').join('') + '</ul>' : '') +\n  '<p style=\"margin-top:16px\"><' + 'a hr' + 'ef=\"' + gateUrl + '\" style=\"background:#FF5C28;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold\">Abrir Gate Humano →</a></p>' +\n  '<p style=\"color:#6b7280;font-size:12px\">Você aprova, edita e decide a aposta. Nada chega ao cliente sem o seu gate.</p></div>';\n\nreturn [{ json: {\n  ...p,\n  email_destino: (base.registro || {}).email_analista || 'tsoares@cadastra.com',\n  email_assunto: (p.status === 'aguardando_gate' ? '🏭 CXO Next | ' : '⚠️ CXO Next | ') + p.cliente + ' — ciclo ' + p.ciclo_id + ' (' + rotulo.toLowerCase() + ')',\n  email_html\n} }];"
+      },
+      "id": "f532be09-54d8-4bd4-ba7f-09363dfb862b",
+      "name": "Montar Email do Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5760,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_ciclos"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ciclo_id": "={{ $json.ciclo_id }}",
+            "cliente": "={{ $json.cliente }}",
+            "status": "={{ $json.status }}",
+            "score_autocritica": "={{ $json.score_autocritica }}",
+            "sintese_md": "={{ $json.sintese_md }}",
+            "dados_json": "={{ $json.dados_json }}",
+            "notas_gate": "",
+            "decidido_por": "",
+            "criado_em": "={{ $json.criado_em }}",
+            "decidido_em": ""
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ciclo_id",
+              "displayName": "ciclo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente",
+              "displayName": "cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score_autocritica",
+              "displayName": "score_autocritica",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sintese_md",
+              "displayName": "sintese_md",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dados_json",
+              "displayName": "dados_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notas_gate",
+              "displayName": "notas_gate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "decidido_por",
+              "displayName": "decidido_por",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "decidido_em",
+              "displayName": "decidido_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cfccca35-ac46-4f0b-a7a3-417011b72b86",
+      "name": "Salvar Ciclo",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        6000,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('Montar Email do Gate').first().json.email_destino }}",
+        "subject": "={{ $('Montar Email do Gate').first().json.email_assunto }}",
+        "emailType": "html",
+        "message": "={{ $('Montar Email do Gate').first().json.email_html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "CXO Next — Fábrica"
+        }
+      },
+      "id": "af5f68cd-9730-4a2a-824d-fd2a46cd58b7",
+      "name": "Email – Convocar Gate",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        6240,
+        400
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H4YY5Bldwy95Y3qW",
+          "name": "SEO-N8N"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## 🏭 CXO Next — Fábrica Multi-Agente (SMA)\n**Tese:** deixar de vender horas para operar pipelines de receita incremental — máquina produz, consultor decide, cliente compra fluxo de oportunidades com ROI auditável.\n\nMulti-tenant: onboarding = 1 linha em `cro_clientes`. Cadências: quinzenal (completa) · semanal (sentinela).",
+        "width": 560,
+        "height": 240,
+        "color": 7
+      },
+      "id": "5c8b8d32-1813-43e4-9817-7d68edcaa4ac",
+      "name": "Nota — Fábrica",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1180,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 SMA — papéis dos agentes\nIngestão (determinística) → **Bibliotecário/RAG** (PSM Livelo + referências + aprendizados; gera a trilha de conhecimento) → **Memória** (loop de feedback de `cro_memoria`) → Heurístico/UX → Diagnóstico (calculadora de potencial) → Priorização (ICE + PSM, KPIs negativas) → Síntese → **Autocrítica** (score ≥ 7) → Gate humano.",
+        "width": 760,
+        "height": 220,
+        "color": 5
+      },
+      "id": "9713a5cc-4816-4db3-ad7a-a6e026b1b0d7",
+      "name": "Nota — SMA",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🚪 Pré-gate\nCiclo salvo em `cro_ciclos` (`aguardando_gate` | `requer_revisao`). Entregas SÓ após aprovação humana no workflow \"CXO Next — Gate Humano & Entregas\". Resultados retornam pelo \"CXO Next — Conhecimento & Feedback\".",
+        "width": 620,
+        "height": 180,
+        "color": 6
+      },
+      "id": "873594b4-ee6d-4880-a356-d1c97d84f45b",
+      "name": "Nota — Gate",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        5500,
+        80
+      ]
+    }
+  ],
+  "connections": {
+    "Cadência Quinzenal (Fábrica)": {
+      "main": [
+        [
+          {
+            "node": "Modo: Completo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modo: Completo": {
+      "main": [
+        [
+          {
+            "node": "Carregar Clientes Ativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentinela Semanal (Proteção de Receita)": {
+      "main": [
+        [
+          {
+            "node": "Modo: Sentinela",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modo: Sentinela": {
+      "main": [
+        [
+          {
+            "node": "Carregar Clientes Ativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execução Manual (Teste)": {
+      "main": [
+        [
+          {
+            "node": "Modo: Manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modo: Manual": {
+      "main": [
+        [
+          {
+            "node": "Carregar Clientes Ativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Carregar Clientes Ativos": {
+      "main": [
+        [
+          {
+            "node": "Montar Fila",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Fila": {
+      "main": [
+        [
+          {
+            "node": "Processar Clientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Clientes": {
+      "main": [
+        [
+          {
+            "node": "Rodada Concluída",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Preparar Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Cliente": {
+      "main": [
+        [
+          {
+            "node": "GA4 – Totais do Período",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GA4 – Totais do Período": {
+      "main": [
+        [
+          {
+            "node": "GA4 – Eventos de Funil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GA4 – Eventos de Funil": {
+      "main": [
+        [
+          {
+            "node": "GA4 – Canais & Devices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GA4 – Canais & Devices": {
+      "main": [
+        [
+          {
+            "node": "Clarity – Comportamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clarity – Comportamento": {
+      "main": [
+        [
+          {
+            "node": "Jira – Backlog Existente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jira – Backlog Existente": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Métricas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Métricas": {
+      "main": [
+        [
+          {
+            "node": "Agente de Ingestão (Normalizar)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de Ingestão (Normalizar)": {
+      "main": [
+        [
+          {
+            "node": "RAG – Carregar Conhecimento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG – Carregar Conhecimento": {
+      "main": [
+        [
+          {
+            "node": "Agente Bibliotecário (RAG)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Bibliotecário (RAG)": {
+      "main": [
+        [
+          {
+            "node": "Memória – Ciclos Anteriores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memória – Ciclos Anteriores": {
+      "main": [
+        [
+          {
+            "node": "Agente de Memória (Feedback)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de Memória (Feedback)": {
+      "main": [
+        [
+          {
+            "node": "Tem Anomalia?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Anomalia?": {
+      "main": [
+        [
+          {
+            "node": "Registrar Alerta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Modo Completo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar Alerta": {
+      "main": [
+        [
+          {
+            "node": "Email – Alerta de Receita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email – Alerta de Receita": {
+      "main": [
+        [
+          {
+            "node": "Modo Completo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modo Completo?": {
+      "main": [
+        [
+          {
+            "node": "Agente Heurístico UX",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Processar Clientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Heurístico UX": {
+      "main": [
+        [
+          {
+            "node": "Agente Diagnóstico de Funil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Diagnóstico de Funil": {
+      "main": [
+        [
+          {
+            "node": "Agente Priorização ICE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Priorização ICE": {
+      "main": [
+        [
+          {
+            "node": "Agente de Síntese",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de Síntese": {
+      "main": [
+        [
+          {
+            "node": "Agente Autocrítica (Revisor)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Autocrítica (Revisor)": {
+      "main": [
+        [
+          {
+            "node": "Montar Pacote do Ciclo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Pacote do Ciclo": {
+      "main": [
+        [
+          {
+            "node": "Montar Email do Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Email do Gate": {
+      "main": [
+        [
+          {
+            "node": "Salvar Ciclo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Ciclo": {
+      "main": [
+        [
+          {
+            "node": "Email – Convocar Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email – Convocar Gate": {
+      "main": [
+        [
+          {
+            "node": "Processar Clientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM – Heurístico": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Heurístico UX",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM – Diagnóstico": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Diagnóstico de Funil",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM – Priorização": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Priorização ICE",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM – Síntese": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente de Síntese",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM – Autocrítica": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Autocrítica (Revisor)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser – Achados": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agente Heurístico UX",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser – Gargalos": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agente Diagnóstico de Funil",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser – Hipóteses": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agente Priorização ICE",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser – Autocrítica": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agente Autocrítica (Revisor)",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

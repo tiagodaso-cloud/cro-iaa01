@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CRO Next — Gate Humano</title>
+<title>CXO Next — Gate Humano</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
@@ -171,6 +171,8 @@ function renderDetalhe(){
     html += '<div class="foot-hint">Hipóteses marcadas serão escritas como cards no Jira do cliente e gravadas na memória de conversão após a aprovação.</div>';
   } else { html += '<div style="font-size:12.5px;color:var(--muted)">Ciclo sem hipóteses (modo sentinela ou erro de pipeline).</div>'; }
   html += '</div>';
+  var tri = d.trilha_conhecimento || [];
+  if(tri.length){ html += '<div class="panel"><h3><span class="n">4</span> Trilha de conhecimento aplicada</h3><div>'+tri.map(function(t){ return '<span class="tag" style="margin:2px;display:inline-block">'+esc(t.ref||'')+' · '+esc(t.titulo||'')+'</span>'; }).join('')+'</div><div class="foot-hint">Conhecimento (PSM Livelo, referências e aprendizados) usado pelos agentes neste ciclo. Memória considerada: '+esc(String((d.memoria_considerada||[]).length))+' hipótese(s) de ciclos anteriores.</div></div>'; }
   html += '<div class="gate-actions"><div class="ga-row"><input type="text" id="aprovador" placeholder="Seu nome (analista responsável)" style="max-width:280px"/><textarea id="notas" placeholder="Notas do gate: edições, contexto para a entrega, o que descartar…"></textarea></div>'
     + '<div class="ga-row"><button class="btn apr" id="btnApr" onclick="decidir(\'aprovar\')">✓ Aprovar & Entregar (Jira + memória)</button><button class="btn rej" id="btnRej" onclick="decidir(\'rejeitar\')">✕ Rejeitar ciclo</button></div>'
     + '<div class="foot-hint">Nada chega ao cliente sem este gate. A aprovação grava os cards no Jira, alimenta a memória de conversão e notifica o analista.</div></div>';

@@ -1,0 +1,939 @@
+{
+  "name": "CXO Next — Conhecimento & Feedback (RAG)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f947ae4e-164b-4fe4-a88c-21943abc6419",
+      "name": "Seed Livelo PSM (rodar 1x)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cxo_conhecimento"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": []
+        },
+        "returnAll": true
+      },
+      "id": "753ddd1a-844b-40e8-80f2-7a7f2f4c716f",
+      "name": "Ler Conhecimento Atual",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -360,
+        -200
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const SEED = [{\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Fluxo do repositório (visão geral)\", \"conteudo\": \"O repositório PSM (Problem-Solution Mapping) organiza o ciclo completo de experimentação: Metas SMART → Problemas (mapeados, validados e priorizados) → Categorias de problemas (score de gravidade) → Hipóteses e Soluções (priorizadas por score) → Plano de Testes → Resultados (positivo/negativo/inconclusivo) → Insights documentados. Cada problema e hipótese referencia a meta SMART via hashtag (ex.: #RECEITA). Nada entra em teste sem problema validado e hipótese priorizada.\", \"tags\": \"metodologia,processo,experimentacao,psm\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Metas SMART com hashtag\", \"conteudo\": \"Todo objetivo de negócio é documentado no formato SMART: Specific (o que deseja alcançar), Measurable (como medir — relatório/fonte), Achievable (é possível?), Relevant (condiz com objetivos da empresa e contexto atual?), Time-bound (prazo). Cada meta recebe uma hashtag-categoria (ex.: #RECEITA — 'Aumentar a receita direta online em 2% YoY, medida por relatório mensal, em 12 meses'). Problemas e hipóteses citam a hashtag da meta relacionada, garantindo alinhamento vertical.\", \"tags\": \"metas,smart,objetivos,alinhamento,okr\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Registro de problema: campos obrigatórios\", \"conteudo\": \"Um problema bem registrado tem: área de negócio demandante, produto, status, enunciado do problema, categoria, meta relacionada (#hashtag), descrição, EVIDÊNCIA (dado que comprova), localização (URL/tela/componente), dispositivo, canal, e validação: 'o problema foi validado utilizando plataformas de análise (GA, Hotjar etc.) e/ou pesquisas com usuários?' + quem validou + veredito 'problema válido?'. Problema sem evidência quantitativa ou qualitativa não avança para hipótese.\", \"tags\": \"problema,evidencia,validacao,ga4,hotjar,clarity,pesquisa\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Priorização de problemas (scores)\", \"conteudo\": \"Score do problema = soma de 3 critérios com pesos: 'Quão difícil será resolver?' (Alto=-10, Médio=10, Baixo=20 — dificuldade alta REDUZ o score), 'Quão grande é esse problema?' (Alto=20, Médio=10, Baixo=0), 'Está em alinhamento com as metas SMART prioritárias?' (Alto=30, Médio=20, Baixo=10, Não alinhado=-10). Score máximo 70, normalizado para 0-100. Problemas com maior score entram primeiro no backlog de hipóteses.\", \"tags\": \"priorizacao,score,problema,dificuldade,impacto,alinhamento\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Categorias de problemas e score de gravidade\", \"conteudo\": \"Problemas são agrupados em categorias (ex.: Product Info — 'problemas relacionados à forma de apresentação e aos conteúdos aplicados nas descrições dos produtos'). O time vota nas categorias mais críticas; o score de gravidade da categoria = score médio dos problemas válidos × proporção de problemas válidos. Priorizam-se categorias, não problemas isolados — ataca-se a causa sistêmica.\", \"tags\": \"categoria,gravidade,priorizacao,product-info\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Formato de hipótese (Acredito que se…)\", \"conteudo\": \"Hipótese no formato Livelo: 'Acredito que se [alteração específica], [público-alvo] terá [benefício/comportamento esperado]. Se eu estiver certo, veremos [métrica que muda].' Exemplo real: 'Acredito que se transformarmos a descrição dos produtos da seção Acessórios de Informática para um formato de tópicos, os usuários terão maior facilidade para ler as características. Se eu estiver certo, veremos uma redução nas trocas e devoluções destes produtos.'\", \"tags\": \"hipotese,formato,formulacao,teste\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Fórmula de hipótese do backlog (Sabendo que / Fazendo / Esperamos)\", \"conteudo\": \"Estrutura de experimento do backlog: SABENDO QUE [problema com evidência em dados] — ex.: 'o carrossel da home possui taxa de cliques de apenas x%, enquanto o banner das demais páginas possui y%'; FAZENDO [alteração a ser aplicada na variante] — ex.: 'a subida do carrossel para a primeira dobra'; ESPERAMOS ENTENDER SE [comportamento esperado/aprendizado] — ex.: 'os usuários não clicavam por não ver o componente ou porque o conteúdo não era relevante'. A hipótese completa concatena: 'Ao fazer X, esperamos entender se Y, dado que Z.'\", \"tags\": \"hipotese,backlog,sabendo-fazendo-esperamos,aprendizado\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Nomenclatura de experimento\", \"conteudo\": \"Nome do experimento segue o padrão: [ação + elemento + página/categoria + canal]. Exemplos: 'Realocar carrossel da home do site'; 'Transformar em tópicos a descrição dos produtos de informática das páginas de Usar Pontos do site e aplicativo'. O nome deve permitir entender o teste sem abrir o card.\", \"tags\": \"nomenclatura,experimento,padrao,documentacao\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Priorização de hipóteses (5 critérios, max 60)\", \"conteudo\": \"Score da hipótese = soma de 5 critérios: Esforço necessário (Alto=0, Médio=5, Baixo=10 — esforço baixo PONTUA MAIS), Probabilidade de veracidade da hipótese (Alto=10, Médio=5, Baixo=-5), Probabilidade de implementação (Alto=10, Médio=5, Baixo=-5), Impacto da implementação no negócio (Alto=20, Médio=10, Baixo=3), Alinhamento com metas SMART e problemas válidos (Alto=10, Médio=5, Baixo=-5, Não alinhado=-10). Máximo 60, normalizado 0-100. Complementa o ICE com dimensões de veracidade e alinhamento.\", \"tags\": \"priorizacao,score,hipotese,esforco,impacto,ice\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — KPI principal, secundários e NEGATIVOS (guardrails)\", \"conteudo\": \"Todo experimento define: KPI PRINCIPAL (a métrica que decide sucesso/insucesso — uma só), KPIs SECUNDÁRIOS (métricas que podem ser impactadas positivamente) e KPIs NEGATIVOS (guardrails — métricas que podem ser afetadas negativamente e precisam ser monitoradas; ex.: aumentar cliques no carrossel não pode derrubar tempo na página ou receita). Um teste que ganha no KPI principal mas degrada um guardrail não é vitória.\", \"tags\": \"kpi,guardrail,metricas,kpis-negativas,monitoramento\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Calculadora de relevância estatística (95%)\", \"conteudo\": \"Um experimento só é conclusivo com significância estatística de 95%: registram-se visitas e conversões de Controle e Variante; calculam-se taxa de conversão, uplift, erro padrão, z-score, p-valor e intervalos de confiança de cada versão. Regra: declarar vencedor somente com p-valor < 0,05 e intervalos de confiança que não se sobreponham de forma relevante. Exemplo do repositório: controle 2000 visitas/200 conversões (10%) vs variante 2000/250 (12,5%) → uplift 25%, p≈0,006 → RELEVANTE.\", \"tags\": \"significancia,estatistica,p-valor,ab-test,confianca,relevancia\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Calculadora de potencial (funil → R$)\", \"conteudo\": \"Potencial financeiro de uma otimização é estimado etapa a etapa do funil: para cada etapa (ex.: Home → listagem → produto → carrinho → sucesso) registram-se sessões e % de passagem para a próxima etapa; simula-se o incremental de passagem na etapa alvo (ex.: +2 p.p. na página de produto); recalcula-se o funil e obtém-se conversões incrementais × ticket médio = retorno potencial mensal em R$. Exemplo Livelo: +2 p.p. em /produto → +43 conversões/mês → R$ 11,5 mi incremental sobre base de R$ 575,7 mi. Sempre apresentar o cálculo aberto (auditável).\", \"tags\": \"potencial,funil,receita,calculo,uplift,ticket-medio,oportunidade\", \"etapa_funil\": \"todas\", \"vertical\": \"e-commerce\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Plano de teste: estrutura do documento\", \"conteudo\": \"O plano de testes contém: RESUMO (ID, categoria do problema, problema, nome e descrição da hipótese, KPI principal, KPIs secundários, página/tela, frame/componente, canal, dispositivo/SO, meta relacionada), CARD JIRA vinculado, TIPO DE TESTE (A/B/n, Multivariado, Split URL), PLATAFORMA, cronograma (início, final previsto quando houver amostra suficiente, duração em semanas), variações com alocação de tráfego e screenshots (controle vs B), descrição do problema na versão original e da solução na variante, informações para os desenvolvedores, riscos e link de preview.\", \"tags\": \"plano-de-teste,documentacao,jira,ab-test,template\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — QA de métricas antes de rodar o teste\", \"conteudo\": \"Checklist de QA obrigatório antes de iniciar o experimento: para CADA métrica de otimização (principal e secundárias), registrar a fonte de acompanhamento (ex.: relatório X do GA, relatório financeiro) e verificar se o tagueamento/coleta do dado está funcionando corretamente, com um responsável nomeado pelo QA de cada métrica. Teste com tracking quebrado é dado perdido — validar ANTES, nunca durante.\", \"tags\": \"qa,tagueamento,tracking,ga4,metricas,checklist\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Segmentação e alocação do teste\", \"conteudo\": \"Todo teste define segmentação explícita: browsers/dispositivos incluídos (ex.: desktop moderno Chrome/FF/Safari/Edge + mobile iPhone/Android) e excluídos (ex.: tablets), audiência/URL targeting com padrões de inclusão (ex.: páginas que contêm /produto/) e exclusão (ex.: páginas de debug), e alocação de tráfego por variação (% controle vs % variante). Segmentação mal definida contamina a amostra e invalida o resultado.\", \"tags\": \"segmentacao,targeting,alocacao,trafego,amostra\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Status de problemas e hipóteses (workflow)\", \"conteudo\": \"Fluxo de status padronizado. Problemas: Novo → Em validação → Backlog → Em andamento → Resolvido | Declinado. Hipóteses: Backlog → Em configuração → Em andamento → Finalizado | Despriorizado | Rollout (quando a variante vence e vai para 100% do tráfego). Status permitem acompanhar o pipeline no dashboard executivo (overview por área de negócio).\", \"tags\": \"status,workflow,pipeline,rollout,backlog\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Registro de resultados e insights\", \"conteudo\": \"Ao final do teste registram-se: visitas e conversões de A (controle) e B, taxas de conversão, uplift, p-valor e EFETIVIDADE (Positivo | Negativo | Inconclusivo) + INSIGHTS (o que aprendemos, independente de ganhar). Teste negativo ou inconclusivo também gera aprendizado documentado — alimenta o repositório e evita repetir apostas ruins. Atualizações durante o teste (qualquer alteração) são registradas com data, solicitante e impacto no andamento.\", \"tags\": \"resultados,insights,aprendizado,efetividade,documentacao\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"livelo_psm\", \"titulo\": \"PSM — Documentação de experimento (impacto financeiro + OKR)\", \"conteudo\": \"Ficha de documentação do experimento: ferramenta, nome (ação+elemento+página+canal), Sabendo que (evidência), Fazendo (alteração), Esperamos que (comportamento), tipo de experimento, KPI de sucesso, KPIs secundárias, KPIs negativas, taxa de conversão/visitas/conversões dos últimos 30 dias (baseline), URL, dispositivo, ticket médio atual, IMPACTO FINANCEIRO ESPERADO (cálculo aberto) e OKR atrelada. Baseline de 30 dias é obrigatório para dimensionar o efeito.\", \"tags\": \"documentacao,baseline,impacto-financeiro,okr,experimento\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Livelo — Repositório PSM\"}, {\"origem\": \"referencia_externa\", \"titulo\": \"Baymard — Benchmarks de checkout e-commerce\", \"conteudo\": \"Referências Baymard Institute para e-commerce: abandono médio de checkout ~70%; taxa saudável carrinho→checkout 55-65%; checkout→compra 40-55%; principais causas de abandono: custos extras revelados tarde (frete/taxas), obrigação de criar conta, checkout longo/complexo (ideal 12-14 elementos de formulário), falta de confiança no pagamento, erros de validação mal comunicados. Comparar sempre a taxa real do cliente contra essas faixas antes de estimar uplift.\", \"tags\": \"baymard,checkout,benchmark,abandono,e-commerce,carrinho\", \"etapa_funil\": \"checkout\", \"vertical\": \"e-commerce\", \"fonte\": \"Baymard Institute (referência de mercado)\"}, {\"origem\": \"referencia_externa\", \"titulo\": \"NN/g — 10 heurísticas de Nielsen aplicadas a conversão\", \"conteudo\": \"Heurísticas de usabilidade com maior efeito em conversão: visibilidade do status do sistema (feedback de progresso no funil), correspondência com o mundo real (linguagem do usuário, não jargão), prevenção de erros (validação inline em formulários), reconhecimento em vez de memorização (resumo do pedido sempre visível), flexibilidade (guest checkout, múltiplos pagamentos), design minimalista (remover distrações no fluxo de decisão), ajudar a reconhecer/recuperar erros (mensagens específicas com correção sugerida). Citar a heurística violada + evidência quantitativa ao registrar problema.\", \"tags\": \"nielsen,heuristica,usabilidade,ux,formularios\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Nielsen Norman Group (referência de mercado)\"}, {\"origem\": \"referencia_externa\", \"titulo\": \"WCAG 2.2 — Acessibilidade que afeta conversão\", \"conteudo\": \"Critérios WCAG A/AA com impacto direto em conversão: contraste mínimo 4.5:1 em texto e CTAs (usuários não clicam no que não leem), alvos de toque ≥24px (mobile), foco visível em navegação por teclado, labels e mensagens de erro programaticamente associadas a campos, não depender só de cor para comunicar estado/erro, evitar timeout curto em checkout. Falhas de acessibilidade aparecem no Clarity como rage clicks e abandono em formulários — cruzar os sinais.\", \"tags\": \"wcag,acessibilidade,contraste,mobile,formularios,rage-clicks\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"WCAG 2.2 (referência de mercado)\"}, {\"origem\": \"referencia_externa\", \"titulo\": \"GA4 — Eventos de funil e-commerce padrão\", \"conteudo\": \"Funil e-commerce GA4 canônico: page_view → view_item_list → select_item → view_item → add_to_cart → view_cart → begin_checkout → add_shipping_info → add_payment_info → purchase. Para lead-gen: form_start → form_submit / generate_lead / sign_up. Quedas anormais entre eventos adjacentes indicam o gargalo; ausência de evento intermediário (ex.: add_shipping_info) geralmente é falha de tagueamento, não de UX — validar coleta antes de diagnosticar comportamento.\", \"tags\": \"ga4,eventos,funil,tagueamento,e-commerce,lead\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Google Analytics 4 (referência de mercado)\"}, {\"origem\": \"referencia_externa\", \"titulo\": \"Clarity — Sinais comportamentais e leitura\", \"conteudo\": \"Microsoft Clarity fornece sinais de fricção: rage clicks (cliques repetidos em elemento que não responde — botão quebrado ou expectativa de interatividade), dead clicks (cliques sem efeito), quick backs (retorno imediato à página anterior — expectativa quebrada), excessive scrolling (conteúdo desorganizado ou CTA fora da dobra). Regra de leitura: rage clicks acima de ~3-4% das sessões numa página do funil é sinal forte; sempre correlacionar com a queda de passagem no GA4 na mesma página para virar problema válido.\", \"tags\": \"clarity,rage-clicks,dead-clicks,comportamento,friccao\", \"etapa_funil\": \"todas\", \"vertical\": \"todas\", \"fonte\": \"Microsoft Clarity (referência de mercado)\"}];\nconst agora = new Date().toISOString();\nconst existentes = new Set($input.all().map(i => (i.json && i.json.titulo) || ''));\nreturn SEED.filter(c => !existentes.has(c.titulo)).map(c => ({ json: { ...c, ativo: true, criado_em: agora } }));"
+      },
+      "id": "1ed92c61-f195-4b93-8fe7-2c25009bdb37",
+      "name": "Preparar Seed (idempotente)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -120,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cxo_conhecimento"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "origem": "={{ $json.origem }}",
+            "titulo": "={{ $json.titulo }}",
+            "conteudo": "={{ $json.conteudo }}",
+            "tags": "={{ $json.tags }}",
+            "etapa_funil": "={{ $json.etapa_funil }}",
+            "vertical": "={{ $json.vertical }}",
+            "fonte": "={{ $json.fonte }}",
+            "ativo": true,
+            "criado_em": "={{ $json.criado_em }}"
+          },
+          "schema": [
+            {
+              "id": "origem",
+              "displayName": "origem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "titulo",
+              "displayName": "titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "conteudo",
+              "displayName": "conteudo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tags",
+              "displayName": "tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "etapa_funil",
+              "displayName": "etapa_funil",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "vertical",
+              "displayName": "vertical",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fonte",
+              "displayName": "fonte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ativo",
+              "displayName": "ativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a860a18f-a54e-4585-9089-6daa8d3ee82a",
+      "name": "Inserir Seed",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        120,
+        -200
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cxo-next-conhecimento",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "af7af81a-ac29-4267-a1b2-7e24bb420733",
+      "name": "POST – Documento",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        80
+      ],
+      "webhookId": "54e7de7f-38e2-450f-ade6-9c06093f18e0"
+    },
+    {
+      "parameters": {
+        "jsCode": "const b = ($json.body) || {};\nconst docs = Array.isArray(b) ? b : (Array.isArray(b.documentos) ? b.documentos : [b]);\nconst agora = new Date().toISOString();\nconst out = [];\nfor (const d of docs) {\n  if (!d || !d.conteudo) continue;\n  const base = { origem: d.origem || 'documento_interno', titulo: d.titulo || 'Documento sem título', tags: d.tags || '', etapa_funil: d.etapa_funil || 'todas', vertical: d.vertical || 'todas', fonte: d.fonte || '', criado_em: agora };\n  const txt = String(d.conteudo);\n  if (txt.length <= 1400) { out.push({ json: { ...base, conteudo: txt } }); }\n  else { let i = 0, p = 1; while (i < txt.length) { out.push({ json: { ...base, titulo: base.titulo + ' (parte ' + p + ')', conteudo: txt.slice(i, i + 1400) } }); i += 1400; p++; } }\n}\nif (!out.length) return [{ json: { vazio: true, criado_em: agora, origem: '', titulo: '', conteudo: '', tags: '', etapa_funil: '', vertical: '', fonte: '' } }];\nreturn out;"
+      },
+      "id": "e7ad7db9-50f8-4254-9cc8-a12a15a2e5fd",
+      "name": "Fatiar Documento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cxo_conhecimento"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "origem": "={{ $json.origem }}",
+            "titulo": "={{ $json.titulo }}",
+            "conteudo": "={{ $json.conteudo }}",
+            "tags": "={{ $json.tags }}",
+            "etapa_funil": "={{ $json.etapa_funil }}",
+            "vertical": "={{ $json.vertical }}",
+            "fonte": "={{ $json.fonte }}",
+            "ativo": true,
+            "criado_em": "={{ $json.criado_em }}"
+          },
+          "schema": [
+            {
+              "id": "origem",
+              "displayName": "origem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "titulo",
+              "displayName": "titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "conteudo",
+              "displayName": "conteudo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tags",
+              "displayName": "tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "etapa_funil",
+              "displayName": "etapa_funil",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "vertical",
+              "displayName": "vertical",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fonte",
+              "displayName": "fonte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ativo",
+              "displayName": "ativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1bafaf1c-fb2c-4537-a988-4d991a699f2b",
+      "name": "Inserir Documento",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -120,
+        80
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = $input.all().filter(i => i.json && !i.json.vazio).length;\nreturn [{ json: { ok: n > 0, chunks_inseridos: n } }];"
+      },
+      "id": "c97c3d74-9bb3-4f56-a42c-2a7cdc44e0e3",
+      "name": "Contar Inseridos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "abc8855c-d552-40a8-97fd-618ce5cd582d",
+      "name": "Responder Documento",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        360,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "path": "cxo-next-feedback",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "73796ca7-f997-46fd-9732-150359f1ab0e",
+      "name": "GET – Form Feedback",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        360
+      ],
+      "webhookId": "7e1fa3c3-d928-4305-9dff-0eb9db2e2280"
+    },
+    {
+      "parameters": {
+        "jsCode": "const HTML = \"<!DOCTYPE html>\\n<html lang=\\\"pt-BR\\\">\\n<head>\\n<meta charset=\\\"UTF-8\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1.0\\\"/>\\n<title>CXO Next \\u2014 Feedback de Resultado</title>\\n<style>\\n:root{--ox:#FF5C28;--dark:#111827;--card:#1f2937;--border:#374151;--text:#f9fafb;--muted:#9ca3af;--green:#10b981}\\n*{box-sizing:border-box;margin:0;padding:0}\\nbody{font-family:Arial,Helvetica,sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}\\n.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:560px;width:100%}\\nh1{font-size:18px;margin-bottom:4px}\\n.sub{color:var(--muted);font-size:12.5px;margin-bottom:20px}\\nlabel{display:block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin:14px 0 5px}\\ninput,select,textarea{width:100%;background:#111827;border:1px solid var(--border);border-radius:9px;color:var(--text);padding:10px 12px;font-size:13.5px;font-family:inherit}\\ntextarea{min-height:74px;resize:vertical}\\n.row{display:flex;gap:10px}.row>div{flex:1}\\nbutton{margin-top:20px;width:100%;background:var(--ox);color:#fff;border:0;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer}\\nbutton:disabled{opacity:.5}\\n#msg{margin-top:14px;font-size:13px;display:none;padding:10px 12px;border-radius:9px}\\n.hint{color:var(--muted);font-size:11px;margin-top:3px}\\n</style>\\n</head>\\n<body>\\n<div class=\\\"card\\\">\\n  <h1>\\ud83d\\udd01 CXO Next \\u2014 Feedback de resultado</h1>\\n  <div class=\\\"sub\\\">Registre o resultado do experimento. Isso atualiza a mem\\u00f3ria de convers\\u00e3o do cliente e vira aprendizado para os pr\\u00f3ximos ciclos da f\\u00e1brica.</div>\\n  <label>Card Jira OU ID da hip\\u00f3tese</label>\\n  <div class=\\\"row\\\">\\n    <div><input id=\\\"jira\\\" placeholder=\\\"ex.: CRO-42 (Jira)\\\"/></div>\\n    <div><input id=\\\"hip\\\" placeholder=\\\"ex.: HIP-03\\\"/></div>\\n  </div>\\n  <div class=\\\"hint\\\">Preencha ao menos um. O Jira tem prioridade na busca.</div>\\n  <label>Resultado</label>\\n  <select id=\\\"resultado\\\">\\n    <option value=\\\"positivo\\\">Positivo \\u2014 variante venceu</option>\\n    <option value=\\\"negativo\\\">Negativo \\u2014 controle venceu</option>\\n    <option value=\\\"inconclusivo\\\" selected>Inconclusivo \\u2014 sem signific\\u00e2ncia</option>\\n  </select>\\n  <div class=\\\"row\\\">\\n    <div><label>Uplift real (%)</label><input id=\\\"uplift\\\" type=\\\"number\\\" step=\\\"0.1\\\" placeholder=\\\"ex.: 7.5\\\"/></div>\\n    <div><label>P-valor</label><input id=\\\"pvalor\\\" type=\\\"number\\\" step=\\\"0.001\\\" placeholder=\\\"ex.: 0.031\\\"/></div>\\n  </div>\\n  <label>Receita incremental estimada (R$/m\\u00eas)</label>\\n  <input id=\\\"receita\\\" type=\\\"number\\\" step=\\\"1\\\" placeholder=\\\"ex.: 12400\\\"/>\\n  <label>Notas / insights</label>\\n  <textarea id=\\\"notas\\\" placeholder=\\\"O que aprendemos? Guardrails afetados? Pr\\u00f3ximo passo?\\\"></textarea>\\n  <button id=\\\"btn\\\" onclick=\\\"enviar()\\\">Registrar resultado</button>\\n  <div id=\\\"msg\\\"></div>\\n</div>\\n<script>\\nfunction enviar(){\\n  var jira=document.getElementById('jira').value.trim(), hip=document.getElementById('hip').value.trim();\\n  var msg=document.getElementById('msg'), btn=document.getElementById('btn');\\n  if(!jira && !hip){ alert('Informe o card Jira ou o ID da hip\\u00f3tese.'); return; }\\n  btn.disabled=true;\\n  fetch(window.location.pathname,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({\\n    jira_issue_key:jira, hipotese_id:hip,\\n    resultado:document.getElementById('resultado').value,\\n    uplift_real_pct:document.getElementById('uplift').value,\\n    p_valor:document.getElementById('pvalor').value,\\n    receita_incremental_reais:document.getElementById('receita').value,\\n    notas:document.getElementById('notas').value\\n  })}).then(function(r){return r.json().catch(function(){return {};});}).then(function(res){\\n    msg.style.display='block';\\n    if(res && res.ok){ msg.style.background='rgba(16,185,129,.15)'; msg.style.color='var(--green)'; msg.textContent='\\u2713 Resultado registrado \\u2014 mem\\u00f3ria e base de conhecimento atualizadas.'; }\\n    else { msg.style.background='rgba(239,68,68,.15)'; msg.style.color='#ef4444'; msg.textContent='Hip\\u00f3tese n\\u00e3o encontrada na mem\\u00f3ria. Confira o Jira/ID.'; btn.disabled=false; }\\n  }).catch(function(e){ msg.style.display='block'; msg.style.background='rgba(239,68,68,.15)'; msg.style.color='#ef4444'; msg.textContent='Falha: '+e; btn.disabled=false; });\\n}\\n</script>\\n</body>\\n</html>\\n\";\nreturn [{ json: { html: HTML } }];"
+      },
+      "id": "288a893f-098d-42dc-a0cd-164b6c6d1f03",
+      "name": "Form HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.html }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "0f6bdb8e-b5d5-4f6b-8670-0af6c06433e9",
+      "name": "Responder Form",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -120,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cxo-next-feedback",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "5969f819-d304-4ef7-9eb3-304ef0f90724",
+      "name": "POST – Feedback",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        640
+      ],
+      "webhookId": "036548fb-148d-4d25-987d-1e976c8599ca"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_memoria"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": []
+        },
+        "returnAll": true
+      },
+      "id": "0e4d5d70-8471-44d8-8ac4-c7021d4d3c43",
+      "name": "Ler Memória",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -360,
+        640
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $('POST – Feedback').first().json.body || {};\nconst rows = $input.all().map(i => i.json).filter(r => r);\nconst jk = String(body.jira_issue_key || '').trim();\nconst hid = String(body.hipotese_id || '').trim();\nlet alvo = null;\nif (jk) alvo = rows.find(r => String(r.jira_issue_key || '').trim().toLowerCase() === jk.toLowerCase());\nif (!alvo && hid) {\n  const cands = rows.filter(r => String(r.hipotese_id || '').trim().toLowerCase() === hid.toLowerCase());\n  cands.sort((a, b) => String(b.criado_em || '').localeCompare(String(a.criado_em || '')));\n  alvo = cands[0] || null;\n}\nconst resultado = String(body.resultado || 'inconclusivo').toLowerCase();\nconst partes = ['Resultado: ' + resultado];\nif (body.uplift_real_pct !== undefined && body.uplift_real_pct !== '') partes.push('uplift real: ' + body.uplift_real_pct + '%');\nif (body.p_valor !== undefined && body.p_valor !== '') partes.push('p-valor: ' + body.p_valor);\nif (body.receita_incremental_reais !== undefined && body.receita_incremental_reais !== '') partes.push('receita incremental: R$ ' + body.receita_incremental_reais + '/mês');\nif (body.notas) partes.push('notas: ' + body.notas);\nconst detalhe = partes.join(' | ');\nconst agora = new Date().toISOString();\nreturn [{ json: {\n  encontrado: !!alvo,\n  row_id: alvo ? alvo.id : null,\n  cliente: alvo ? alvo.cliente : '',\n  titulo: alvo ? alvo.titulo : (jk || hid),\n  hipotese_id: alvo ? alvo.hipotese_id : hid,\n  jira_issue_key: alvo ? alvo.jira_issue_key : jk,\n  email_analista: (alvo && alvo.email_analista) ? alvo.email_analista : 'tsoares@cadastra.com',\n  resultado, resultado_detalhe: detalhe, atualizado_em: agora,\n  aprendizado_titulo: 'Resultado de teste — ' + (alvo ? (alvo.titulo || alvo.hipotese_id) : (jk || hid)) + ' (' + resultado + ')',\n  aprendizado_conteudo: 'Cliente ' + (alvo ? alvo.cliente : '?') + ', hipótese ' + (alvo ? alvo.hipotese_id : hid) + (jk ? ' (' + jk + ')' : '') + ': ' + detalhe + '. Registrado via loop de feedback do CXO Next.',\n  aprendizado_tags: 'resultado,' + resultado + (alvo && alvo.cliente ? ',' + alvo.cliente : '')\n} }];"
+      },
+      "id": "f3bd22e6-91eb-468a-857d-04d5a549119b",
+      "name": "Aplicar Feedback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -120,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.encontrado }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "be09e8bb-19df-4477-a91e-76586f62c197",
+      "name": "Encontrou?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        120,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cro_memoria"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Aplicar Feedback').first().json.row_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status_implementacao": "finalizado",
+            "resultado": "={{ $('Aplicar Feedback').first().json.resultado_detalhe }}",
+            "atualizado_em": "={{ $('Aplicar Feedback').first().json.atualizado_em }}"
+          },
+          "schema": [
+            {
+              "id": "status_implementacao",
+              "displayName": "status_implementacao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "resultado",
+              "displayName": "resultado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "atualizado_em",
+              "displayName": "atualizado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "09d4ae6d-8a8a-419f-a175-d924a89fea77",
+      "name": "Atualizar Memória",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        360,
+        560
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cxo_conhecimento"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "origem": "resultado_teste",
+            "titulo": "={{ $('Aplicar Feedback').first().json.aprendizado_titulo }}",
+            "conteudo": "={{ $('Aplicar Feedback').first().json.aprendizado_conteudo }}",
+            "tags": "={{ $('Aplicar Feedback').first().json.aprendizado_tags }}",
+            "etapa_funil": "todas",
+            "vertical": "todas",
+            "fonte": "loop de feedback",
+            "ativo": true,
+            "criado_em": "={{ $('Aplicar Feedback').first().json.atualizado_em }}"
+          },
+          "schema": [
+            {
+              "id": "origem",
+              "displayName": "origem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "titulo",
+              "displayName": "titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "conteudo",
+              "displayName": "conteudo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tags",
+              "displayName": "tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "etapa_funil",
+              "displayName": "etapa_funil",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "vertical",
+              "displayName": "vertical",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fonte",
+              "displayName": "fonte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ativo",
+              "displayName": "ativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f636d21b-c174-4bc1-8540-290714c22ff2",
+      "name": "Registrar Aprendizado (resultado)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        600,
+        560
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('Aplicar Feedback').first().json.email_analista }}",
+        "subject": "=🔁 CXO Next | resultado registrado: {{ $('Aplicar Feedback').first().json.titulo }}",
+        "emailType": "html",
+        "message": "={{ '<div style=\"font-family:Arial,sans-serif\"><h3>Resultado registrado no CXO Next</h3><p>' + $('Aplicar Feedback').first().json.resultado_detalhe + '</p><p style=\"color:#6b7280;font-size:12px\">Memória de conversão atualizada e aprendizado gravado na base de conhecimento — os próximos ciclos da fábrica já consideram este resultado.</p></div>' }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "CXO Next — Feedback"
+        }
+      },
+      "id": "f4ebf748-7541-4862-aa5a-4dd6da168c89",
+      "name": "Email – Feedback Registrado",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        840,
+        560
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H4YY5Bldwy95Y3qW",
+          "name": "SEO-N8N"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, resultado: $('Aplicar Feedback').first().json.resultado }) }}",
+        "options": {}
+      },
+      "id": "905a86b5-212f-4229-b731-97eb239c5b94",
+      "name": "Responder Feedback OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1080,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, erro: 'hipotese nao encontrada na memoria' }) }}",
+        "options": {}
+      },
+      "id": "927ba78c-55b6-4a2a-a594-b9d5d40e95ab",
+      "name": "Responder Não Encontrado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        360,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 📚 CXO Next — Conhecimento & Feedback (RAG)\n**Seed Livelo PSM (rodar 1x):** carrega a metodologia PSM + referências na Data Table `cxo_conhecimento` (idempotente).\n\n**POST /cxo-next-conhecimento:** ingestão de documentos internos/externos (Workspace): { titulo, conteudo, origem, tags, etapa_funil, vertical, fonte } — texto longo é fatiado em chunks.\n\n**GET/POST /cxo-next-feedback:** formulário + registro de resultado de teste → atualiza `cro_memoria` e grava aprendizado em `cxo_conhecimento`. **É o que fecha o loop:** decisão → implementação → resultado → memória → conhecimento → próximo ciclo.",
+        "height": 300,
+        "width": 520,
+        "color": 4
+      },
+      "id": "24b3ebab-53ac-4c9d-a5fd-846145d26fa1",
+      "name": "Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        -460
+      ]
+    }
+  ],
+  "connections": {
+    "Seed Livelo PSM (rodar 1x)": {
+      "main": [
+        [
+          {
+            "node": "Ler Conhecimento Atual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Conhecimento Atual": {
+      "main": [
+        [
+          {
+            "node": "Preparar Seed (idempotente)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Seed (idempotente)": {
+      "main": [
+        [
+          {
+            "node": "Inserir Seed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST – Documento": {
+      "main": [
+        [
+          {
+            "node": "Fatiar Documento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fatiar Documento": {
+      "main": [
+        [
+          {
+            "node": "Inserir Documento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Documento": {
+      "main": [
+        [
+          {
+            "node": "Contar Inseridos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contar Inseridos": {
+      "main": [
+        [
+          {
+            "node": "Responder Documento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET – Form Feedback": {
+      "main": [
+        [
+          {
+            "node": "Form HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form HTML": {
+      "main": [
+        [
+          {
+            "node": "Responder Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST – Feedback": {
+      "main": [
+        [
+          {
+            "node": "Ler Memória",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Memória": {
+      "main": [
+        [
+          {
+            "node": "Aplicar Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aplicar Feedback": {
+      "main": [
+        [
+          {
+            "node": "Encontrou?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encontrou?": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Memória",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder Não Encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Memória": {
+      "main": [
+        [
+          {
+            "node": "Registrar Aprendizado (resultado)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar Aprendizado (resultado)": {
+      "main": [
+        [
+          {
+            "node": "Email – Feedback Registrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email – Feedback Registrado": {
+      "main": [
+        [
+          {
+            "node": "Responder Feedback OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

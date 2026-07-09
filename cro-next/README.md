@@ -1,114 +1,128 @@
-# CRO Next — Fábrica Multi-Agente + Gate Humano (n8n)
+# CXO Next — Fábrica Multi-Agente (SMA) · v2
 
-**Pilar 01 do planejamento "CRO Next"** — sair de horas de especialista para *pipelines de receita incremental*: a **máquina** coleta, analisa, monitora, estima e documenta 24/7; o **consultor** julga, prioriza e decide a aposta num gate humano; o **cliente** compra fluxo de oportunidades com ROI auditável.
+**Tese central:** deixar de vender horas de especialista para **operar pipelines de receita incremental** — produção automatizada por IA multi-agente + julgamento consultivo humano.
 
-Este diretório traz **2 workflows n8n prontos para importar** + a página do gate.
+> **Máquina** (coleta, analisa, monitora, documenta e estima 24/7)
+> **+ Consultor** (julga, prioriza, conversa e decide a aposta no gate)
+> **+ Cliente** (compra fluxo de oportunidades com ROI auditável)
 
-| Arquivo | O que é | Como usar |
+Sistema de agentes em **n8n** (GA4, Clarity, Jira, Workspace) que automatiza ingestão, análise heurística, diagnóstico de funil, priorização e síntese — **multi-tenant, com gate humano**, agora com **RAG** (metodologia PSM da Livelo + documentos internos + referências externas), **trilha de conhecimento** e **loop de feedback**.
+
+## Arquivos para importar
+
+| Arquivo | Workflow | Nós |
 |---|---|---|
-| **`cro-next-fabrica.json`** | **W1 — Fábrica Multi-Agente** (40 nós) | Importar no n8n |
-| **`cro-next-gate.json`** | **W2 — Gate Humano & Entregas** (18 nós) | Importar no n8n |
-| `w2-gate-humano.html` | Página do gate (já embutida no W2; aqui para edição) | referência |
-| `w1-fabrica-multi-agente.sdk.js` | Fonte SDK do W1 (legível) | referência |
+| **`cxo-next-fabrica.json`** | W1 — Fábrica Multi-Agente (SMA) | 47 |
+| **`cxo-next-gate.json`** | W2 — Gate Humano & Entregas | 20 |
+| **`cxo-next-conhecimento.json`** | W3 — Conhecimento & Feedback (RAG) | 22 |
+
+Referência: `w2-gate-humano.html` (página do gate, já embutida no W2). Os arquivos `cro-next-*.json` são o **protótipo 01** (mantidos para histórico).
+
+---
+
+## O SMA — papéis dos agentes
+
+```
+                       ┌─────────────────────────────────────────────┐
+ GA4 · Clarity · Jira  │              W1 — FÁBRICA (SMA)             │
+ Workspace (docs)      │                                             │
+        │              │ 1. Agente de Ingestão (determinístico)      │
+        ▼              │    KPIs, funil, deltas, anomalias always-on │
+   [coleta 24/7] ────▶ │ 2. Agente Bibliotecário (RAG)               │
+                       │    PSM Livelo + referências + aprendizados  │
+ cxo_conhecimento ───▶ │    → seleciona chunks → TRILHA DE           │
+ (23 chunks seed +     │      CONHECIMENTO registrada no ciclo       │
+  docs + aprendizados) │ 3. Agente de Memória (loop de feedback)     │
+ cro_memoria ────────▶ │    o que já foi aprovado/testado/aprendido  │
+                       │ 4. Agente Heurístico/UX (Nielsen·Baymard·   │
+                       │    WCAG·PSM) — problemas com evidência      │
+                       │ 5. Agente Diagnóstico de Funil              │
+                       │    calculadora de potencial PSM (funil→R$)  │
+                       │ 6. Agente de Priorização (ICE + score PSM,  │
+                       │    KPIs negativas, hipótese Sabendo/Fazendo/│
+                       │    Esperamos, significância 95%)            │
+                       │ 7. Agente de Síntese (material de reunião)  │
+                       │ 8. Agente Autocrítica (revisor, score ≥ 7)  │
+                       └──────────────────┬──────────────────────────┘
+                                          ▼
+                       ┌─────────────────────────────────────────────┐
+                       │       W2 — GATE HUMANO & ENTREGAS           │
+                       │ Painel web: ciclos, números, hipóteses,     │
+                       │ trilha de conhecimento. Analista aprova/    │
+                       │ rejeita → Jira (plano de teste PSM) +       │
+                       │ cro_memoria + aprendizado do gate           │
+                       └──────────────────┬──────────────────────────┘
+                                          ▼  implementação + teste A/B
+                       ┌─────────────────────────────────────────────┐
+                       │     W3 — CONHECIMENTO & FEEDBACK (RAG)      │
+                       │ Seed Livelo PSM · ingestão de documentos ·  │
+                       │ formulário/API de resultado de teste →      │
+                       │ cro_memoria + cxo_conhecimento              │
+                       └──────────────────┬──────────────────────────┘
+                                          │
+                 o próximo ciclo da fábrica JÁ considera o resultado
+                 (loop fechado: decisão → teste → resultado → memória
+                  → conhecimento → próxima análise)
+```
+
+**Trilha de conhecimento:** cada ciclo registra em `dados_json.trilha_conhecimento` quais chunks [C1..Cn] os agentes usaram (PSM, referências, aprendizados) — visível no painel do gate. Auditável de ponta a ponta.
+
+**Anti-comoditização:** todo achado/gargalo/hipótese cita evidência quantitativa real; a Autocrítica barra número inventado, aritmética inconsistente, falta de guardrails e conteúdo genérico.
 
 ---
 
 ## Passo a passo de implementação
 
-### 0) Pré-requisitos (uma vez)
-As **Data Tables** já foram criadas no projeto **SEO** do n8n: `cro_clientes`, `cro_ciclos`, `cro_alertas`, `cro_memoria`. Se algum dia precisar recriá-las, os esquemas estão no fim deste README.
-
-### 1) Credenciais
-No n8n (**Credentials**), confirme que existem — todas já presentes no ambiente, exceto a do GA4:
-
+### 1) Credenciais (n8n → Credentials)
 | Credencial | Tipo | Status |
 |---|---|---|
 | OpenRouter account 51 | OpenRouter API | ✅ existe |
 | SEO-N8N | Gmail OAuth2 | ✅ existe |
 | JIRA-GABRIELY | Jira Software Cloud API | ✅ existe |
-| **Google Analytics - CRO Next** | **Google Analytics OAuth2** | ⚠️ **criar + autorizar** (login Google com acesso ao GA4) |
+| **Google Analytics - CRO Next** | Google Analytics OAuth2 | ⚠️ **criar + autorizar** (o nome segue "CRO Next" de propósito — se você já a criou para o protótipo 01, a v2 a reaproveita) |
 
-> Os 3 nós **GA4** do W1 vêm com a credencial marcada como `__CRIAR__`. Depois de importar, abra cada nó GA4 e **selecione a credencial "Google Analytics - CRO Next"** (crie-a se ainda não existir).
+### 2) Data Tables (projeto SEO)
+Já criadas: `cro_clientes`, `cro_ciclos`, `cro_alertas`, `cro_memoria` e **`cxo_conhecimento`** (nova — **já semeada com os 23 chunks** da metodologia PSM Livelo + referências Baymard/NN-g/WCAG/GA4/Clarity).
 
-### 2) Importar o W1 (Fábrica)
-1. n8n → **Workflows → Import from File** → selecione **`cro-next-fabrica.json`**.
-2. Confirme que ele caiu no projeto **SEO** (onde estão as Data Tables). Se caiu em outro projeto, mova-o (⋯ → Move).
-3. Abra os 3 nós **GA4 – …** e selecione a credencial do GA4 (passo 1).
-4. Os nós de Data Table (`Carregar Clientes Ativos`, `Registrar Alerta`, `Salvar Ciclo`) referenciam as tabelas por **nome** — confirme que resolvem (devem achar `cro_clientes`/`cro_alertas`/`cro_ciclos`).
+> As tabelas do protótipo mantêm o prefixo `cro_` de propósito (continuidade dos dados). A nova base de conhecimento usa `cxo_`.
 
-> ⚠️ Já existe no n8n um workflow **incompleto** "CRO Next — Fábrica Multi-Agente (SMA)" com só 11 nós (`/workflow/XOuTqncVyu5iWtfM`), criado durante os testes. **Apague-o** para não confundir com o importado (40 nós).
+### 3) Importar os 3 workflows
+n8n → **Workflows → Import from File**, nesta ordem, todos no projeto **SEO**:
+1. `cxo-next-conhecimento.json` (W3) → **ativar** (webhooks de conhecimento/feedback).
+2. `cxo-next-gate.json` (W2) → **ativar** (webhooks do gate).
+3. `cxo-next-fabrica.json` (W1) → abrir os 3 nós **GA4 – …** e selecionar a credencial do GA4 → ativar quando quiser as cadências.
 
-### 3) Importar o W2 (Gate)
-1. **Import from File** → **`cro-next-gate.json`** (mesmo projeto SEO).
-2. Anote as URLs dos 2 webhooks (nó **GET – Gate** e **POST – Decisão**):
-   - Gate: `https://n8n-prod.cadastra.com/webhook/cro-next-gate`
-   - Decisão: `.../webhook/cro-next-gate/decisao` (chamada pela própria página)
-3. **Ative** o W2 (toggle *Active*) para os webhooks funcionarem em produção.
+O workflow antigo incompleto de 11 nós já foi **arquivado** automaticamente. Os workflows do protótipo 01 (se importados) podem ser desativados — a v2 os substitui.
 
-> O botão de e-mail do W1 e o link do gate apontam para `https://n8n-prod.cadastra.com/webhook/cro-next-gate`. Se a URL da sua instância for outra, ajuste o `gateUrl` no nó **Montar Email do Gate** (W1).
+### 4) Seed do conhecimento (já feito, mas idempotente)
+A tabela `cxo_conhecimento` **já está semeada**. Se um dia precisar recarregar (ou em outra instância): W3 → gatilho **"Seed Livelo PSM (rodar 1x)"** → Execute. É idempotente (não duplica títulos existentes).
 
-### 4) Onboarding de um cliente = 1 linha
-Em **Data Tables → `cro_clientes`**, adicione uma linha com `ativo = true` e preencha ao menos:
+### 5) Onboarding de cliente = 1 linha
+Em `cro_clientes`: `ativo=true`, `cliente`, `ga4_property_id`, `email_analista`, `valor_por_conversao`, `jira_base_url`, `jira_project_key` (+ opcionais `clarity_api_token`, `contexto_negocio`, `vertical`, `tier`).
 
-`cliente`, `ga4_property_id`, `email_analista`, `valor_por_conversao` (fallback quando não há receita no GA4), `jira_base_url`, `jira_project_key`. Opcionais: `clarity_api_token`, `contexto_negocio`, `vertical`, `tier` (`essential|growth|enterprise`), `moeda`.
+### 6) Testar o ciclo completo
+1. **W1** → "Execução Manual (Teste)" → gera ciclo com trilha de conhecimento e e-mail convocando o gate.
+2. Abrir `https://n8n-prod.cadastra.com/webhook/cxo-next-gate` → revisar (KPIs, gargalos, hipóteses PSM com guardrails, trilha) → **Aprovar** → cards no Jira (formato plano de teste PSM) + memória + aprendizado do gate.
+3. Após rodar o teste A/B real: `https://n8n-prod.cadastra.com/webhook/cxo-next-feedback` → registrar resultado (positivo/negativo/inconclusivo, uplift, p-valor) → memória e conhecimento atualizados → **o próximo ciclo já usa isso**.
 
-Nunca crie um workflow novo por cliente — a fábrica é **multi-tenant**: 1 workflow, N linhas.
-
-### 5) Testar
-1. No W1, use o gatilho **Execução Manual (Teste)** → *Execute workflow*. Ele percorre 1 cliente ativo, coleta dados, roda os 5 agentes e grava um ciclo em `cro_ciclos` com status `aguardando_gate` (ou `requer_revisao` se a autocrítica < 7), e envia o e-mail convocando o gate.
-2. Abra `https://n8n-prod.cadastra.com/webhook/cro-next-gate` → o painel lista o ciclo. Revise, marque as hipóteses e clique **Aprovar & Entregar** → o W2 cria os cards no Jira, grava `cro_memoria`, atualiza o ciclo e envia o e-mail.
-
-### 6) Produção (deixar no ar)
-Ative o W1. As cadências disparam sozinhas:
-- **Quinzenal (seg 07:00)** → modo `completo` (fábrica inteira, todos os clientes ativos).
-- **Semanal (qui 07:30)** → modo `sentinela` (só coleta + detecção de anomalias → alerta de receita; não roda os agentes de análise).
+### 7) Produção
+Ativar W1: quinzenal (seg 07:00, fábrica completa) + semanal (qui 07:30, sentinela de receita). W2 e W3 ficam sempre ativos (webhooks).
 
 ---
 
-## Arquitetura
+## Endpoints (W2/W3 ativos)
+| Endpoint | Função |
+|---|---|
+| `GET /webhook/cxo-next-gate` | Painel do gate humano |
+| `POST /webhook/cxo-next-gate/decisao` | Decisão do gate (usado pela página) |
+| `GET /webhook/cxo-next-feedback` | Formulário de resultado de teste |
+| `POST /webhook/cxo-next-feedback` | API de resultado `{jira_issue_key\|hipotese_id, resultado, uplift_real_pct, p_valor, receita_incremental_reais, notas}` |
+| `POST /webhook/cxo-next-conhecimento` | Ingestão de documento `{titulo, conteudo, origem?, tags?, etapa_funil?, vertical?, fonte?}` — texto longo é fatiado em chunks automaticamente |
 
-### W1 — Fábrica (`cro-next-fabrica.json`)
-```
-3 gatilhos (quinzenal=completo · semanal=sentinela · manual)
-  → Modo (Set) → Carregar Clientes Ativos (cro_clientes) → Montar Fila
-  → Loop por cliente (batch=1):
-      Preparar Cliente (janelas de 28d atual vs anterior, ciclo_id, slug)
-      → GA4 Totais → GA4 Funil → GA4 Canais/Devices → Clarity → Jira Backlog
-      → Normalizar Métricas (KPIs, taxas de funil, deltas — determinístico)
-      → Agente de Ingestão (anomalias always-on + monta dossiê do ciclo)
-      → Tem Anomalia? ─sim→ Registrar Alerta (cro_alertas) + Email de receita
-                        └→ Modo Completo? ─não→ próximo cliente
-                                           └sim→ SMA:
-             Heurístico/UX (Nielsen·Baymard·WCAG)
-              → Diagnóstico de Funil (gargalos + uplift + R$/mês)
-              → Priorização ICE (hipóteses qualificadas)
-              → Síntese (dashboard narrativo + pauta)
-              → Autocrítica (LLM revisor; score 0–10, gate exige ≥ 7)
-              → Montar Pacote → Montar Email → Salvar Ciclo (cro_ciclos)
-              → Email "Convocar Gate" → próximo cliente
-```
-Modelo dos 5 agentes: `anthropic/claude-sonnet-4.6` via OpenRouter. Toda coleta é tolerante a falha (`onError: continueRegularOutput`, `neverError`), então um cliente sem Clarity/Jira ainda roda.
+**Ingestão de documentos do Workspace:** exporte o conteúdo (Docs/Drive) e envie via `POST /cxo-next-conhecimento` (ou cole na Data Table). Automatizar a leitura direta do Drive é evolução natural — o nó Google Drive do n8n encaixa antes do "Fatiar Documento".
 
-### W2 — Gate & Entregas (`cro-next-gate.json`)
-```
-GET  /cro-next-gate         → lê cro_ciclos (pendentes) → injeta base64 na página → serve HTML
-POST /cro-next-gate/decisao → { ciclo_id, decisao, aprovador, notas, hipoteses_ids[] }
-     ├─ aprovar c/ hipóteses → loop: Jira Criar Issue + Gravar Memória (cro_memoria)
-     │                          → Atualizar Ciclo (aprovado) → Email → responde
-     └─ rejeitar / sem hip.   → Atualizar Ciclo (rejeitado) → responde
-```
-**Nada chega ao cliente sem o gate humano.**
+## Metodologia PSM (Livelo) embarcada
+Do repositório PSM anexado, a fábrica herda e aplica: fórmula de hipótese (**Sabendo que / Fazendo / Esperamos entender se**), nomenclatura de experimento ([ação+elemento+página+canal]), **KPI principal + secundárias + NEGATIVAS (guardrails)**, duplo score (ICE + PSM: esforço/veracidade/implementação/impacto/alinhamento, máx 60), **calculadora de potencial** (funil etapa a etapa → R$/mês com cálculo aberto), **calculadora de relevância** (significância 95%, p-valor < 0,05), plano de testes com QA de tagueamento e segmentação, status padronizados e registro de insights mesmo em testes negativos.
 
----
-
-## Princípio anti-comoditização
-Todo achado, gargalo e hipótese precisa citar **evidência quantitativa real** do cliente (taxas de funil, deltas, rage/dead clicks do Clarity, gap mobile×desktop). O agente de **Autocrítica** roda antes do gate para barrar número inventado, aritmética inconsistente ou texto genérico.
-
-## Esquemas das Data Tables
-- **cro_clientes**: cliente·ativo(bool)·site_url·contexto_negocio·vertical·tier·ga4_property_id·clarity_api_token·jira_base_url·jira_project_key·jira_issue_type·email_analista·valor_por_conversao(num)·moeda
-- **cro_ciclos**: ciclo_id·cliente·status·score_autocritica(num)·sintese_md·dados_json·notas_gate·decidido_por·criado_em·decidido_em
-- **cro_alertas**: cliente·tipo·severidade·metrica·variacao_pct(num)·mensagem·ciclo_id·criado_em
-- **cro_memoria**: cliente·ciclo_id·hipotese_id·titulo·hipotese_json·status_implementacao·jira_issue_key·jira_base_url·email_analista·resultado·criado_em·atualizado_em
-
-## Nota sobre credenciais no JSON
-As credenciais referenciadas (IDs OpenRouter/Gmail/Jira) são as já existentes neste n8n. Ao importar em **outra** instância, o n8n pedirá para remapear cada credencial — selecione as equivalentes. Nenhum segredo fica no JSON, apenas os IDs/nomes das credenciais.
+## Esquema da `cxo_conhecimento`
+`origem` (livelo_psm | documento_interno | referencia_externa | aprendizado_ciclo | resultado_teste) · `titulo` · `conteudo` · `tags` (csv) · `etapa_funil` · `vertical` · `fonte` · `ativo` (bool) · `criado_em`
