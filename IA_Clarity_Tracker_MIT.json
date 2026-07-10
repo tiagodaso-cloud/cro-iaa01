@@ -1,0 +1,1063 @@
+{
+  "name": "IA Clarity Tracker - MIT",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "544f25b0-2b55-4b86-ac48-388942dbb6a7",
+      "name": "Agendamento Diário",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        6128,
+        1616
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0e8f16fe-ec3d-4de3-8e59-30d29f78676c",
+              "name": "clarityApiUrl",
+              "type": "string",
+              "value": "https://www.clarity.ms/export-data/api/v1/project-live-insights"
+            },
+            {
+              "id": "ff1e8820-fb13-4925-846f-87d4e33cb26a",
+              "name": "numOfDays",
+              "type": "string",
+              "value": "3"
+            },
+            {
+              "id": "4bea0095-27f7-4a5d-a6f7-2a20ab33c974",
+              "name": "projectName",
+              "type": "string",
+              "value": "Mitsubishi"
+            },
+            {
+              "id": "8ac210b4-d87e-4181-83d5-227d6ff4bc6a",
+              "name": "alertFrustrationThreshold",
+              "type": "number",
+              "value": 15
+            },
+            {
+              "id": "8be13ab4-fb8b-4e4c-a56f-80383bed11d1",
+              "name": "minSessionsForAlert",
+              "type": "number",
+              "value": 20
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "aec5f927-6273-4f47-a369-a9e871508a97",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        6352,
+        1616
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config').first().json.clarityApiUrl }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "numOfDays",
+              "value": "={{ $('Config').first().json.numOfDays }}"
+            },
+            {
+              "name": "dimension1",
+              "value": "URL"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 45000
+        }
+      },
+      "id": "e784c4a1-5f68-4ecb-b812-4547bbe502f2",
+      "name": "Clarity – Por URL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6576,
+        1616
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput",
+      "notes": "Dimensões: URL",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "dQZl7FzC93eG2rSD",
+          "name": "Authorization"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config').first().json.clarityApiUrl }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "numOfDays",
+              "value": "={{ $('Config').first().json.numOfDays }}"
+            },
+            {
+              "name": "dimension1",
+              "value": "Device"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 45000
+        }
+      },
+      "id": "b584f3f4-f25f-4cf0-864c-f4eaa6f4ac51",
+      "name": "Clarity – Por Dispositivo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6784,
+        1616
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput",
+      "notes": "Dimensões: Device",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "dQZl7FzC93eG2rSD",
+          "name": "Authorization"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config').first().json.clarityApiUrl }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "numOfDays",
+              "value": "={{ $('Config').first().json.numOfDays }}"
+            },
+            {
+              "name": "dimension1",
+              "value": "Source"
+            },
+            {
+              "name": "dimension2",
+              "value": "Medium"
+            },
+            {
+              "name": "dimension3",
+              "value": "Campaign"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 45000
+        }
+      },
+      "id": "811785bd-e2e3-40fa-9ca3-c3dcaf268d5a",
+      "name": "Clarity – Origem de Tráfego",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        7008,
+        1616
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput",
+      "notes": "Dimensões: Source, Medium, Campaign",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "dQZl7FzC93eG2rSD",
+          "name": "Authorization"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config').first().json.clarityApiUrl }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "numOfDays",
+              "value": "={{ $('Config').first().json.numOfDays }}"
+            },
+            {
+              "name": "dimension1",
+              "value": "Browser"
+            },
+            {
+              "name": "dimension2",
+              "value": "OS"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 45000
+        }
+      },
+      "id": "f5543348-5d9d-4f0f-ba59-0e5e7e2dd864",
+      "name": "Clarity – Navegador e SO",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        7232,
+        1616
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput",
+      "notes": "Dimensões: Browser, OS",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "dQZl7FzC93eG2rSD",
+          "name": "Authorization"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// Processa as respostas da Data Export API do Microsoft Clarity\n// e calcula métricas derivadas de CRO/UX (fricção + engajamento)\n// ============================================================\nconst cfg = $('Config').first().json;\n\nconst num = (v) => {\n  if (v === null || v === undefined) return 0;\n  const n = parseFloat(String(v).replace(',', '.'));\n  return isNaN(n) ? 0 : n;\n};\n\n// Lê a saída de um nó HTTP do Clarity de forma tolerante a falhas.\n// Se a chamada não retornou métricas, captura a mensagem de erro da\n// API (401 token inválido, 429 limite diário etc.) para o dashboard.\nconst apiErrors = {};\nfunction getMetrics(nodeName, key) {\n  try {\n    const items = $(nodeName).all().map(i => i.json);\n    if (!items.length) { apiErrors[key] = 'Sem resposta da API'; return []; }\n    if (items.length === 1 && Array.isArray(items[0])) return items[0];\n    if (items.length === 1 && Array.isArray(items[0].body)) return items[0].body;\n    const metrics = items.filter(m => m && m.metricName);\n    if (!metrics.length) {\n      const first = items[0] || {};\n      apiErrors[key] =\n        first.error?.message || first.error?.description || first.message ||\n        (typeof first.error === 'string' ? first.error : null) ||\n        JSON.stringify(first).slice(0, 300);\n    }\n    return metrics;\n  } catch (e) { apiErrors[key] = e.message; return []; }\n}\n\n// Métricas de fricção do Clarity + pesos do Score de Frustração\nconst FRICTION_METRICS = {\n  RageClickCount:   { key: 'rageClicks',      weight: 0.35, label: 'Rage clicks' },\n  DeadClickCount:   { key: 'deadClicks',      weight: 0.20, label: 'Dead clicks' },\n  QuickbackClick:   { key: 'quickbacks',      weight: 0.15, label: 'Quickbacks' },\n  ExcessiveScroll:  { key: 'excessiveScroll', weight: 0.10, label: 'Scroll excessivo' },\n  ErrorClickCount:  { key: 'errorClicks',     weight: 0.10, label: 'Error clicks' },\n  ScriptErrorCount: { key: 'scriptErrors',    weight: 0.10, label: 'Erros de script' }\n};\n\n// Agrupa as métricas por valor de dimensão (URL, Device, Source...)\nfunction buildRows(metrics, dimKeys) {\n  const rows = {};\n  const rowOf = (entry) => {\n    const dim = dimKeys\n      .map(k => entry[k] ?? entry[k.toLowerCase()] ?? entry[k.charAt(0).toLowerCase() + k.slice(1)])\n      .filter(v => v !== undefined && v !== null && v !== '')\n      .join(' · ') || 'Geral';\n    if (!rows[dim]) rows[dim] = {\n      dimension: dim, sessions: 0, botSessions: 0, users: 0,\n      pagesPerSession: null, scrollDepth: null,\n      totalTimeSec: 0, activeTimeSec: 0, friction: {}, frictionScore: 0\n    };\n    return rows[dim];\n  };\n  for (const m of metrics) {\n    const info = Array.isArray(m.information) ? m.information : [];\n    for (const e of info) {\n      const r = rowOf(e);\n      switch (m.metricName) {\n        case 'Traffic':\n          r.sessions    += num(e.totalSessionCount);\n          r.botSessions += num(e.totalBotSessionCount);\n          r.users       += num(e.distinctUserCount);\n          r.pagesPerSession = num(e.PagesPerSessionPercentage ?? e.pagesPerSessionPercentage);\n          break;\n        case 'ScrollDepth':\n          r.scrollDepth = num(e.averageScrollDepth);\n          break;\n        case 'EngagementTime':\n          r.totalTimeSec  += num(e.totalTime);\n          r.activeTimeSec += num(e.activeTime);\n          break;\n        default:\n          if (FRICTION_METRICS[m.metricName]) {\n            const f = FRICTION_METRICS[m.metricName];\n            r.friction[f.key] = {\n              sessions: num(e.sessionsCount),\n              pct:      num(e.sessionsWithMetricPercentage),\n              total:    num(e.subTotal),\n              pagesViews: num(e.pagesViews ?? e.pagesVisited)\n            };\n          }\n      }\n    }\n  }\n  // Score de Frustração por linha (0–100): média ponderada dos % de sessões com fricção\n  for (const r of Object.values(rows)) {\n    let score = 0;\n    for (const f of Object.values(FRICTION_METRICS)) {\n      score += f.weight * (r.friction[f.key]?.pct ?? 0);\n    }\n    r.frictionScore = Math.round(Math.min(100, score) * 10) / 10;\n  }\n  return Object.values(rows).sort((a, b) => b.frictionScore - a.frictionScore || b.sessions - a.sessions);\n}\n\nconst byUrl    = buildRows(getMetrics('Clarity – Por URL', 'Por URL'), ['URL', 'Url']);\nconst byDevice = buildRows(getMetrics('Clarity – Por Dispositivo', 'Por Dispositivo'), ['Device']);\nconst bySource = buildRows(getMetrics('Clarity – Origem de Tráfego', 'Origem de Tráfego'), ['Source', 'Medium', 'Campaign']);\nconst byTech   = buildRows(getMetrics('Clarity – Navegador e SO', 'Navegador e SO'), ['Browser', 'OS']);\n\n// Visão geral agregada (ponderada por sessões) a partir do corte por URL\nfunction aggregate(rows) {\n  const t = { sessions: 0, botSessions: 0, users: 0, activeTime: 0, totalTime: 0 };\n  let scrollW = 0, scrollS = 0;\n  const fric = {};\n  for (const r of rows) {\n    t.sessions += r.sessions; t.botSessions += r.botSessions; t.users += r.users;\n    t.activeTime += r.activeTimeSec; t.totalTime += r.totalTimeSec;\n    if (r.scrollDepth !== null && r.sessions > 0) { scrollW += r.scrollDepth * r.sessions; scrollS += r.sessions; }\n    for (const f of Object.values(FRICTION_METRICS)) {\n      const fr = r.friction[f.key];\n      if (fr) {\n        fric[f.key] = fric[f.key] || { sessions: 0, total: 0 };\n        fric[f.key].sessions += fr.sessions;\n        fric[f.key].total    += fr.total;\n      }\n    }\n  }\n  const pctOf = k => t.sessions ? Math.round((fric[k]?.sessions ?? 0) / t.sessions * 1000) / 10 : 0;\n  let score = 0;\n  for (const f of Object.values(FRICTION_METRICS)) score += f.weight * pctOf(f.key);\n  return {\n    sessions: t.sessions,\n    botSessions: t.botSessions,\n    botPct: (t.sessions + t.botSessions) ? Math.round(t.botSessions / (t.sessions + t.botSessions) * 1000) / 10 : 0,\n    users: t.users,\n    avgScrollDepth: scrollS ? Math.round(scrollW / scrollS * 10) / 10 : null,\n    avgActiveTimeSec: t.sessions ? Math.round(t.activeTime / t.sessions) : null,\n    avgTotalTimeSec:  t.sessions ? Math.round(t.totalTime / t.sessions) : null,\n    frictionRates: Object.fromEntries(Object.values(FRICTION_METRICS).map(f =>\n      [f.key, { label: f.label, pctSessions: pctOf(f.key), totalOcorrencias: fric[f.key]?.total ?? 0 }])),\n    frustrationScore: Math.round(Math.min(100, score) * 10) / 10\n  };\n}\nconst overview = aggregate(byUrl);\n\n// Alertas: páginas com fricção acima do threshold e tráfego relevante\nconst minSessions = num(cfg.minSessionsForAlert) || 20;\nconst threshold   = num(cfg.alertFrustrationThreshold) || 15;\nconst alerts = byUrl\n  .filter(r => r.sessions >= minSessions && r.frictionScore >= threshold)\n  .slice(0, 10)\n  .map(r => ({ url: r.dimension, sessions: r.sessions, frictionScore: r.frictionScore }));\n\nconst apiStatus = {\n  porUrl: byUrl.length, porDispositivo: byDevice.length,\n  origemTrafego: bySource.length, navegadorSo: byTech.length,\n  erros: apiErrors\n};\n\nconst today = new Date().toISOString().slice(0, 10);\nreturn [{ json: {\n  generatedAt: new Date().toISOString(),\n  snapshotDate: today,\n  projectName: cfg.projectName || 'Meu Projeto',\n  periodDays: num(cfg.numOfDays) || 3,\n  overview,\n  byUrl: byUrl.slice(0, 15),\n  byDevice,\n  bySource: bySource.slice(0, 12),\n  byTech: byTech.slice(0, 12),\n  alerts,\n  apiStatus\n}}];"
+      },
+      "id": "c6013d5e-1a4e-4b5e-8982-9752ccbf8f86",
+      "name": "Processar Métricas Clarity",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7456,
+        1616
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "clarity_snapshots"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "projectName",
+              "keyValue": "={{ $('Config').first().json.projectName }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "84218868-6228-42b0-bbe4-0ca5af015e12",
+      "name": "Ler Snapshots Anteriores",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        7664,
+        1616
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// Compara o snapshot atual com o snapshot anterior salvo na\n// Data Table `clarity_snapshots` e calcula variações (%)\n// ============================================================\nconst current = $('Processar Métricas Clarity').first().json;\n\nconst prevRows = $input.all()\n  .map(i => i.json)\n  .filter(r => r && r.snapshotDate && r.snapshotDate < current.snapshotDate)\n  .sort((a, b) => String(b.snapshotDate).localeCompare(String(a.snapshotDate)));\n\nlet prev = null;\nif (prevRows[0]?.metrics) {\n  try {\n    prev = typeof prevRows[0].metrics === 'string'\n      ? JSON.parse(prevRows[0].metrics)\n      : prevRows[0].metrics;\n  } catch (e) { prev = null; }\n}\n\n// variação percentual arredondada (null se não comparável)\nfunction delta(cur, old) {\n  if (cur === null || cur === undefined || old === null || old === undefined || old === 0) return null;\n  return Math.round(((cur - old) / old) * 1000) / 10;\n}\n\nlet trends = null;\nif (prev?.overview) {\n  const c = current.overview, p = prev.overview;\n  trends = {\n    comparadoCom: prevRows[0].snapshotDate,\n    sessionsPct:         delta(c.sessions, p.sessions),\n    usersPct:            delta(c.users, p.users),\n    frustrationScorePct: delta(c.frustrationScore, p.frustrationScore),\n    scrollDepthPct:      delta(c.avgScrollDepth, p.avgScrollDepth),\n    rageClicksPct:       delta(c.frictionRates?.rageClicks?.pctSessions, p.frictionRates?.rageClicks?.pctSessions),\n    deadClicksPct:       delta(c.frictionRates?.deadClicks?.pctSessions, p.frictionRates?.deadClicks?.pctSessions),\n    quickbacksPct:       delta(c.frictionRates?.quickbacks?.pctSessions, p.frictionRates?.quickbacks?.pctSessions)\n  };\n}\n\nreturn [{ json: { ...current, trends } }];"
+      },
+      "id": "bd3141ae-8bd7-4f6c-b7f2-f6bdd166b2b9",
+      "name": "Comparar Tendências",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7888,
+        1616
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é um consultor sênior de CRO (Conversion Rate Optimization) e UX Research, especialista em análise comportamental com Microsoft Clarity. Você domina heurísticas de Nielsen, frameworks de priorização e diagnóstico de fricção de interface.\n\n## DADOS DA AUDITORIA (Microsoft Clarity Data Export API, últimos {{ $json.periodDays }} dia(s))\nProjeto: {{ $json.projectName }} | Data: {{ $json.snapshotDate }}\n\n{{ JSON.stringify({ visaoGeral: $json.overview, tendenciasVsSnapshotAnterior: $json.trends, paginasOrdenadasPorFriccao: $json.byUrl, dispositivos: $json.byDevice, origensDeTrafego: $json.bySource, navegadorESistema: $json.byTech, alertasCriticos: $json.alerts }) }}\n\n## GLOSSÁRIO DAS MÉTRICAS\n- frustrationScore: índice composto 0–100 (ponderação: rage clicks 35%, dead clicks 20%, quickbacks 15%, scroll excessivo 10%, error clicks 10%, erros de script 10%). Quanto maior, pior.\n- rageClicks: cliques repetidos e rápidos no mesmo elemento (frustração aguda).\n- deadClicks: cliques sem nenhum efeito (expectativa de interatividade quebrada).\n- quickbacks: usuário entra na página e volta imediatamente (conteúdo não corresponde à expectativa).\n- excessiveScroll: rolagem muito além do esperado (dificuldade em encontrar conteúdo).\n- errorClicks / scriptErrors: cliques imediatamente antes de erro de JavaScript / erros de script na sessão.\n- pct em frictionRates = % de sessões afetadas. avgScrollDepth = profundidade média de rolagem (%).\n\n## SUA TAREFA\nProduza uma auditoria CRO/UX acionável. Seja específico: cite as URLs, dispositivos e origens exatas dos dados. Nunca invente números que não estejam nos dados. Se um corte estiver vazio (API não retornou), ignore-o sem especular.\n\nResponda SOMENTE com um JSON válido (sem markdown, sem cercas de código, sem texto antes ou depois), exatamente neste schema:\n{\n  \"resumo_executivo\": {\n    \"nota_geral\": <0-100, saúde geral de UX: 100 = excelente>,\n    \"nivel_urgencia\": \"baixa|media|alta|critica\",\n    \"sintese\": \"<3-5 frases: principal achado, impacto provável em conversão e o que fazer primeiro>\"\n  },\n  \"diagnostico\": [\n    { \"area\": \"<pagina/dispositivo/origem/tecnologia>\", \"achado\": \"<o que os dados mostram>\", \"evidencia\": \"<números exatos dos dados>\", \"severidade\": \"baixa|media|alta|critica\", \"causa_provavel\": \"<hipótese de causa UX>\" }\n  ],\n  \"quick_wins\": [\n    { \"acao\": \"<mudança simples implementável em <1 semana>\", \"motivo\": \"<por que resolve>\", \"pagina_alvo\": \"<URL ou área>\", \"prazo\": \"<ex: 2 dias>\" }\n  ],\n  \"investigar_no_clarity\": [\n    { \"o_que\": \"<o que investigar manualmente no painel do Clarity>\", \"ferramenta\": \"Recordings|Heatmaps|Funnels|Journeys\", \"filtro_sugerido\": \"<filtro exato: ex. Rage clicks = sim + URL contém /checkout + Device = Mobile>\", \"pergunta_a_responder\": \"<pergunta de pesquisa UX>\" }\n  ]\n}\n\nRegras: diagnostico com 4-8 itens ordenados por severidade; quick_wins com 3-6 itens; investigar_no_clarity com 4-6 itens."
+      },
+      "id": "f0f8cd93-83e3-41cc-b989-c97f779a0ddc",
+      "name": "Agente CRO/UX",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        8112,
+        1616
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "maxTokens": 8000,
+          "temperature": 0.3
+        }
+      },
+      "id": "5ac54428-23a7-48cd-9b4d-a46795e08a99",
+      "name": "OpenRouter – CRO",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        8144,
+        1840
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// Extrai o JSON da análise da IA (de forma robusta) e prepara\n// o snapshot para salvar na Data Table `clarity_snapshots`\n// ============================================================\nconst raw = $input.first().json;\nlet text = raw.text ?? raw.output ?? raw.response ?? '';\nif (typeof text !== 'string') text = JSON.stringify(text);\n\nlet analysis = null;\ntry { analysis = JSON.parse(text); } catch (e) {\n  const fence = text.match(/```(?:json)?\\s*([\\s\\S]*?)```/);\n  if (fence) { try { analysis = JSON.parse(fence[1]); } catch (e2) {} }\n  if (!analysis) {\n    const m = text.match(/\\{[\\s\\S]*\\}/);\n    if (m) { try { analysis = JSON.parse(m[0]); } catch (e3) {} }\n  }\n}\nif (!analysis) analysis = {\n  resumo_executivo: { nota_geral: null, nivel_urgencia: 'media', sintese: text.slice(0, 1200) || 'Análise indisponível nesta execução.' },\n  diagnostico: [], quick_wins: [], investigar_no_clarity: []\n};\n\nconst data = $('Comparar Tendências').first().json;\n\nreturn [{ json: {\n  snapshotDate: data.snapshotDate,\n  projectName: data.projectName,\n  frustrationScore: data.overview?.frustrationScore ?? 0,\n  analysis,\n  metrics: {\n    generatedAt: data.generatedAt, snapshotDate: data.snapshotDate, periodDays: data.periodDays,\n    overview: data.overview, byUrl: data.byUrl, byDevice: data.byDevice, bySource: data.bySource,\n    byTech: data.byTech, alerts: data.alerts, apiStatus: data.apiStatus, trends: data.trends\n  }\n}}];"
+      },
+      "id": "d3a8d92b-610c-4a3a-a72c-16fc2a5317ca",
+      "name": "Formatar Relatório",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8432,
+        1616
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "clarity_snapshots"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "snapshotDate",
+              "keyValue": "={{ $json.snapshotDate }}"
+            },
+            {
+              "keyName": "projectName",
+              "keyValue": "={{ $json.projectName }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "snapshotDate": "={{ $json.snapshotDate }}",
+            "projectName": "={{ $json.projectName }}",
+            "frustrationScore": "={{ $json.frustrationScore }}",
+            "metrics": "={{ JSON.stringify($json.metrics) }}",
+            "analysis": "={{ JSON.stringify($json.analysis) }}"
+          },
+          "matchingColumns": [
+            "snapshotDate"
+          ]
+        },
+        "options": {}
+      },
+      "id": "4977de43-87ff-4a97-aea3-08daa54161cd",
+      "name": "Salvar Snapshot",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        8656,
+        1616
+      ]
+    },
+    {
+      "parameters": {
+        "path": "clarity-cro-report",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1dfb341-0e21-4426-bd11-8f94386c0d96",
+      "name": "GET – Relatório CRO",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        6576,
+        2080
+      ],
+      "webhookId": "aa11d8d6-019c-4edb-a57f-9fd16511ffb8"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "clarity_snapshots"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": []
+        },
+        "returnAll": true
+      },
+      "id": "08184596-6aae-43de-a0b3-aabf8874d870",
+      "name": "Ler Relatórios Salvos",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        6784,
+        2080
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// Renderiza o dashboard CRO/UX (padrão visual Cadastra) com\n// seletor de data a partir dos snapshots da Data Table\n// ============================================================\nconst q = $('GET – Relatório CRO').first().json.query ?? {};\nconst rowsRaw = $input.all().map(i => i.json).filter(r => r && r.snapshotDate && r.metrics);\nrowsRaw.sort((a, b) => String(b.snapshotDate).localeCompare(String(a.snapshotDate)));\n\nconst dates = [...new Set(rowsRaw.map(r => String(r.snapshotDate)))];\n// Padrão: dia anterior (snapshot mais recente antes de hoje); se não houver, o mais recente\nconst todayStr = new Date().toISOString().slice(0, 10);\nconst defaultDate = dates.find(d => d < todayStr) || dates[0];\nconst selDate = (q.date && dates.includes(String(q.date))) ? String(q.date) : defaultDate;\nconst row = rowsRaw.find(r => String(r.snapshotDate) === selDate);\n\nconst esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst parse = v => { try { return typeof v === 'string' ? JSON.parse(v) : v; } catch (e) { return null; } };\nconst fmt  = n => (n === null || n === undefined) ? '—' : Number(n).toLocaleString('pt-BR');\nconst pct  = n => (n === null || n === undefined) ? '—' : Number(n).toLocaleString('pt-BR') + '%';\nconst mmss = s => (s === null || s === undefined) ? '—' : Math.floor(s / 60) + 'm ' + Math.round(s % 60) + 's';\n\nconst CSS = `\n*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}\n:root{--ox:#FF5C28;--dark:#111827;--gray:#6b7280;--gray-light:#9ca3af;--bg:#f4f4f2;--white:#ffffff;--line:#e5e7eb;--line-soft:#f3f4f6;--green:#059669;--green-bg:#ecfdf5;--green-border:#a7f3d0;--yellow:#d97706;--yellow-bg:#fffbeb;--yellow-border:#fde68a;--red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;--purple:#7c3aed;--purple-bg:#f5f3ff;--purple-border:#ddd6fe;--sans:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace;--r:12px;--r-lg:16px;--shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);--shadow-lg:0 4px 24px rgba(0,0,0,.08),0 12px 48px rgba(0,0,0,.06)}\nbody{font-family:var(--sans);background:var(--bg);color:var(--dark);line-height:1.6;min-height:100vh}\n.header{background:var(--white);padding:0 40px;height:56px;display:flex;align-items:center;box-shadow:0 1px 0 var(--line);position:sticky;top:0;z-index:200}\n.header-inner{max-width:1100px;margin:0 auto;width:100%;display:flex;align-items:center;gap:12px}\n.logo{height:26px}.product-name{font-size:16px;font-weight:800;letter-spacing:-.02em}\n.product-name span{color:var(--ox)}\n.version-badge{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}\n.hero{background:linear-gradient(140deg,#e84e1b 0%,#ff6b3d 100%);padding:40px 40px 88px;position:relative;overflow:hidden}\n.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:72px;background:linear-gradient(to bottom,transparent,var(--bg))}\n.hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1;color:#fff}\n.hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.75;margin-bottom:10px}\n.hero h1{font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px}\n.hero-desc{font-size:15px;max-width:640px;opacity:.9;line-height:1.6;margin-bottom:20px}\n.hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}\n.hero-badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.92);padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600}\n.date-pick{display:flex;align-items:center;gap:10px}\n.date-pick label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.8}\n.date-pick select{padding:10px 16px;border:none;border-radius:var(--r);font-size:14px;font-weight:700;font-family:var(--sans);color:var(--dark);background:var(--white);cursor:pointer;box-shadow:var(--shadow);outline:none;min-width:180px}\n.wrap{max-width:1100px;margin:-48px auto 60px;padding:0 40px;position:relative;z-index:10}\n.card{background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);padding:36px 40px;margin-bottom:20px}\n.card-title{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}\n.card-sub{color:var(--gray);margin-bottom:24px;font-size:14px;line-height:1.6}\n.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:8px}\n.kpi{background:var(--line-soft);border:1px solid var(--line);border-radius:var(--r);padding:16px;text-align:center;border-top:3px solid var(--ox)}\n.kpi-val{font-size:24px;font-weight:800;letter-spacing:-.04em;color:var(--dark);line-height:1.15;margin-bottom:4px}\n.kpi-lbl{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.06em}\n.kpi-trend{font-size:11px;font-weight:700;display:block;margin-top:2px}\n.score-frac{font-size:2em;font-weight:800;letter-spacing:-.04em;line-height:1}\n.score-frac.hi{color:var(--green)}.score-frac.mid{color:var(--yellow)}.score-frac.lo{color:var(--red)}\n.geo-badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}\n.geo-badge.poor{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}\n.geo-badge.fair{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border)}\n.geo-badge.good{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}\n.section{background:var(--white);border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07)}\n.section-head{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}\n.section-head:hover{background:var(--line-soft)}.section-title{font-size:14px;font-weight:800;letter-spacing:-.01em}\n.chev{color:var(--gray-light);font-size:13px}\n.section-body{padding:22px}.section-body.hidden{display:none}\n.audit-item{border-left:4px solid var(--line);padding:12px 16px;margin:8px 0;background:var(--line-soft);border-radius:0 var(--r) var(--r) 0}\n.audit-item.fail{border-left-color:var(--red)}.audit-item.warning{border-left-color:var(--yellow)}.audit-item.pass{border-left-color:var(--green)}\n.audit-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}\n.audit-title{font-size:13px;font-weight:700}\n.audit-finding{font-size:13px;color:var(--gray);margin-bottom:4px}\n.audit-rec{font-size:12px;color:var(--dark);font-style:italic}\n.impact-tag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.04em}\n.impact-tag.critical{background:#b91c1c;color:#fff}.impact-tag.serious{background:#ea580c;color:#fff}\n.impact-tag.moderate{background:#f59e0b;color:#1f2937}.impact-tag.minor{background:#3b82f6;color:#fff}\n.feat-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--white);border:1px solid var(--line);border-radius:8px;font-size:13px;line-height:1.5;margin-bottom:8px}\n.feat-check{width:22px;height:22px;background:var(--ox);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}\n.check-block{background:var(--line-soft);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;margin-bottom:10px}\n.check-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}\n.tool-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)}\n.filter-code{font-family:var(--mono);font-size:11px;background:#1e1e2e;color:#a6e3a1;padding:6px 10px;border-radius:6px;white-space:pre-wrap;word-break:break-all;margin:6px 0}\n.check-q{font-size:12px;color:var(--purple);font-style:italic}\n.infra-alert{background:var(--red-bg);border:2px solid var(--red-border);border-radius:var(--r);padding:18px 22px;margin-top:16px}\n.infra-alert-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#be123c;margin-bottom:8px}\n.infra-alert ul{margin-left:18px;font-size:13px;color:#881337}\n.infra-alert li{margin-bottom:3px;word-break:break-all}\n.tbl-wrap{overflow-x:auto;margin-bottom:18px}\n.tbl-title{font-size:13px;font-weight:800;margin:14px 0 8px;letter-spacing:-.01em}\n.tbl{width:100%;border-collapse:collapse;font-size:12.5px}\n.tbl th{background:var(--line-soft);color:var(--gray);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}\n.tbl th.c,.tbl td.c{text-align:center}.tbl th.r,.tbl td.r{text-align:right}\n.tbl td{padding:9px 10px;border-bottom:1px solid var(--line-soft);word-break:break-all;max-width:340px}\n.tbl tr:hover td{background:var(--line-soft)}\n.score-pill{font-weight:800}\n.sev-legend{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:11px;color:var(--gray);margin-top:14px}\n.footer-note{text-align:center;font-size:11px;color:var(--gray-light);margin:24px 0}\n.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}\n.chart-box{background:var(--line-soft);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}\n.chart-title{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--gray);margin-bottom:8px}\n.chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px}\n.chart-key{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--gray)}\n.chart-dot{width:8px;height:8px;border-radius:50%;display:inline-block}\n@media(max-width:640px){.header,.hero{padding-left:20px;padding-right:20px}.wrap{padding:0 16px}.card{padding:24px 20px}}\n`;\n\nfunction scoreCls(v, invert) {\n  if (v === null || v === undefined) return 'mid';\n  if (invert) return v >= 25 ? 'lo' : v >= 8 ? 'mid' : 'hi';\n  return v >= 70 ? 'hi' : v >= 40 ? 'mid' : 'lo';\n}\nfunction trendArrow(v, invert) {\n  if (v === null || v === undefined) return '';\n  const good = invert ? v < 0 : v > 0;\n  const color = v === 0 ? 'var(--gray-light)' : good ? 'var(--green)' : 'var(--red)';\n  const arrow = v > 0 ? '▲' : v < 0 ? '▼' : '＝';\n  return `<span class=\"kpi-trend\" style=\"color:${color}\">${arrow} ${Math.abs(v).toLocaleString('pt-BR')}% vs anterior</span>`;\n}\nfunction sevTag(sev) {\n  const s = String(sev || 'media').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');\n  const map = { critica: 'critical', alta: 'serious', media: 'moderate', baixa: 'minor' };\n  return `<span class=\"impact-tag ${map[s] || 'moderate'}\">${esc(sev)}</span>`;\n}\nfunction sevItemCls(sev) {\n  const s = String(sev || 'media').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');\n  return (s === 'critica' || s === 'alta') ? 'fail' : s === 'media' ? 'warning' : 'pass';\n}\nfunction urgBadge(u) {\n  const s = String(u || 'media').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');\n  const cls = (s === 'critica' || s === 'alta') ? 'poor' : s === 'media' ? 'fair' : 'good';\n  return `<span class=\"geo-badge ${cls}\">urgência ${esc(u || 'média')}</span>`;\n}\nfunction section(icon, title, bodyHtml, open) {\n  if (!bodyHtml) return '';\n  return `<div class=\"section\">\n    <div class=\"section-head\" onclick=\"tg(this)\"><div class=\"section-title\">${icon} ${esc(title)}</div><span class=\"chev\">${open ? '▾' : '▸'}</span></div>\n    <div class=\"section-body${open ? '' : ' hidden'}\">${bodyHtml}</div>\n  </div>`;\n}\nfunction frictionTable(title, rows) {\n  if (!rows || !rows.length) return '';\n  const tr = rows.map(r => {\n    const f = r.friction || {};\n    const p = k => f[k]?.pct !== undefined ? pct(f[k].pct) : '—';\n    const sc = r.frictionScore >= 25 ? 'var(--red)' : r.frictionScore >= 15 ? '#ea580c' : r.frictionScore >= 8 ? 'var(--yellow)' : 'var(--green)';\n    return `<tr>\n      <td>${esc(r.dimension)}</td>\n      <td class=\"r\">${fmt(r.sessions)}</td>\n      <td class=\"c\"><span class=\"score-pill\" style=\"color:${sc}\">${fmt(r.frictionScore)}</span></td>\n      <td class=\"c\">${p('rageClicks')}</td>\n      <td class=\"c\">${p('deadClicks')}</td>\n      <td class=\"c\">${p('quickbacks')}</td>\n      <td class=\"c\">${r.scrollDepth !== null && r.scrollDepth !== undefined ? pct(r.scrollDepth) : '—'}</td>\n    </tr>`;\n  }).join('');\n  return `<div class=\"tbl-title\">${esc(title)}</div><div class=\"tbl-wrap\"><table class=\"tbl\">\n    <tr><th>Dimensão</th><th class=\"r\">Sessões</th><th class=\"c\">Score Fricção</th><th class=\"c\">Rage %</th><th class=\"c\">Dead %</th><th class=\"c\">Quickback %</th><th class=\"c\">Scroll médio</th></tr>\n    ${tr}</table></div>`;\n}\n\nfunction page(heroExtra, inner) {\n  return `<!DOCTYPE html><html lang=\"pt-BR\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>IA Clarity Tracker - MIT</title>\n<link href=\"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap\" rel=\"stylesheet\">\n<style>${CSS}</style></head><body>\n<header class=\"header\"><div class=\"header-inner\">\n  <img src=\"https://creativosbr.com.br/wp-content/uploads/2022/08/cadastra-1638546176-logopng.png\" class=\"logo\" alt=\"Cadastra\">\n  <div class=\"product-name\">IA Clarity <span>Tracker</span></div>\n  <span class=\"version-badge\">MIT</span>\n</div></header>\n<section class=\"hero\"><div class=\"hero-inner\">\n  <div class=\"hero-eyebrow\">CRO · UX RESEARCH · BEHAVIOR ANALYTICS</div>\n  <h1>Auditoria CRO/UX — Microsoft Clarity</h1>\n  <p class=\"hero-desc\">Monitoramento diário de fricção e engajamento com dados comportamentais do Microsoft Clarity: rage clicks, dead clicks, quickbacks, scroll e erros — com diagnóstico e recomendações geradas por IA.</p>\n  <div class=\"hero-badges\">\n    <div class=\"hero-badge\">Rage Clicks</div><div class=\"hero-badge\">Dead Clicks</div>\n    <div class=\"hero-badge\">Quickbacks</div><div class=\"hero-badge\">Scroll Depth</div>\n    <div class=\"hero-badge\">Erros de Script</div><div class=\"hero-badge\">Score de Frustração</div>\n    <div class=\"hero-badge\">Tendências</div><div class=\"hero-badge\">IA Insights</div>\n  </div>\n  ${heroExtra}\n</div></section>\n<div class=\"wrap\">${inner}\n  <p class=\"footer-note\">Gerado automaticamente via n8n + Microsoft Clarity Data Export API · cortes vazios indicam chamadas sem dados no período</p>\n</div>\n<script>function tg(h){const b=h.nextElementSibling;b.classList.toggle('hidden');h.querySelector('.chev').textContent=b.classList.contains('hidden')?'▸':'▾'}</script>\n</body></html>`;\n}\n\n// ── Estado vazio ─────────────────────────────────────────────\nif (!row) {\n  const html = page('', `<div class=\"card\">\n    <div class=\"card-title\">Nenhum snapshot disponível ainda</div>\n    <div class=\"card-sub\">Execute o workflow de auditoria (agendado diariamente ou manualmente) para gerar o primeiro relatório. Os snapshots aparecerão aqui automaticamente, com seletor de data.</div>\n  </div>`);\n  return [{ json: { html } }];\n}\n\n// ── Evolução dos últimos dias (todos os snapshots, até 14) ───\nconst histRows = rowsRaw.slice(0, 14).slice().reverse(); // mais antigo → mais recente\nconst hist = histRows.map(r => {\n  const m = parse(r.metrics) || {};\n  const o = m.overview || {};\n  const f2 = o.frictionRates || {};\n  return {\n    date: String(r.snapshotDate),\n    frustrationScore: o.frustrationScore ?? null,\n    sessions: o.sessions ?? null,\n    rage: f2.rageClicks?.pctSessions ?? null,\n    dead: f2.deadClicks?.pctSessions ?? null,\n    quick: f2.quickbacks?.pctSessions ?? null,\n    scroll: o.avgScrollDepth ?? null\n  };\n});\n\n// Gráfico de linhas em SVG puro (sem dependências externas)\nfunction lineChart(series, opts) {\n  const W = 460, H = 190, PL = 46, PR = 16, PT = 14, PB = 30;\n  const pts = series.flatMap(s => s.values.filter(p => p.v !== null && p.v !== undefined));\n  if (!pts.length) return '';\n  const ds = [...new Set(series.flatMap(s => s.values.map(p => p.d)))].sort();\n  let ymin = Math.min(...pts.map(p => p.v), 0);\n  let ymax = Math.max(...pts.map(p => p.v));\n  if (ymax === ymin) ymax = ymin + 1;\n  ymax = ymax + (ymax - ymin) * 0.12;\n  const x = d => { const i = ds.indexOf(d); return PL + (ds.length === 1 ? (W - PL - PR) / 2 : i * (W - PL - PR) / (ds.length - 1)); };\n  const y = v => PT + (H - PT - PB) * (1 - (v - ymin) / (ymax - ymin));\n  let grid = '';\n  for (let i = 0; i <= 3; i++) {\n    const gv = ymin + (ymax - ymin) * i / 3, gy = y(gv);\n    const lbl = Number(gv.toFixed(Math.abs(ymax - ymin) < 20 ? 1 : 0)).toLocaleString('pt-BR');\n    grid += `<line x1=\"${PL}\" y1=\"${gy.toFixed(1)}\" x2=\"${W - PR}\" y2=\"${gy.toFixed(1)}\" stroke=\"#e5e7eb\" stroke-width=\"1\"/><text x=\"${PL - 6}\" y=\"${(gy + 3.5).toFixed(1)}\" text-anchor=\"end\" font-size=\"10\" fill=\"#9ca3af\">${lbl}</text>`;\n  }\n  const xi = [...new Set([0, Math.floor((ds.length - 1) / 2), ds.length - 1])];\n  let xlbl = '';\n  for (const i of xi) xlbl += `<text x=\"${x(ds[i]).toFixed(1)}\" y=\"${H - 8}\" text-anchor=\"middle\" font-size=\"10\" fill=\"#9ca3af\">${esc(ds[i].slice(5))}</text>`;\n  let marks = '';\n  for (const s of series) {\n    const vs = s.values.filter(p => p.v !== null && p.v !== undefined);\n    if (!vs.length) continue;\n    marks += `<path d=\"${vs.map((p, i) => `${i ? 'L' : 'M'}${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ')}\" fill=\"none\" stroke=\"${s.color}\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>`;\n    marks += vs.map(p => `<circle cx=\"${x(p.d).toFixed(1)}\" cy=\"${y(p.v).toFixed(1)}\" r=\"3.5\" fill=\"${s.color}\" stroke=\"#fff\" stroke-width=\"2\"><title>${esc(s.label)} · ${esc(p.d)}: ${Number(p.v).toLocaleString('pt-BR')}</title></circle>`).join('');\n    const lastP = vs[vs.length - 1];\n    marks += `<text x=\"${Math.min(x(lastP.d), W - 20).toFixed(1)}\" y=\"${(y(lastP.v) - 9).toFixed(1)}\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"700\" fill=\"${s.color}\">${Number(lastP.v).toLocaleString('pt-BR')}</text>`;\n  }\n  const legend = series.length > 1\n    ? `<div class=\"chart-legend\">${series.map(s => `<span class=\"chart-key\"><span class=\"chart-dot\" style=\"background:${s.color}\"></span>${esc(s.label)}</span>`).join('')}</div>`\n    : '';\n  return `<div class=\"chart-box\"><div class=\"chart-title\">${esc(opts.title)}</div>${legend}<svg viewBox=\"0 0 ${W} ${H}\" role=\"img\" aria-label=\"${esc(opts.title)}\" style=\"width:100%;height:auto\">${grid}${xlbl}${marks}</svg></div>`;\n}\nconst mkSeries = (key, label, color) => ({ label, color, values: hist.map(h => ({ d: h.date, v: h[key] })) });\nconst evolCard = hist.length >= 2 ? `<div class=\"card\">\n  <div class=\"card-title\">📈 Evolução dos últimos dias</div>\n  <div class=\"card-sub\">Histórico dos últimos ${hist.length} snapshots diários salvos na Data Table. Passe o mouse sobre os pontos para ver os valores exatos.</div>\n  <div class=\"chart-grid\">\n    ${lineChart([mkSeries('frustrationScore', 'Score de Frustração', '#e84e1b')], { title: 'Score de Frustração (0–100)' })}\n    ${lineChart([mkSeries('sessions', 'Sessões', '#e84e1b')], { title: 'Sessões' })}\n    ${lineChart([mkSeries('rage', 'Rage clicks', '#2563eb'), mkSeries('dead', 'Dead clicks', '#ea580c'), mkSeries('quick', 'Quickbacks', '#7c3aed')], { title: '% de sessões com fricção' })}\n    ${lineChart([mkSeries('scroll', 'Scroll médio', '#e84e1b')], { title: 'Scroll médio (%)' })}\n  </div>\n</div>` : '';\n\n// ── Dados do snapshot selecionado ────────────────────────────\nconst data = parse(row.metrics) || {};\nconst analysis = parse(row.analysis) || {};\nconst ov = data.overview || {};\nconst fr = ov.frictionRates || {};\nconst t  = data.trends || {};\nconst re = analysis.resumo_executivo || {};\n\nconst dateSelector = `<div class=\"date-pick\"><label>Snapshot</label>\n  <select onchange=\"location.href='?date='+this.value\">\n    ${dates.map(d => `<option value=\"${esc(d)}\"${d === selDate ? ' selected' : ''}>${esc(d)}</option>`).join('')}\n  </select></div>`;\n\nconst kpi = (lbl, val, trend) => `<div class=\"kpi\"><div class=\"kpi-val\">${val}</div><div class=\"kpi-lbl\">${esc(lbl)}</div>${trend || ''}</div>`;\nconst fsCls = scoreCls(ov.frustrationScore, true);\nconst fsColor = fsCls === 'hi' ? 'var(--green)' : fsCls === 'mid' ? 'var(--yellow)' : 'var(--red)';\n\nconst alertsHtml = (data.alerts || []).length ? `<div class=\"infra-alert\">\n  <div class=\"infra-alert-head\">🚨 ${data.alerts.length} página(s) acima do limite de fricção</div>\n  <ul>${data.alerts.map(a => `<li>${esc(a.url)} — score <b>${fmt(a.frictionScore)}</b> (${fmt(a.sessions)} sessões)</li>`).join('')}</ul>\n</div>` : '';\n\n// Erros das chamadas à Data Export API (token inválido, limite diário...)\nconst apiErrs = Object.entries(data.apiStatus?.erros || {});\nconst apiErrsHtml = apiErrs.length ? `<div class=\"infra-alert\" style=\"background:var(--yellow-bg);border-color:var(--yellow-border)\">\n  <div class=\"infra-alert-head\" style=\"color:var(--yellow)\">⚠️ Chamadas à API do Clarity sem dados neste snapshot</div>\n  <ul style=\"color:#713f12\">${apiErrs.map(([k, v]) => `<li><b>${esc(k)}:</b> ${esc(v)}</li>`).join('')}</ul>\n  <div style=\"font-size:12px;color:#854d0e;margin-top:6px\">Causas comuns: credencial Header Auth incorreta (Name deve ser exatamente <b>Authorization</b>, Value <b>Bearer SEU_TOKEN</b>) ou limite de 10 chamadas/dia da API excedido.</div>\n</div>` : '';\n\nconst overviewCard = `<div class=\"card\">\n  <div class=\"card-title\">📊 Visão Geral</div>\n  <div class=\"card-sub\">${esc(data.projectName)} · últimos ${esc(data.periodDays)} dia(s) · gerado em ${new Date(data.generatedAt).toLocaleString('pt-BR')}${t.comparadoCom ? ' · comparado com ' + esc(t.comparadoCom) : ''}</div>\n  <div class=\"kpi-grid\">\n    ${kpi('Sessões', fmt(ov.sessions), trendArrow(t.sessionsPct, false))}\n    ${kpi('Usuários únicos', fmt(ov.users), trendArrow(t.usersPct, false))}\n    ${kpi('Score Frustração', `<span style=\"color:${fsColor}\">${fmt(ov.frustrationScore)}</span>`, trendArrow(t.frustrationScorePct, true))}\n    ${kpi('Scroll médio', pct(ov.avgScrollDepth), trendArrow(t.scrollDepthPct, false))}\n    ${kpi('Tempo ativo/sessão', mmss(ov.avgActiveTimeSec))}\n    ${kpi('Rage clicks', pct(fr.rageClicks?.pctSessions), trendArrow(t.rageClicksPct, true))}\n    ${kpi('Dead clicks', pct(fr.deadClicks?.pctSessions), trendArrow(t.deadClicksPct, true))}\n    ${kpi('Tráfego bot', pct(ov.botPct))}\n  </div>\n  <div class=\"sev-legend\">Cortes coletados — URLs: ${data.apiStatus?.porUrl ?? 0} · Dispositivos: ${data.apiStatus?.porDispositivo ?? 0} · Origens: ${data.apiStatus?.origemTrafego ?? 0} · Navegador/SO: ${data.apiStatus?.navegadorSo ?? 0}</div>\n  ${apiErrsHtml}\n  ${alertsHtml}\n</div>`;\n\nconst resumoHtml = `\n  <div style=\"display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px\">\n    ${re.nota_geral !== null && re.nota_geral !== undefined ? `<div><span class=\"score-frac ${scoreCls(re.nota_geral, false)}\">${esc(re.nota_geral)}</span><span style=\"color:var(--gray-light);font-weight:700\">/100</span><div class=\"kpi-lbl\" style=\"margin-top:2px\">Nota UX (IA)</div></div>` : ''}\n    ${urgBadge(re.nivel_urgencia)}\n  </div>\n  <p style=\"font-size:14px;color:var(--dark);line-height:1.7\">${esc(re.sintese)}</p>`;\n\nconst diagHtml = (analysis.diagnostico || []).map(d => `<div class=\"audit-item ${sevItemCls(d.severidade)}\">\n  <div class=\"audit-head\">${sevTag(d.severidade)}<span class=\"audit-title\">${esc(d.area)}</span></div>\n  <div class=\"audit-finding\">${esc(d.achado)}</div>\n  <div class=\"audit-finding\">📊 ${esc(d.evidencia)}</div>\n  ${d.causa_provavel ? `<div class=\"audit-rec\">💡 Causa provável: ${esc(d.causa_provavel)}</div>` : ''}\n</div>`).join('');\n\nconst qwHtml = (analysis.quick_wins || []).map((q2, i) => `<div class=\"feat-item\">\n  <div class=\"feat-check\">${i + 1}</div>\n  <div><b>${esc(q2.acao)}</b><br><span style=\"color:var(--gray)\">${esc(q2.motivo)}</span>\n  <span style=\"color:var(--gray-light);font-size:12px\"> · ${esc(q2.pagina_alvo || '')} · ⏱ ${esc(q2.prazo || '')}</span></div>\n</div>`).join('');\n\nconst invHtml = (analysis.investigar_no_clarity || []).map(v => `<div class=\"check-block\">\n  <div class=\"check-head\"><span class=\"tool-badge\">${esc(v.ferramenta)}</span><span class=\"audit-title\">${esc(v.o_que)}</span></div>\n  <div class=\"filter-code\">🔎 ${esc(v.filtro_sugerido)}</div>\n  <div class=\"check-q\">❓ ${esc(v.pergunta_a_responder)}</div>\n</div>`).join('');\n\nconst cortesHtml =\n  frictionTable('Páginas com maior fricção', data.byUrl) +\n  frictionTable('Por dispositivo', data.byDevice) +\n  frictionTable('Por origem de tráfego (Source · Medium · Campaign)', data.bySource) +\n  frictionTable('Por navegador e sistema (erros técnicos)', data.byTech);\n\nconst inner = overviewCard +\n  evolCard +\n  section('💡', 'Resumo Executivo', resumoHtml, true) +\n  section('🔍', 'Diagnóstico de Fricção', diagHtml, true) +\n  section('⚡', 'Quick Wins', qwHtml, false) +\n  section('🎥', 'Investigar manualmente no Clarity', invHtml, false) +\n  section('📋', 'Dados por corte', cortesHtml, false);\n\nreturn [{ json: { html: page(dateSelector, inner) } }];\n"
+      },
+      "id": "dd66a1a3-c340-4af6-b559-c85f974f533f",
+      "name": "Preparar Dashboard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7008,
+        2080
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.html }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "fc82af82-c6d5-4bd5-803f-b1456654ee3d",
+      "name": "Responder Relatório",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        7232,
+        2080
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔑 Setup 1 — Token do Clarity\n1. No Clarity: **Settings → Data Export → Generate new API token**\n2. No n8n: crie credencial **Header Auth**\n   - Name: `Authorization`\n   - Value: `Bearer SEU_TOKEN`\n3. Selecione-a nos 4 nós `Clarity – ...`\n\n⚠️ Limite: **10 chamadas/projeto/dia** — cada execução usa 4. Evite executar mais de 2x ao dia.",
+        "height": 260,
+        "width": 480,
+        "color": 5
+      },
+      "id": "e368201e-b3c9-4998-8525-772b2123faa3",
+      "name": "Sticky Note 120--40",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        6512,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ⚙️ Setup 2 — Config\nEdite o nó **Config**:\n- `projectName`: Mitsubishi (nome exibido nos relatórios)\n- `numOfDays`: 1 a 3 (janela da API)\n- `alertFrustrationThreshold`: score (0–100) que marca página como crítica\n- `minSessionsForAlert`: tráfego mínimo p/ marcar como crítica",
+        "height": 240,
+        "width": 460,
+        "color": 4
+      },
+      "id": "ec43d308-abbe-46b2-a956-887e72060dd3",
+      "name": "Sticky Note -400--60",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        5984,
+        1248
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🗄️ Setup 3 — Data Table\nCrie a Data Table **`clarity_snapshots`** com as colunas:\n- `snapshotDate` (string)\n- `projectName` (string)\n- `frustrationScore` (number)\n- `metrics` (string)\n- `analysis` (string)\n\nGuarda o histórico diário → tendências e dashboard.\n(A coluna `report` da versão anterior não é mais usada.)",
+        "height": 300,
+        "width": 400,
+        "color": 6
+      },
+      "id": "6afc2918-1942-4dfb-b48a-67edac3f8caf",
+      "name": "Sticky Note 1220--60",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        7616,
+        1248
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 Setup 4 — IA\nSelecione sua credencial **OpenRouter** no nó\n`OpenRouter – CRO`.\nModelo padrão: `anthropic/claude-sonnet-4.6`.",
+        "width": 340,
+        "color": 7
+      },
+      "id": "dc90f044-5a46-4f1c-a265-bbedcbc1d51b",
+      "name": "Sticky Note 1660-680",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        8048,
+        2000
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 📊 Dashboard\nCom o workflow **ativo**, acesse:\n`https://SEU_N8N/webhook/clarity-cro-report`\n\nPadrão visual Cadastra + **seletor de data** no topo\npara navegar entre os snapshots salvos.",
+        "height": 200,
+        "width": 460,
+        "color": 3
+      },
+      "id": "23a7f23d-f5c3-4348-92bc-89c82d52126e",
+      "name": "Sticky Note 120-940",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        6512,
+        2256
+      ]
+    },
+    {
+      "id": "d008cb21-2eb1-47fb-bb0a-cd5e38168cf2",
+      "name": "Agendamento Semanal",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        6128,
+        2560
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "430647d3-69ba-47c7-8fb8-80935f69e1e5",
+      "name": "Config Semanal",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        6352,
+        2560
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3a27b073-aea6-4995-a232-f5e48bf624b7",
+              "name": "projectName",
+              "type": "string",
+              "value": "Mitsubishi"
+            },
+            {
+              "id": "75cc1a52-5e22-4ac1-a891-c01d72036ed2",
+              "name": "reportEmails",
+              "type": "string",
+              "value": "tiagodaso@gmail.com"
+            },
+            {
+              "id": "bcaf545b-267f-4cbe-b93f-303339573afa",
+              "name": "lookbackDays",
+              "type": "string",
+              "value": "7"
+            },
+            {
+              "id": "ff11b354-caaf-4e69-9d6f-a8da3a84a6bf",
+              "name": "clarityPeriodDays",
+              "type": "string",
+              "value": "3"
+            },
+            {
+              "id": "aa3e3350-8d6d-4f85-b10d-734f4a1b2d7e",
+              "name": "ga4PropertyId",
+              "type": "string",
+              "value": ""
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "0889c01c-0df8-46a7-81e7-9de1d9d1987d",
+      "name": "Ler Snapshots (Semanal)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        6576,
+        2560
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "clarity_snapshots"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "projectName",
+              "keyValue": "={{ $('Config Semanal').first().json.projectName }}"
+            }
+          ]
+        },
+        "returnAll": true
+      }
+    },
+    {
+      "id": "fa8628e9-261c-4c26-830d-ab2f2bf06738",
+      "name": "GA – Métricas Diárias",
+      "type": "n8n-nodes-base.googleAnalytics",
+      "typeVersion": 2,
+      "position": [
+        6800,
+        2560
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "propertyType": "ga4",
+        "propertyId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config Semanal').first().json.ga4PropertyId }}"
+        },
+        "dateRange": "last7days",
+        "metricsGA4": {
+          "metricValues": [
+            {
+              "listName": "sessions"
+            },
+            {
+              "listName": "totalUsers"
+            },
+            {
+              "listName": "screenPageViews"
+            },
+            {
+              "listName": "userEngagementDuration"
+            },
+            {
+              "listName": "other",
+              "name": "engagementRate"
+            }
+          ]
+        },
+        "dimensionsGA4": {
+          "dimensionValues": [
+            {
+              "listName": "date"
+            }
+          ]
+        },
+        "returnAll": true,
+        "simple": true
+      }
+    },
+    {
+      "id": "88cfb50e-49fd-4137-ba73-14d6b170eb33",
+      "name": "Montar Resumo Semanal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7024,
+        2560
+      ],
+      "parameters": {
+        "jsCode": "// ============================================================\n// Consolida os snapshots do Clarity dos últimos 7 dias e os\n// dados diários do GA4, alinha por data e calcula correlações\n// ============================================================\nconst cfg = $('Config Semanal').first().json;\nconst lookback = parseInt(cfg.lookbackDays) || 7;\nconst cutoff = new Date(Date.now() - lookback * 864e5).toISOString().slice(0, 10);\n\nconst parse = v => { try { return typeof v === 'string' ? JSON.parse(v) : v; } catch (e) { return null; } };\n\n// ── Clarity: snapshots diários da Data Table ─────────────────\nconst snaps = $('Ler Snapshots (Semanal)').all().map(i => i.json)\n  .filter(r => r && r.snapshotDate && String(r.snapshotDate) >= cutoff)\n  .filter(r => !cfg.projectName || r.projectName === cfg.projectName)\n  .sort((a, b) => String(a.snapshotDate).localeCompare(String(b.snapshotDate)))\n  .map(r => {\n    const m = parse(r.metrics) || {};\n    const o = m.overview || {};\n    const fr = o.frictionRates || {};\n    const an = parse(r.analysis) || {};\n    return {\n      date: String(r.snapshotDate),\n      frustrationScore: o.frustrationScore ?? null,\n      sessions: o.sessions ?? null,\n      users: o.users ?? null,\n      scroll: o.avgScrollDepth ?? null,\n      ragePct: fr.rageClicks?.pctSessions ?? null,\n      deadPct: fr.deadClicks?.pctSessions ?? null,\n      quickPct: fr.quickbacks?.pctSessions ?? null,\n      alerts: (m.alerts || []).map(a => ({ url: a.url, frictionScore: a.frictionScore, sessions: a.sessions })),\n      topUrls: (m.byUrl || []).slice(0, 8).map(u => ({ url: u.dimension, frictionScore: u.frictionScore, sessions: u.sessions })),\n      sinteseIA: an.resumo_executivo?.sintese || null\n    };\n  });\n\n// ── GA4: métricas diárias (tolerante à ausência de credencial) ─\nlet ga = [];\ntry {\n  ga = $('GA – Métricas Diárias').all().map(i => i.json)\n    .filter(r => r && r.date)\n    .map(r => {\n      const d = String(r.date);\n      const iso = d.length === 8 ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}` : d;\n      const n = v => { const x = parseFloat(v); return isNaN(x) ? null : x; };\n      const sess = n(r.sessions), engDur = n(r.userEngagementDuration);\n      return {\n        date: iso,\n        sessions: sess,\n        users: n(r.totalUsers),\n        pageViews: n(r.screenPageViews),\n        engagementRate: r.engagementRate !== undefined ? Math.round(n(r.engagementRate) * 1000) / 10 : null,\n        avgEngagementSec: (engDur !== null && sess) ? Math.round(engDur / sess) : null\n      };\n    })\n    .filter(r => r.date >= cutoff)\n    .sort((a, b) => a.date.localeCompare(b.date));\n} catch (e) { ga = []; }\nconst gaOk = ga.length > 0;\n\n// ── Agregados da semana (Clarity) ────────────────────────────\nconst avg = arr => { const v = arr.filter(x => x !== null && x !== undefined); return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length * 10) / 10 : null; };\nconst sum = arr => arr.filter(x => x !== null && x !== undefined).reduce((a, b) => a + b, 0);\nconst delta = (a, b) => (a === null || b === null || a === undefined || b === undefined || !b) ? null : Math.round((a - b) / b * 1000) / 10;\n\nconst first = snaps[0] || {};\nconst last = snaps[snaps.length - 1] || {};\nconst resumoClarity = {\n  diasComSnapshot: snaps.length,\n  sessoesTotais: sum(snaps.map(s => s.sessions)),\n  frustracaoMedia: avg(snaps.map(s => s.frustrationScore)),\n  frustracaoInicio: first.frustrationScore ?? null,\n  frustracaoFim: last.frustrationScore ?? null,\n  variacaoFrustracaoPct: delta(last.frustrationScore, first.frustrationScore),\n  rageMedioPct: avg(snaps.map(s => s.ragePct)),\n  deadMedioPct: avg(snaps.map(s => s.deadPct)),\n  quickbackMedioPct: avg(snaps.map(s => s.quickPct)),\n  scrollMedioPct: avg(snaps.map(s => s.scroll))\n};\n\n// URLs recorrentes no topo de fricção durante a semana\nconst urlAgg = {};\nfor (const s of snaps) for (const u of s.topUrls) {\n  if (!urlAgg[u.url]) urlAgg[u.url] = { url: u.url, dias: 0, scoreMedio: 0, sessoes: 0 };\n  urlAgg[u.url].dias++;\n  urlAgg[u.url].scoreMedio += u.frictionScore || 0;\n  urlAgg[u.url].sessoes += u.sessions || 0;\n}\nconst urlsRecorrentes = Object.values(urlAgg)\n  .map(u => ({ ...u, scoreMedio: Math.round(u.scoreMedio / u.dias * 10) / 10 }))\n  .sort((a, b) => b.dias - a.dias || b.scoreMedio - a.scoreMedio)\n  .slice(0, 10);\n\n// ── Correlação Clarity × GA (Pearson por dia alinhado) ───────\nfunction pearson(xs, ys) {\n  const n = xs.length;\n  if (n < 3) return null;\n  const mx = xs.reduce((a, b) => a + b, 0) / n, my = ys.reduce((a, b) => a + b, 0) / n;\n  let num = 0, dx = 0, dy = 0;\n  for (let i = 0; i < n; i++) { num += (xs[i] - mx) * (ys[i] - my); dx += (xs[i] - mx) ** 2; dy += (ys[i] - my) ** 2; }\n  if (!dx || !dy) return null;\n  return Math.round(num / Math.sqrt(dx * dy) * 100) / 100;\n}\nconst aligned = snaps.map(s => ({ s, g: ga.find(g => g.date === s.date) })).filter(p => p.g);\nconst corrOf = (fa, fb) => {\n  const ps = aligned.filter(p => fa(p) !== null && fa(p) !== undefined && fb(p) !== null && fb(p) !== undefined);\n  return pearson(ps.map(fa), ps.map(fb));\n};\nconst correlacoes = gaOk ? {\n  diasAlinhados: aligned.length,\n  frustracao_vs_engajamentoGA: corrOf(p => p.s.frustrationScore, p => p.g.engagementRate),\n  frustracao_vs_sessoesGA: corrOf(p => p.s.frustrationScore, p => p.g.sessions),\n  rage_vs_engajamentoGA: corrOf(p => p.s.ragePct, p => p.g.engagementRate),\n  quickback_vs_engajamentoGA: corrOf(p => p.s.quickPct, p => p.g.engagementRate),\n  nota: 'Correlação de Pearson (-1 a 1) entre dias alinhados; snapshots do Clarity agregam os últimos ' + (parseInt(cfg.clarityPeriodDays) || 3) + ' dias, portanto trate como tendência, não causalidade.'\n} : { diasAlinhados: 0, nota: 'GA indisponível nesta execução (credencial/propriedade não configurada ou sem dados).' };\n\nreturn [{ json: {\n  geradoEm: new Date().toISOString(),\n  projectName: cfg.projectName || 'Meu Projeto',\n  emails: cfg.reportEmails,\n  periodo: { de: snaps[0]?.date || cutoff, ate: last.date || new Date().toISOString().slice(0, 10) },\n  resumoClarity,\n  clarityDiario: snaps.map(({ sinteseIA, topUrls, ...rest }) => rest),\n  urlsRecorrentes,\n  gaOk,\n  gaDiario: ga,\n  correlacoes,\n  ultimaSinteseIA: last.sinteseIA || null\n} }];\n"
+      }
+    },
+    {
+      "id": "687b26ea-9ae9-4d16-aa3b-275147afb4d8",
+      "name": "Agente Resumo Semanal",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        7248,
+        2560
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é um consultor sênior de CRO/UX e Web Analytics. Analise a evolução da última semana correlacionando o comportamento do Microsoft Clarity (fricção) com as métricas de audiência do Google Analytics 4.\n\n## PERÍODO\nProjeto: {{ $json.projectName }} | De {{ $json.periodo.de }} a {{ $json.periodo.ate }}\n\n## DADOS CONSOLIDADOS DA SEMANA\n{{ JSON.stringify({ resumoClarity: $json.resumoClarity, clarityDiario: $json.clarityDiario, urlsRecorrentes: $json.urlsRecorrentes, gaDisponivel: $json.gaOk, gaDiario: $json.gaDiario, correlacoesNumericas: $json.correlacoes }) }}\n\n## GLOSSÁRIO\n- frustrationScore: índice 0–100 (rage 35%, dead 20%, quickback 15%, scroll excessivo 10%, error clicks 10%, script errors 10%). Maior = pior.\n- Correlação de Pearson (-1 a 1): |r|≥0,7 forte, 0,4–0,7 moderada, <0,4 fraca. Os snapshots do Clarity agregam alguns dias, então trate correlação como TENDÊNCIA, nunca como causalidade comprovada.\n- GA: sessions, totalUsers, screenPageViews, engagementRate (% sessões engajadas), avgEngagementSec.\n\n## SUA TAREFA\nEscreva um resumo semanal executivo e acionável. Cite números exatos dos dados. Correlacione explicitamente os padrões de fricção do Clarity com o que aconteceu no GA na mesma janela (ex.: \"dias com pico de rage clicks coincidiram com queda na taxa de engajamento do GA\"). Se o GA estiver indisponível (gaDisponivel=false), baseie-se só no Clarity e diga isso.\n\nResponda SOMENTE com JSON válido (sem markdown, sem cercas), exatamente neste schema:\n{\n  \"resumo_da_semana\": \"<4-6 frases: como a semana evoluiu, principal padrão Clarity×GA, e o foco da próxima semana>\",\n  \"destaques\": [\n    { \"tipo\": \"positivo|negativo|neutro\", \"titulo\": \"<curto>\", \"detalhe\": \"<números exatos>\" }\n  ],\n  \"correlacoes_ga_clarity\": [\n    { \"padrao_clarity\": \"<métrica/comportamento do Clarity>\", \"metrica_ga\": \"<métrica do GA>\", \"leitura\": \"<o que a relação sugere na prática>\", \"confianca\": \"alta|média|baixa\" }\n  ],\n  \"recomendacoes_proxima_semana\": [\n    { \"acao\": \"<ação concreta>\", \"motivo\": \"<por quê, ligado aos dados>\", \"prioridade\": \"alta|media|baixa\" }\n  ]\n}\nRegras: destaques 3-5 itens; correlacoes_ga_clarity 2-4 itens (se GA indisponível, deixe [] e explique no resumo); recomendacoes_proxima_semana 3-5 itens ordenadas por prioridade."
+      }
+    },
+    {
+      "id": "178b0096-efe2-48ff-a3ca-3ec4b8bf446a",
+      "name": "OpenRouter – Semanal",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        7280,
+        2784
+      ],
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.6",
+        "options": {
+          "maxTokens": 8000,
+          "temperature": 0.3
+        }
+      },
+      "credentials": {
+        "openRouterApi": {
+          "id": "4MTPOCzYj4oYOSjA",
+          "name": "OpenRouter account 51"
+        }
+      }
+    },
+    {
+      "id": "546a09d2-4312-4e5a-9b1b-7ea994c6a0f6",
+      "name": "Formatar Email Semanal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7568,
+        2560
+      ],
+      "parameters": {
+        "jsCode": "// ============================================================\n// Extrai o JSON da análise semanal da IA e monta o e-mail em\n// HTML compatível com clientes de e-mail (estilos inline)\n// ============================================================\nconst raw = $input.first().json;\nlet text = raw.text ?? raw.output ?? raw.response ?? '';\nif (typeof text !== 'string') text = JSON.stringify(text);\n\nlet ai = null;\ntry { ai = JSON.parse(text); } catch (e) {\n  const fence = text.match(/```(?:json)?\\s*([\\s\\S]*?)```/);\n  if (fence) { try { ai = JSON.parse(fence[1]); } catch (e2) {} }\n  if (!ai) { const m = text.match(/\\{[\\s\\S]*\\}/); if (m) { try { ai = JSON.parse(m[0]); } catch (e3) {} } }\n}\nif (!ai) ai = { resumo_da_semana: text.slice(0, 1500) || 'Análise indisponível nesta execução.', destaques: [], correlacoes_ga_clarity: [], recomendacoes_proxima_semana: [] };\n\nconst d = $('Montar Resumo Semanal').first().json;\nconst rc = d.resumoClarity || {};\n\nconst esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst fmt = n => (n === null || n === undefined) ? '—' : Number(n).toLocaleString('pt-BR');\nconst pct = n => (n === null || n === undefined) ? '—' : Number(n).toLocaleString('pt-BR') + '%';\n\nconst OX = '#e84e1b', DARK = '#111827', GRAY = '#6b7280', LINE = '#e5e7eb', SOFT = '#f3f4f6';\nconst GREEN = '#059669', RED = '#dc2626', YELLOW = '#d97706';\n\nconst deltaTxt = v => {\n  if (v === null || v === undefined) return '';\n  const good = v < 0; // frustração: queda é boa\n  return `<span style=\"color:${good ? GREEN : RED};font-weight:700\">${v > 0 ? '▲' : '▼'} ${Math.abs(v).toLocaleString('pt-BR')}%</span>`;\n};\n\nconst kpiCell = (lbl, val, extra) => `<td width=\"25%\" style=\"background:${SOFT};border:1px solid ${LINE};border-top:3px solid ${OX};border-radius:8px;padding:12px;text-align:center\">\n  <div style=\"font-size:20px;font-weight:800;color:${DARK}\">${val}</div>\n  <div style=\"font-size:10px;font-weight:700;color:${GRAY};text-transform:uppercase;letter-spacing:.05em\">${esc(lbl)}</div>${extra || ''}\n</td>`;\n\n// Barra simples (compatível com e-mail) para o score diário\nconst barRow = (label, v, max) => {\n  const w = (v === null || !max) ? 0 : Math.max(2, Math.round(v / max * 100));\n  const color = v >= 25 ? RED : v >= 15 ? '#ea580c' : v >= 8 ? YELLOW : GREEN;\n  return `<tr>\n    <td style=\"font-size:12px;color:${GRAY};padding:3px 8px 3px 0;white-space:nowrap\">${esc(label)}</td>\n    <td width=\"100%\" style=\"padding:3px 0\">\n      <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr>\n        <td width=\"${w}%\" style=\"background:${color};height:10px;border-radius:5px;font-size:0;line-height:0\">&nbsp;</td>\n        <td style=\"font-size:11px;font-weight:700;color:${DARK};padding-left:6px;white-space:nowrap\">${fmt(v)}</td>\n        <td width=\"${100 - w}%\"></td>\n      </tr></table>\n    </td>\n  </tr>`;\n};\nconst maxScore = Math.max(...(d.clarityDiario || []).map(s => s.frustrationScore || 0), 1);\nconst dailyBars = (d.clarityDiario || []).map(s => barRow(s.date, s.frustrationScore, maxScore)).join('');\n\n// Tabela diária Clarity × GA\nconst gaRows = (d.clarityDiario || []).map(s => {\n  const g = (d.gaDiario || []).find(g2 => g2.date === s.date) || {};\n  return `<tr>\n    <td style=\"padding:7px 8px;border-bottom:1px solid ${SOFT};font-size:12px\">${esc(s.date)}</td>\n    <td align=\"right\" style=\"padding:7px 8px;border-bottom:1px solid ${SOFT};font-size:12px\">${fmt(s.frustrationScore)}</td>\n    <td align=\"right\" style=\"padding:7px 8px;border-bottom:1px solid ${SOFT};font-size:12px\">${pct(s.ragePct)}</td>\n    <td align=\"right\" style=\"padding:7px 8px;border-bottom:1px solid ${SOFT};font-size:12px;border-left:2px solid ${LINE}\">${fmt(g.sessions)}</td>\n    <td align=\"right\" style=\"padding:7px 8px;border-bottom:1px solid ${SOFT};font-size:12px\">${fmt(g.users)}</td>\n    <td align=\"right\" style=\"padding:7px 8px;border-bottom:1px solid ${SOFT};font-size:12px\">${pct(g.engagementRate)}</td>\n  </tr>`;\n}).join('');\nconst th = t => `<th align=\"right\" style=\"padding:7px 8px;font-size:10px;font-weight:800;color:${GRAY};text-transform:uppercase;letter-spacing:.05em;background:${SOFT};border-bottom:1px solid ${LINE}\">${t}</th>`;\n\nconst corr = d.correlacoes || {};\nconst corrChip = v => {\n  if (v === null || v === undefined) return `<span style=\"color:${GRAY}\">n/d</span>`;\n  const a = Math.abs(v);\n  const força = a >= 0.7 ? 'forte' : a >= 0.4 ? 'moderada' : 'fraca';\n  const color = a >= 0.7 ? RED : a >= 0.4 ? YELLOW : GRAY;\n  return `<b style=\"color:${color}\">${v.toLocaleString('pt-BR')}</b> <span style=\"color:${GRAY};font-size:11px\">(${força})</span>`;\n};\nconst corrHtml = d.gaOk ? `<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"font-size:12px;color:${DARK}\">\n  <tr><td style=\"padding:4px 0\">Frustração (Clarity) × Taxa de engajamento (GA)</td><td align=\"right\">${corrChip(corr.frustracao_vs_engajamentoGA)}</td></tr>\n  <tr><td style=\"padding:4px 0\">Frustração (Clarity) × Sessões (GA)</td><td align=\"right\">${corrChip(corr.frustracao_vs_sessoesGA)}</td></tr>\n  <tr><td style=\"padding:4px 0\">Rage clicks (Clarity) × Engajamento (GA)</td><td align=\"right\">${corrChip(corr.rage_vs_engajamentoGA)}</td></tr>\n  <tr><td style=\"padding:4px 0\">Quickbacks (Clarity) × Engajamento (GA)</td><td align=\"right\">${corrChip(corr.quickback_vs_engajamentoGA)}</td></tr>\n</table>\n<p style=\"font-size:11px;color:${GRAY};margin:8px 0 0\">${esc(corr.nota || '')} Dias alinhados: ${fmt(corr.diasAlinhados)}.</p>`\n: `<p style=\"font-size:12px;color:${YELLOW};margin:0\"><b>⚠️ Dados do GA indisponíveis nesta execução.</b> Configure a credencial do Google Analytics e o ID da propriedade GA4 no nó \"Config Semanal\" para habilitar a correlação.</p>`;\n\nconst tipoColor = t => { const s = String(t || '').toLowerCase(); return s === 'positivo' ? GREEN : s === 'negativo' ? RED : GRAY; };\nconst destaquesHtml = (ai.destaques || []).map(x => `<tr><td style=\"padding:6px 0;font-size:13px;line-height:1.55\">\n  <span style=\"color:${tipoColor(x.tipo)};font-weight:800\">●</span> <b>${esc(x.titulo)}</b> — ${esc(x.detalhe)}\n</td></tr>`).join('');\n\nconst corrIAHtml = (ai.correlacoes_ga_clarity || []).map(x => `<tr><td style=\"padding:8px 10px;border-left:3px solid ${OX};background:${SOFT};border-radius:6px;font-size:12.5px;line-height:1.55\">\n  <b>${esc(x.padrao_clarity)}</b> ↔ <b>${esc(x.metrica_ga)}</b><br>${esc(x.leitura)}\n  <span style=\"color:${GRAY};font-size:11px\"> · confiança ${esc(x.confianca || 'média')}</span>\n</td></tr><tr><td style=\"font-size:6px;line-height:6px\">&nbsp;</td></tr>`).join('');\n\nconst prioColor = p => { const s = String(p || '').toLowerCase(); return s === 'alta' ? RED : s === 'media' || s === 'média' ? YELLOW : GRAY; };\nconst recsHtml = (ai.recomendacoes_proxima_semana || []).map((r, i) => `<tr><td style=\"padding:6px 0;font-size:13px;line-height:1.55\">\n  <b>${i + 1}.</b> ${esc(r.acao)} <span style=\"color:${prioColor(r.prioridade)};font-weight:700;font-size:11px\">[${esc(r.prioridade || 'média')}]</span><br>\n  <span style=\"color:${GRAY};font-size:12px\">${esc(r.motivo)}</span>\n</td></tr>`).join('');\n\nconst urlsHtml = (d.urlsRecorrentes || []).slice(0, 6).map(u => `<tr>\n  <td style=\"padding:6px 8px;border-bottom:1px solid ${SOFT};font-size:12px;word-break:break-all\">${esc(u.url)}</td>\n  <td align=\"center\" style=\"padding:6px 8px;border-bottom:1px solid ${SOFT};font-size:12px\">${fmt(u.dias)}</td>\n  <td align=\"right\" style=\"padding:6px 8px;border-bottom:1px solid ${SOFT};font-size:12px;font-weight:700\">${fmt(u.scoreMedio)}</td>\n</tr>`).join('');\n\nconst sec = (title, body) => `<tr><td style=\"padding:22px 28px;border-top:1px solid ${LINE}\">\n  <div style=\"font-size:14px;font-weight:800;color:${DARK};margin-bottom:10px\">${title}</div>${body}\n</td></tr>`;\n\nconst html = `<!DOCTYPE html><html lang=\"pt-BR\"><body style=\"margin:0;padding:0;background:#f4f4f2\">\n<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background:#f4f4f2;padding:24px 0\"><tr><td align=\"center\">\n<table cellpadding=\"0\" cellspacing=\"0\" width=\"640\" style=\"max-width:640px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;box-shadow:0 2px 12px rgba(0,0,0,.08)\">\n  <tr><td style=\"background:linear-gradient(140deg,#e84e1b,#ff6b3d);background-color:#e84e1b;padding:26px 28px;color:#ffffff\">\n    <div style=\"font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.85\">IA Clarity Tracker · Resumo Semanal</div>\n    <div style=\"font-size:22px;font-weight:800;margin-top:4px\">${esc(d.projectName)} — Semana de ${esc(d.periodo?.de)} a ${esc(d.periodo?.ate)}</div>\n  </td></tr>\n  <tr><td style=\"padding:22px 28px\">\n    <table cellpadding=\"0\" cellspacing=\"6\" width=\"100%\"><tr>\n      ${kpiCell('Sessões (soma)', fmt(rc.sessoesTotais))}\n      ${kpiCell('Frustração média', fmt(rc.frustracaoMedia), rc.variacaoFrustracaoPct !== null ? `<div style=\"font-size:11px;margin-top:2px\">${deltaTxt(rc.variacaoFrustracaoPct)} na semana</div>` : '')}\n      ${kpiCell('Rage clicks méd.', pct(rc.rageMedioPct))}\n      ${kpiCell('Dead clicks méd.', pct(rc.deadMedioPct))}\n    </tr></table>\n  </td></tr>\n  ${sec('💡 Resumo da semana (IA)', `<p style=\"font-size:13px;color:${DARK};line-height:1.65;margin:0\">${esc(ai.resumo_da_semana)}</p>`)}\n  ${destaquesHtml ? sec('⭐ Destaques', `<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">${destaquesHtml}</table>`) : ''}\n  ${sec('📉 Score de Frustração por dia', `<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">${dailyBars || '<tr><td style=\"font-size:12px;color:' + GRAY + '\">Sem snapshots no período.</td></tr>'}</table>`)}\n  ${sec('🔗 Correlação GA × Clarity (números)', corrHtml)}\n  ${corrIAHtml ? sec('🧠 Leitura das correlações (IA)', `<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">${corrIAHtml}</table>`) : ''}\n  ${sec('📅 Diário: Clarity × GA', `<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"border-collapse:collapse\">\n    <tr><th align=\"left\" style=\"padding:7px 8px;font-size:10px;font-weight:800;color:${GRAY};text-transform:uppercase;background:${SOFT};border-bottom:1px solid ${LINE}\">Data</th>${th('Frustração')}${th('Rage %')}${th('Sessões GA')}${th('Usuários GA')}${th('Engaj. GA')}</tr>\n    ${gaRows || `<tr><td colspan=\"6\" style=\"font-size:12px;color:${GRAY};padding:8px\">Sem dados no período.</td></tr>`}\n  </table>`)}\n  ${urlsHtml ? sec('🚨 Páginas recorrentes com fricção', `<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"border-collapse:collapse\">\n    <tr><th align=\"left\" style=\"padding:6px 8px;font-size:10px;font-weight:800;color:${GRAY};text-transform:uppercase;background:${SOFT};border-bottom:1px solid ${LINE}\">URL</th><th align=\"center\" style=\"padding:6px 8px;font-size:10px;font-weight:800;color:${GRAY};text-transform:uppercase;background:${SOFT};border-bottom:1px solid ${LINE}\">Dias no topo</th><th align=\"right\" style=\"padding:6px 8px;font-size:10px;font-weight:800;color:${GRAY};text-transform:uppercase;background:${SOFT};border-bottom:1px solid ${LINE}\">Score médio</th></tr>\n    ${urlsHtml}</table>`) : ''}\n  ${recsHtml ? sec('✅ Recomendações para a próxima semana', `<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">${recsHtml}</table>`) : ''}\n  <tr><td style=\"padding:18px 28px;border-top:1px solid ${LINE};text-align:center\">\n    <a href=\"https://n8n-prod.cadastra.com/webhook/clarity-cro-report\" style=\"display:inline-block;background:#e84e1b;color:#ffffff;text-decoration:none;font-weight:700;font-size:13px;padding:10px 22px;border-radius:8px\">Abrir dashboard completo</a>\n    <div style=\"font-size:10px;color:#9ca3af;margin-top:12px\">Gerado automaticamente via n8n · Microsoft Clarity Data Export API + Google Analytics 4</div>\n  </td></tr>\n</table>\n</td></tr></table></body></html>`;\n\nreturn [{ json: {\n  emails: d.emails,\n  subject: `📊 Resumo Semanal CRO/UX — ${d.projectName} · ${d.periodo?.de} a ${d.periodo?.ate}`,\n  html\n} }];\n"
+      }
+    },
+    {
+      "id": "e6ca6f47-004b-4041-b4f8-00bcdffb6ac5",
+      "name": "Enviar Email Semanal",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        7792,
+        2560
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.emails }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H4YY5Bldwy95Y3qW",
+          "name": "SEO-N8N"
+        }
+      }
+    },
+    {
+      "id": "af16cba7-4aea-41b7-a6b0-1ab201968792",
+      "name": "Sticky Note Semanal",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        6112,
+        2360
+      ],
+      "parameters": {
+        "width": 1840,
+        "height": 180,
+        "color": 4,
+        "content": "## 📧 Resumo Semanal (novo)\nToda segunda 08:00 → consolida os snapshots do Clarity dos últimos 7 dias + métricas diárias do GA4, correlaciona os padrões e envia um e-mail HTML para os endereços de **Config Semanal → reportEmails**.\n\n**Antes de ativar:** preencha `ga4PropertyId` em *Config Semanal* e confira as credenciais de **GA (OAuth2)**, **OpenRouter** e **Gmail**. Sem GA configurado o e-mail é enviado só com dados do Clarity."
+      }
+    }
+  ],
+  "connections": {
+    "Agendamento Diário": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Clarity – Por URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clarity – Por URL": {
+      "main": [
+        [
+          {
+            "node": "Clarity – Por Dispositivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clarity – Por Dispositivo": {
+      "main": [
+        [
+          {
+            "node": "Clarity – Origem de Tráfego",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clarity – Origem de Tráfego": {
+      "main": [
+        [
+          {
+            "node": "Clarity – Navegador e SO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clarity – Navegador e SO": {
+      "main": [
+        [
+          {
+            "node": "Processar Métricas Clarity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Métricas Clarity": {
+      "main": [
+        [
+          {
+            "node": "Ler Snapshots Anteriores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Snapshots Anteriores": {
+      "main": [
+        [
+          {
+            "node": "Comparar Tendências",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comparar Tendências": {
+      "main": [
+        [
+          {
+            "node": "Agente CRO/UX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente CRO/UX": {
+      "main": [
+        [
+          {
+            "node": "Formatar Relatório",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter – CRO": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente CRO/UX",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Relatório": {
+      "main": [
+        [
+          {
+            "node": "Salvar Snapshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET – Relatório CRO": {
+      "main": [
+        [
+          {
+            "node": "Ler Relatórios Salvos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Relatórios Salvos": {
+      "main": [
+        [
+          {
+            "node": "Preparar Dashboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Dashboard": {
+      "main": [
+        [
+          {
+            "node": "Responder Relatório",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agendamento Semanal": {
+      "main": [
+        [
+          {
+            "node": "Config Semanal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config Semanal": {
+      "main": [
+        [
+          {
+            "node": "Ler Snapshots (Semanal)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Snapshots (Semanal)": {
+      "main": [
+        [
+          {
+            "node": "GA – Métricas Diárias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GA – Métricas Diárias": {
+      "main": [
+        [
+          {
+            "node": "Montar Resumo Semanal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Resumo Semanal": {
+      "main": [
+        [
+          {
+            "node": "Agente Resumo Semanal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Resumo Semanal": {
+      "main": [
+        [
+          {
+            "node": "Formatar Email Semanal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Email Semanal": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email Semanal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter – Semanal": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Resumo Semanal",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
